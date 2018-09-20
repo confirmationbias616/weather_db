@@ -23,14 +23,14 @@ def load_model():
     filename = '{}/Gym/pickeled_models/{}.pkl'.format(
         PATH, datetime.datetime.now().date())
     with open(filename, 'rb') as input_file:
-        pickle.load(input_file)
+        return pickle.load(input_file)
 
 
 def load_features():
     filename = '{}/Gym/feature_list/{}.pkl'.format(
         PATH, datetime.datetime.now().date())
     with open(filename, 'rb') as input_file:
-        pickle.load(input_file)
+        return pickle.load(input_file)
 
 
 model = load_model()

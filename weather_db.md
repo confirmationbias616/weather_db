@@ -87,7 +87,7 @@ Use Scikit-Learn to train a random forest model on historical data, using the re
 Unpickle appropriate model generated in previous step and use it to predict
 
 #### Report
-bla bla blaaaaaaaaa
+Provide some insight into how the model predicted the weather for yesterday.
 
 
 ## Any interesting charts or diagrams you created
@@ -109,13 +109,13 @@ Give examples
 * Run ```mkdir Data```.
 * Switch into the data directory using ```cd Data```.
 * Download the data files from the dropbox folder into the data directory.
- * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0])
+ * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0]).
  * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
 * Switch back into the weather_db directory using ``cd ..``.
 
 
 ## To-Do
-Here is a very rough to-do list, which is constsntly evolving.
+Here is a very rough to-do list, which is constantly evolving.
 
 * Try filtering out all cities above certain latitude (both at the training level and testing level). Could also try simply filtering out all predictions that are 2 or more degrees off of any of the weather providers. (But that wouldn’t feel very goo)
 

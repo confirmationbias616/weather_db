@@ -62,17 +62,16 @@ Use Requests to scrape websites of tracked forecasters for all available locatio
 Favour API's where available. If there's no API, default to using BeautifulSoup to parse through relevant info.
 
 Data to retrieve:
-
 * (1,2,3,4,5)-day forecast for the follwoing measruments:
- * High
- * Low
- * Day pop
- * Night pop
- * Total precipitation (prepare for snow)
+    * High
+    * Low
+    * Day pop
+    * Night pop
+    * Total precipitation (prepare for snow)
 * Yesterday’s data (should this be provided by a 3rd party service?):
- * High
- * Low
- * Total precipitation
+    * High
+    * Low
+    * Total precipitation
 
 #### Transform & Load
 Use Pandas to store all data into .csv files and load back into memory when nescessary. Also use Pandas to wrangle the data into suitable shapes for downstream processes.
@@ -109,8 +108,8 @@ Give examples
 * Run ```mkdir Data```.
 * Switch into the data directory using ```cd Data```.
 * Download the data files from the dropbox folder into the data directory.
- * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0]).
- * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
+    * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0]).
+    * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
 * Switch back into the weather_db directory using ``cd ..``.
 
 
@@ -134,9 +133,9 @@ Here is a very rough to-do list, which is constantly evolving.
 * Is there anything we can do with quantile regression?! Reduce the amount of extreme predictions?
 
 * Create a few datasets with different lengths of trailing dates to be used in larger grid search loop of hyperparameterization
- * random search?
- * grid search with starting point from hyperparameters of yesterday’s model, +\- a certain range a percentage variation.
- * Try out different time horizons using tweaked model and use prediction of yesterday’s high as the 
+    * random search?
+    * grid search with starting point from hyperparameters of yesterday’s model, +\- a certain range a percentage variation.
+    * Try out different time horizons using tweaked model and use prediction of yesterday’s high as the 
 
 * To refine forecast dB structure go have a look at the stock trading forecast repository on Github by the machine learning guide podcast guy.
 
@@ -155,8 +154,8 @@ Here is a very rough to-do list, which is constantly evolving.
 * Create ReadMe file (at least 1 master but should there be individual ones for other scripts? Or should I just do a better job of commenting the code?)
 
 * Things to clean up:
- * Clean any line that verbosely outputs to the log or posts a warning to the log
- * Remove references to dB’s? Or just explain in readme that it’s because the project will be switching to a dB eventually. 
+    * Clean any line that verbosely outputs to the log or posts a warning to the log
+    * Remove references to dB’s? Or just explain in readme that it’s because the project will be switching to a dB eventually. 
  * PEP8
 
 * Set up a way of travelling back in time to that we can do heavy experimentation on hyperparameterization and not have to wait a day for testing the results because we don’t have the data yet. It would be wicked sweet to roll through the history in one loop and collect results for a certain set of hyperparameters 

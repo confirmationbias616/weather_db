@@ -26,16 +26,16 @@ See [Installation](#Installation) instructions to check out the source code on y
 
 ## Challenges
 
-###Data Drift
+### Data Drift
 Given that Canada is a country with 4 seasons, historical daily avergaes are constantly on the move from one day/week/month to the next. It's unreasonable to expect a machine learning model trained on January data to perform just as well in July. This boils down to the well-known issue of data drift, where the continuous mutation of feautre characteristics results in unpredictability of the target variable. In this application, we are always trying to predict tomorrow's wether, which means we are trying to predict an edge case for which the model has been poorly trained on. One way to solve this would be to train the model on a period of time which eaqually straddles the forecast date. As we've been collecting data for less than 1 year however, this is solution is not yet possible. 
 
-###Micro-Climates
+### Micro-Climates
 On any given day, the weather across Canada's vast territory tends to vary immensely depending on geographic location. If this is not controlled for, the ML model will be unseccessful. We solve this issue by pulling in each location's latitude and longitude from Google's Geocoding API. This means the ML model can cater its predictions based on geographic location.
 
-###Geographic Sparsity
+### Geographic Sparsity
 Given that Canada is sparsly populated, regions included in weather forecasts tend to be clusterd and not very well distributed. This challenge is mostly resolved by using the latitude and longitude features, as described above, but there is still an issue with the fact that we have very little data on the North Territories. It might be wrothwhile to exclude every datapoint above a certain latitude threshold — even if it means losing the functionality to predict in those regions.
 
-###Timing of Data Availability
+### Timing of Data Availability
 Since we are trying to predict next-day weather with the data we have during the current day, it behooves us to receive data in a timely manner. A major component of being able to forecast the weather lies in the concept of [weather persistence](<https://en.wikipedia.org/wiki/Weather_forecasting#Persistence>). Basically this means that the weather tends to maintain itself over short periods of time. The short-term past is a good predictor of the near future. Therefore, gathering current day conditions as a feautre set would surely be of massive benefit for the ML model's performance.  
 
 Unfortunately, both of our tracked forecasters (Environment Canada and The Weather Network) do not offer current day reports in terms of recorded highs and recorded lows. This means we can only use yesterday's conditions for the "persistence" component of our feautre set. This data is 48 hours removed from our target prediction's occurence, which is not very useful. 
@@ -74,7 +74,7 @@ Data to retrieve:
  * Low
  * Total precipitation
 
-####Transform & Load
+#### Transform & Load
 Use Pandas to store all data into .csv files and load back into memory when nescessary. Also use Pandas to wrangle the data into suitable shapes for downstream processes.
 
 #### Validate
@@ -87,7 +87,7 @@ Use Scikit-Learn to train a random forest model on historical data, using the re
 Unpickle appropriate model generated in previous step and use it to predict
 
 #### Report
-bla bla blaaaaaaaaa
+Provide some insight into how the model predicted the weather for yesterday.
 
 
 ## Any interesting charts or diagrams you created
@@ -109,13 +109,13 @@ Give examples
 * Run ```mkdir Data```.
 * Switch into the data directory using ```cd Data```.
 * Download the data files from the dropbox folder into the data directory.
- * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0])
+ * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0]).
  * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
 * Switch back into the weather_db directory using ``cd ..``.
 
 
 ## To-Do
-Here is a very rough to-do list, which is constsntly evolving.
+Here is a very rough to-do list, which is constantly evolving.
 
 * Try filtering out all cities above certain latitude (both at the training level and testing level). Could also try simply filtering out all predictions that are 2 or more degrees off of any of the weather providers. (But that wouldn’t feel very goo)
 

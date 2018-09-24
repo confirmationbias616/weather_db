@@ -116,19 +116,15 @@ Give examples
 ## To-Do
 Here is a very rough to-do list, which is constantly evolving.
 
-* Try filtering out all cities above certain latitude (both at the training level and testing level). Could also try simply filtering out all predictions that are 2 or more degrees off of any of the weather providers. (But that wouldn’t feel very goo)
+* Try filtering out all cities above certain latitude (both at the training level and testing level). Could also try simply filtering out all predictions that are 2 or more degrees off of any of the weather providers. (But that wouldn’t feel very good).
 
-* Make a script to backfill missing values for history_db at the end of every month
-
-* Find out which is the best baseline estimator: EC, TWN, or some kind of average of both? Also, what would be the impact on dataset size (lots of missing historical values)? Need to create a history backfill script first though
-
-* Visualize a tree from the random forest (just like that blog post)
+* Make a script to backfill missing values for history_db at the end of every month.
 
 * Get set up with YELLOWBRICK and explore!
 
 * Tweak ETL a bit to make sure Ottawa is being tracked
 
-* Set up creation of daily data viz to show recent history of Ottawa prediction performances by TWN vs EC vs ML vs actual... Klipfolio??
+* Set up creation of daily data viz to show recent history of Ottawa prediction performances by TWN vs EC vs ML vs actual... play around with Klipfolio API??
 
 * Is there anything we can do with quantile regression?! Reduce the amount of extreme predictions?
 
@@ -137,28 +133,20 @@ Here is a very rough to-do list, which is constantly evolving.
     * grid search with starting point from hyperparameters of yesterday’s model, +\- a certain range a percentage variation.
     * Try out different time horizons using tweaked model and use prediction of yesterday’s high as the 
 
-* To refine forecast dB structure go have a look at the stock trading forecast repository on Github by the machine learning guide podcast guy.
+* Create a new feature, ‘days_ago’, on the fly (inside the pipeline instance) right before every ML training session. 
 
-* Make custom criterion for random forest regressor?
-
-* Just a thought: if we move all of our training activities to the morning slot, could we not introduce high_1_day_ago back into the workflow instead of high_2_days_ago? Also, why not keep both?! Should we also bring lows into the picture? This means we NEED TO MOVE ETL_history.py to morning slot as well!!
-
-* Another thought: we never introduced the feature of “day_of_year”. Maybe we shouldn’t. Maybe we should create a new feature, ‘days_ago’, on the fly (inside the pipeline instance) right before every ML training session. 
-
-* Gotta smooth out the fluctuations on the averages. There’s no reason for the 2 degree jump in average from one day to the next. Completely throws off the model. 
+* Smooth out the fluctuations on the averages. There’s no reason for the 2 degree jump in average from one day to the next. Completely throws off the model. 
 
 * Plot latitude vs longitude to get a feel for location distribution. Overlay on map?
 
-* In the post-mortem script, identify how many locations were better served by TWN than ML. Same for EC. So many stats can be pulled from this. WE LEARN THE MOST FROM OUR MISTAKES/OUTLIERS. Can we even use it as a metric in the outer hyperparameterization loop?!
-
-* Create ReadMe file (at least 1 master but should there be individual ones for other scripts? Or should I just do a better job of commenting the code?)
+* In the post-mortem script, identify how many locations were better served by TWN than ML. Same for EC. So many stats can be pulled from this. Can we even use it as a metric in the outer hyperparameterization loop?!
 
 * Things to clean up:
     * Clean any line that verbosely outputs to the log or posts a warning to the log
-    * Remove references to dB’s? Or just explain in readme that it’s because the project will be switching to a dB eventually. 
- * PEP8
+    * Remove references to dB’s? Or just explain in readme that it’s because the project will be switching to a relational database eventually. 
+    * PEP8
 
-* Set up a way of travelling back in time to that we can do heavy experimentation on hyperparameterization and not have to wait a day for testing the results because we don’t have the data yet. It would be wicked sweet to roll through the history in one loop and collect results for a certain set of hyperparameters 
+* Set up a way of travelling back in time so that we can do heavy experimentation on hyperparameterization and not have to wait a day for testing the results because we don’t have the data yet. It would be wicked sweet to roll through the history in one loop and collect results for a certain set of hyperparameters 
 
 * How about we use a hybrid of models for the prediction? 1 recent country wide + 1 long term localized? 1 recent weighted heavy + 1 long term weighted less?
 

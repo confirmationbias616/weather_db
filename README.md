@@ -88,20 +88,13 @@ Unpickle appropriate model generated in previous step and use it to predict
 #### Report
 Provide some insight into how the model predicted the weather for yesterday.
 
-
-## Any interesting charts or diagrams you created
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
+Make sure you are running Python3 and have installed all required packages using `pip install -r requirements.txt`
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
 ### <a name="Installation"></a>Installation
 * Clone this repo to your computer.
 * Get into the folder using ```cd weather_db```.

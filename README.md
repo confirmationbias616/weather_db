@@ -5,7 +5,7 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 
 ###### Primary Goal:
 * Predict tomorrow's high with as much accuracy as possible. 
- * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forcasters.
+ * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forecasters.
 
  
 ###### Secondary Goals:
@@ -27,25 +27,25 @@ See [Installation](#Installation) instructions to check out the source code on y
 ## Challenges
 
 ### Data Drift
-Given that Canada is a country with 4 seasons, historical daily avergaes are constantly on the move from one day/week/month to the next. It's unreasonable to expect a machine learning model trained on January data to perform just as well in July. This boils down to the well-known issue of data drift, where the continuous mutation of feautre characteristics results in unpredictability of the target variable. In this application, we are always trying to predict tomorrow's wether, which means we are trying to predict an edge case for which the model has been poorly trained on. One way to solve this would be to train the model on a period of time which eaqually straddles the forecast date. As we've been collecting data for less than 1 year however, this is solution is not yet possible. 
+Given that Canada is a country with 4 seasons, historical daily averages are constantly on the move from one day/week/month to the next. It's unreasonable to expect a machine learning model trained on January data to perform just as well in July. This boils down to the well-known issue of data drift, where the continuous mutation of feature characteristics results in unpredictability of the target variable. In this application, we are always trying to predict tomorrow's wether, which means we are trying to predict an edge case for which the model has been poorly trained on. One way to solve this would be to train the model on a period of time which equally straddles the forecast date. As we've been collecting data for less than 1 year however, this is solution is not yet possible. 
 
 ### Micro-Climates
-On any given day, the weather across Canada's vast territory tends to vary immensely depending on geographic location. If this is not controlled for, the ML model will be unseccessful. We solve this issue by pulling in each location's latitude and longitude from Google's Geocoding API. This means the ML model can cater its predictions based on geographic location.
+On any given day, the weather across Canada's vast territory tends to vary immensely depending on geographic location. If this is not controlled for, the ML model will be unsuccessful. We solve this issue by pulling in each location's latitude and longitude from Google's Geocoding API. This means the ML model can cater its predictions based on geographic location.
 
 ### Geographic Sparsity
-Given that Canada is sparsly populated, regions included in weather forecasts tend to be clusterd and not very well distributed. This challenge is mostly resolved by using the latitude and longitude features, as described above, but there is still an issue with the fact that we have very little data on the North Territories. It might be wrothwhile to exclude every datapoint above a certain latitude threshold — even if it means losing the functionality to predict in those regions.
+Given that Canada is sparsely populated, regions included in weather forecasts tend to be clustered and not very well distributed. This challenge is mostly resolved by using the latitude and longitude features, as described above, but there is still an issue with the fact that we have very little data on the North Territories. It might be worthwhile to exclude every datapoint above a certain latitude threshold — even if it means losing the functionality to predict in those regions.
 
 ### Timing of Data Availability
-Since we are trying to predict next-day weather with the data we have during the current day, it behooves us to receive data in a timely manner. A major component of being able to forecast the weather lies in the concept of [weather persistence](<https://en.wikipedia.org/wiki/Weather_forecasting#Persistence>). Basically this means that the weather tends to maintain itself over short periods of time. The short-term past is a good predictor of the near future. Therefore, gathering current day conditions as a feautre set would surely be of massive benefit for the ML model's performance.  
+Since we are trying to predict next-day weather with the data we have during the current day, it behooves us to receive data in a timely manner. A major component of being able to forecast the weather lies in the concept of [weather persistence](<https://en.wikipedia.org/wiki/Weather_forecasting#Persistence>). Basically this means that the weather tends to maintain itself over short periods of time. The short-term past is a good predictor of the near future. Therefore, gathering current day conditions as a feature set would surely be of massive benefit for the ML model's performance.  
 
-Unfortunately, both of our tracked forecasters (Environment Canada and The Weather Network) do not offer current day reports in terms of recorded highs and recorded lows. This means we can only use yesterday's conditions for the "persistence" component of our feautre set. This data is 48 hours removed from our target prediction's occurence, which is not very useful. 
+Unfortunately, both of our tracked forecasters (Environment Canada and The Weather Network) do not offer current day reports in terms of recorded highs and recorded lows. This means we can only use yesterday's conditions for the "persistence" component of our feature set. This data is 48 hours removed from our target prediction's occurrence, which is not very useful. 
 
 This realization leads us to 2 possible courses of actions — both of which will be explored in the future.
 
 1. Switch the forecasting service from predicting tomorrow's weather to predicting today's weather.
- * To acheive this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecaters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
- * This service would be less useful but still worthwile to certain niche customers (such as scientists, construction workes, festival organizers) 
-2. Find a weather forecaster who tracks and reports actual-day highs and lows for a wide range of canadian locations. 
+ * To achieve this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecasters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
+ * This service would be less useful but still worthwhile to certain niche customers (such as scientists, construction consultants, festival organizers) 
+2. Find a weather forecaster who tracks and reports actual-day highs and lows for a wide range of Canadian locations. 
 
 
 ## End-to-End Machine Learning
@@ -62,7 +62,7 @@ Use Requests to scrape websites of tracked forecasters for all available locatio
 Favour API's where available. If there's no API, default to using BeautifulSoup to parse through relevant info.
 
 Data to retrieve:
-* (1,2,3,4,5)-day forecast for the follwoing measruments:
+* (1,2,3,4,5)-day forecast for the following measurements:
     * High
     * Low
     * Day pop
@@ -74,10 +74,10 @@ Data to retrieve:
     * Total precipitation
 
 #### Transform & Load
-Use Pandas to store all data into .csv files and load back into memory when nescessary. Also use Pandas to wrangle the data into suitable shapes for downstream processes.
+Use Pandas to store all data into `.csv` files and load back into memory when necessary. Also use Pandas to wrangle the data into suitable shapes for downstream processes.
 
 #### Validate
-Everytime new data is collected, run a few tests to make sure data collection ran as expected and data is acceptable. Log any exceptions.
+Every time new data is collected, run a few tests to make sure data collection ran as expected and data is acceptable. Log any exceptions.
 
 #### Train
 Use Scikit-Learn to train a random forest model on historical data, using the reported daily high by The Weather Network as a the target variable. Pickle the model for future use in predicting daily highs.

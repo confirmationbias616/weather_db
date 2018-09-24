@@ -1,6 +1,7 @@
 Data/
 Gym/
 Predictions/
+weather_env/
 
 TEST_ETL_history.py
 

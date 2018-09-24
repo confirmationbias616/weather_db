@@ -105,6 +105,12 @@ Make sure you are running Python3 and have installed all required packages using
     * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
 * Switch back into the weather_db directory using ``cd ..``.
 
+### Schedule
+Currently, I run 2 scripts on a daily schedule, using launchd through a great little app called [LaunchControl](<http://www.soma-zone.com/LaunchControl/>):
+* `Day.py` at 5:10 PM
+* `Evening.py` at 10:10 PM
+If you want the same results as me, you should do the same.
+
 
 ## To-Do
 Here is a very rough to-do list, which is constantly evolving.

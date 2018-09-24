@@ -5,12 +5,12 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 
 ###### Primary Goal:
 * Predict tomorrow's high with as much accuracy as possible. 
- * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forcasters
+ * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forcasters.
 
  
 ###### Secondary Goals:
-* Find out which weather forecaster has the best predictions under which circumstances
-* Find out which factors are the most important when 
+* Find out which weather forecaster has the best predictions and under which circumstances.
+* Find out which features are the most important to predict the weather without meteorology.
 * Find out if rumours of forecaster [wet bias](<https://en.wikipedia.org/wiki/Wet_bias>) are valid.
 * Collect a dataset of historical forecasts across the country for whatever new purpose the open source community might find
 
@@ -43,7 +43,7 @@ Unfortunately, both of our tracked forecasters (Environment Canada and The Weath
 This realization leads us to 2 possible courses of actions — both of which will be explored in the future.
 
 1. Switch the forecasting service from predicting tomorrow's weather to predicting today's weather.
- * To acheive this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecaters. See this notebook for 
+ * To acheive this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecaters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
  * This service would be less useful but still worthwile to certain niche customers (such as scientists, construction workes, festival organizers) 
 2. Find a weather forecaster who tracks and reports actual-day highs and lows for a wide range of canadian locations. 
 

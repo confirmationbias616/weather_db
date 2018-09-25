@@ -98,12 +98,11 @@ Make sure you are running Python3 and have installed all required packages using
 ### <a name="Installation"></a>Installation
 * Clone this repo to your computer.
 * Get into the folder using ```cd weather_db```.
-* Run ```mkdir Data```.
-* Switch into the data directory using ```cd Data```.
-* Download the data files from the dropbox folder into the data directory.
-    * You can find the data [here](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0]).
-    * This data is continuously being updated using python scripts found in this repo - timed and launched through launchctl on the host machine.
-* Switch back into the weather_db directory using ``cd ..``.
+* Run ```mkdir Data Gym Predictions```.
+* Download contents from each of the following dropbox links and copy them to your local respective newly created directories
+    * [Data](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0)
+    * [Gym](https://www.dropbox.com/sh/cai718eeplvb8fi/AAAF1Nnz5w098HDgIH0WoWg3a?dl=0)
+    * [Predictions](https://www.dropbox.com/sh/y0v5l20oyocyb7v/AADDkzurHZikFe9sfu5jYIq1a?dl=0)
 
 ### Schedule
 Currently, I run 2 scripts on a daily schedule, using launchd through a great little app called [LaunchControl](<http://www.soma-zone.com/LaunchControl/>):

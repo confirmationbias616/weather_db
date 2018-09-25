@@ -43,8 +43,8 @@ Unfortunately, both of our tracked forecasters (Environment Canada and The Weath
 This realization leads us to 2 possible courses of actions — both of which will be explored in the future.
 
 1. Switch the forecasting service from predicting tomorrow's weather to predicting today's weather.
- * To achieve this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecasters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
- * This service would be less useful but still worthwhile to certain niche customers (such as scientists, construction consultants, festival organizers) 
+    * To achieve this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecasters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
+     * This service would be less useful but still worthwhile to certain niche customers (such as scientists, construction consultants, festival organizers) 
 2. Find a weather forecaster who tracks and reports actual-day highs and lows for a wide range of Canadian locations. 
 
 
@@ -67,8 +67,8 @@ Data to retrieve:
     * Low
     * Day pop
     * Night pop
-    * Total precipitation (prepare for snow)
-* Yesterday’s data (should this be provided by a 3rd party service?):
+    * Total precipitation
+* Yesterday’s data:
     * High
     * Low
     * Total precipitation
@@ -152,3 +152,5 @@ Here is a very rough to-do list, which is constantly evolving.
 * Turn (almost) all .py flies into functions. Then, current date could be passed in as a variable. This would allow us to time travel
 
 * make ETL functions more efficient by merging data frame into master CSV only one at the end (not at every loop!)
+
+* need to modify code to prepare for snow accumulation instead of rain accumulation, which is usually reported in cm (vs mm for rain!).

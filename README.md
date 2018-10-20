@@ -135,6 +135,9 @@ Here is a very rough to-do list, which is constantly evolving.
 
 * Smooth out the fluctuations on the averages. There’s no reason for the 2 degree jump in average from one day to the next. Completely throws off the model. 
 
+* convert all temperatures to absoute-zero scale (Kelvin) so that they can be handled with more ease
+    * We could divide all the forecasted and recorded tmeperatures by that day's historical averages
+
 * Plot latitude vs longitude to get a feel for location distribution. Overlay on map?
 
 * In the post-mortem script, identify how many locations were better served by TWN than ML. Same for EC. So many stats can be pulled from this. Can we even use it as a metric in the outer hyperparameterization loop?!

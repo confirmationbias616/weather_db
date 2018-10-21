@@ -7,6 +7,7 @@ import time
 from shutil import copyfile
 
 from Train import train
+from Predict import predict
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +23,9 @@ loggr.setLevel(logging.INFO)
 loggr.info('Time Travellin...')
 
 
-train(time_span=6,target_date='2018-10-14')
+train(time_span=10,target_date='2018-10-15')
+predict(target_date='2018-10-15')
+
 
 '''
 try:

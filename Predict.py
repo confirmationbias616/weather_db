@@ -19,64 +19,96 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def load_model():
-    filename = '{}/Gym/pickeled_models/{}.pkl'.format(
-        PATH, datetime.datetime.now().date())
-    with open(filename, 'rb') as input_file:
-        return pickle.load(input_file)
+def predict(**kwargs):
+
+    def load_model(date):
+
+        if not time_travel:
+            filename = '{}/Gym/pickeled_models/{}.pkl'.format(PATH, date)
+        else:
+            filename = '{}/Gym/pickeled_models/time_travel/{}.pkl'.format(PATH, date)
+
+        with open(filename, 'rb') as input_file:
+            return pickle.load(input_file)
+
+    def load_features(date):
+
+        if not time_travel:
+            filename = '{}/Gym/feature_list/{}.pkl'.format(PATH, date)
+        else:
+            filename = '{}/Gym/feature_list/time_travel/{}.pkl'.format(PATH, date)
+
+        with open(filename, 'rb') as input_file:
+            return pickle.load(input_file)
+
+    try:
+        today = kwargs['target_date']
+        time_travel = True
+    except KeyError:
+        today = datetime.datetime.now().date()
+        time_travel = False
+    loggr.info('Predicting for date: {}...'.format(today))
+
+    if today == datetime.datetime.now().date():
+        model = load_model(today)
+    else:
+        model = load_model(str(datetime.datetime.now().date()) + ' -> ' + today)
+
+    if today == datetime.datetime.now().date():
+        ML_attr = load_features(today)
+    else:
+        ML_attr = load_features(str(datetime.datetime.now().date()) + ' -> ' + today)
+
+    # load data
+    db = pd.read_csv('{}/Data/master_db.csv'.format(PATH), dtype={'date': 'str'})
+
+    # check to see if there's any duplicated entries (should be empty)
+    db = db.drop('Unnamed: 0', axis=1).drop_duplicates()
+
+    tomorrow = str(datetime.date(int(today[:4]), int(today[5:7]), int(today[8:])) + datetime.timedelta(days=1))
+
+    '''Probably safe to delete this old block of code... lets just hang on to
+    it for a while!'''
+    # use the line below if time traveling in the past
+    # tomorrow = tomorrow-datetime.timedelta(days=2))
+
+    # just some formatting
+    tomorrow = '{}-{}-{}'.format(tomorrow[:4], tomorrow[5:7], tomorrow[8:10])
+
+    db_tomorrow = db[db['date'] == tomorrow]
+
+    # drop all columns that are not being used at all to train the model
+    db_tomorrow = db_tomorrow[ML_attr]
+
+    # drop any column that is completely empty
+    db_tomorrow.dropna(axis=1, how='all', inplace=True)
+
+    # drop any row that is completely empty
+    db_tomorrow.dropna(axis=0, how='any', inplace=True)
+
+    fc_ind = db_tomorrow.reset_index()['index']
+
+    # normalize
+    pipeline = Pipeline([('std_scaler', StandardScaler())])
+    X_today = pipeline.fit_transform(db_tomorrow)
+
+    predictions = model.predict(X_today)
+
+    forecast_table = db_tomorrow.loc[
+        #fc_ind][['region', 'province', 'TWN_high_T1', 'EC_high_T1']]
+        fc_ind][['TWN_high_T1', 'EC_high_T1']]
 
 
-def load_features():
-    filename = '{}/Gym/feature_list/{}.pkl'.format(
-        PATH, datetime.datetime.now().date())
-    with open(filename, 'rb') as input_file:
-        return pickle.load(input_file)
+    forecast_table['model_predictions'] = [
+        
+        # Comment out the line below depending on whether or not we want
+        # rounded predictions. Should make this an input parameter to the
+        # function.
 
+        #round(predictions[i]) for i in range(len(predictions))
+        round(predictions[i],1) for i in range(len(predictions))
 
-model = load_model()
+    ]
 
-ML_attr = load_features()
-
-# load data
-db = pd.read_csv('{}/Data/master_db.csv'.format(PATH), dtype={'date': 'str'})
-
-# check to see if there's any duplicated entries (should be empty)
-db = db.drop('Unnamed: 0', axis=1).drop_duplicates()
-
-today = datetime.datetime.now().date()
-tomorrow = str(datetime.datetime.now().date() + datetime.timedelta(days=1))
-
-# use the line below if time traveling in the past
-# tomorrow = tomorrow-datetime.timedelta(days=2))
-
-# just some formatting
-tomorrow = '{}-{}-{}'.format(tomorrow[:4], tomorrow[5:7], tomorrow[8:10])
-
-db_tomorrow = db[db['date'] == tomorrow]
-
-# drop all columns that are not being used at all to train the model
-db_tomorrow = db_tomorrow[ML_attr]
-
-# drop any column that is completely empty
-db_tomorrow.dropna(axis=1, how='all', inplace=True)
-
-# drop any row that is completely empty
-db_tomorrow.dropna(axis=0, how='any', inplace=True)
-
-fc_ind = db_tomorrow.reset_index()['index']
-
-# normalize
-pipeline = Pipeline([('std_scaler', StandardScaler())])
-X_today = pipeline.fit_transform(db_tomorrow)
-
-predictions = model.predict(X_today)
-
-forecast_table = db_tomorrow.loc[
-    fc_ind][['region', 'province', 'TWN_high_T1', 'EC_high_T1']]
-
-
-forecast_table['model_predictions'] = [
-    round(predictions[i]) for i in range(len(predictions))]
-
-forecast_table.to_csv('{}/Predictions/{}_predict_tm_high.csv'.format(PATH, today))
-forecast_table.describe().to_csv('{}/Predictions/{}_describe.csv'.format(PATH, today))
+    forecast_table.to_csv('{}/Predictions/{}_predict_tm_high.csv'.format(PATH, today))
+    forecast_table.describe().to_csv('{}/Predictions/{}_describe.csv'.format(PATH, today))

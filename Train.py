@@ -40,8 +40,11 @@ def train(time_span=100,**kwargs):
 
         if not time_travel:
             filename = '{}/Gym/feature_list/{}.pkl'.format(PATH, date)
-            with open(filename, 'wb') as output:
-                pickle.dump(features, output)
+        else:
+            filename = '{}/Gym/feature_list/time_travel/{}.pkl'.format(PATH, date)
+
+        with open(filename, 'wb') as output:
+            pickle.dump(features, output)
 
     try:
         today = kwargs['target_date']
@@ -177,7 +180,10 @@ def train(time_span=100,**kwargs):
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns
-    save_features(ML_attr, today)
+    if today == datetime.datetime.now().date():
+        save_features(today)
+    else:
+        save_features(ML_attr, str(datetime.datetime.now().date()) + ' -> ' + today)
 
     # normalize
     pipeline = Pipeline([('std_scaler', StandardScaler())])

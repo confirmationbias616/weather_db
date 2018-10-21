@@ -26,23 +26,17 @@ loggr.setLevel(logging.INFO)
 
 def train(time_span=100,**kwargs):
 
-    def save_model(model, date):
+    def save_model(model):
 
-        if not time_travel:
-            filename = '{}/Gym/pickeled_models/{}.pkl'.format(PATH, date)
-        else:
-            filename = '{}/Gym/pickeled_models/time_travel/{}.pkl'.format(PATH, date)
-
+        filename = '{}/Gym/pickeled_models/{}{}.pkl'.format(
+            PATH, time_travel_string, today)
         with open(filename, 'wb') as output:
             pickle.dump(model, output)
 
-    def save_features(features, date):
+    def save_features(features):
 
-        if not time_travel:
-            filename = '{}/Gym/feature_list/{}.pkl'.format(PATH, date)
-        else:
-            filename = '{}/Gym/feature_list/time_travel/{}.pkl'.format(PATH, date)
-
+        filename = '{}/Gym/feature_list/{}{}.pkl'.format(
+            PATH, time_travel_string, today)
         with open(filename, 'wb') as output:
             pickle.dump(features, output)
 
@@ -53,6 +47,11 @@ def train(time_span=100,**kwargs):
         today = datetime.datetime.now().date()
         time_travel = False
     loggr.info('Training for date: {}...'.format(today))
+
+    if time_travel:
+        time_travel_string = 'time_travel/{} -> '.format(datetime.datetime.now().date())
+    else:
+        time_travel_string = ''
 
     # load data
     db = pd.read_csv('{}/Data/master_db.csv'.format(PATH), dtype={'date': 'str'})
@@ -180,10 +179,8 @@ def train(time_span=100,**kwargs):
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns
-    if today == datetime.datetime.now().date():
-        save_features(today)
-    else:
-        save_features(ML_attr, str(datetime.datetime.now().date()) + ' -> ' + today)
+
+    save_features(ML_attr)
 
     # normalize
     pipeline = Pipeline([('std_scaler', StandardScaler())])
@@ -229,10 +226,7 @@ def train(time_span=100,**kwargs):
 
     # Depending on whther we are time travelling or not (via kwarg
     # 'target_date'), save the model differently
-    if today == datetime.datetime.now().date():
-        save_model(model, today)
-    else:
-        save_model(model, str(datetime.datetime.now().date()) + ' -> ' + today)
+    save_model(model)
 
     summary = list(zip([
         'train data points', 'test data points', 'baseline RMSE',
@@ -240,4 +234,4 @@ def train(time_span=100,**kwargs):
         [len(X_train), len(y_train), baseline_rmse,
             baseline_ave_error, model, ML_attr, model_rmse]))
 
-    pd.DataFrame(summary).to_csv('{}/Predictions/{}_summary.csv'.format(PATH, today))
+    pd.DataFrame(summary).to_csv('{}/Predictions/{}{}_summary.csv'.format(PATH, time_travel_string, today))

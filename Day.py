@@ -44,6 +44,15 @@ while True:
 		# clean up by deleting the temp backup
 		os.remove('{}/Data/history_db_TEMP.csv'.format(PATH))
 
+try:
+	loggr.info('Running a few tests...')
+	from Test_data import check_historical_data
+	from Test_data import correct_bad_EC_data
+	check_historical_data()
+	correct_bad_EC_data()
+	loggr.info('Tests are now complete.')
+except Exception as e:
+	loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 
 try:
 	loggr.info('Wrangling data to prep for ML '\
@@ -55,14 +64,6 @@ except Exception as e:
 	loggr.exception("Wrangle.py could not run. Here's why: \n {e}")
 
 loggr.info('ETL process is now complete.')
-
-try:
-	loggr.info('Running a few tests...')
-	from Test_data import check_historical_data
-	check_historical_data()
-	loggr.info('Tests are now complete.')
-except Exception as e:
-	loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 
 try:
 	loggr.info('Crunching the numbers with ML...')

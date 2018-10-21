@@ -3,6 +3,7 @@ import datetime
 import sys
 import os
 import logging
+import numpy as np
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -16,10 +17,10 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-fc, ht, db, rc = [pd.read_csv(
+fc, ht, rc = [pd.read_csv(
     '{}/Data/{}.csv'.format(PATH, x),
     dtype={'date': 'str'}) for x in ['forecast_db', 'history_db',
-                                     'master_db', 'region_codes']]
+                                     'region_codes']]
 
 
 # create a copy of what was collected today
@@ -47,7 +48,20 @@ def check_forecast_data():
                 loggr.warning("some of {} forecast data '\
                     'was missed".format(provider))
         else:
-            loggr.critical("all of {} forecast data was missed".format(provider))
+            loggr.critical("all {} forecast data was missed".format(provider))
+
+
+# This is to fix an EC bug where it seems like they record a high of '0' when
+# it should actually be NaN.
+def correct_bad_EC_data():
+    drop_ind = list(fc[(fc.low > fc.high) & (fc.high == 0) &
+                    (fc.provider == 'EC')].index)
+    if drop_ind:
+        fc.loc[drop_ind, 'high'] = np.nan
+        fc.to_csv('{}/Data/forecast_db.csv'.format(PATH))
+        loggr.info('Deleted {} bad entries from EC.'.format(len(drop_ind)))
+
+
 
 # check for missed historical data collection
 def check_historical_data():
@@ -59,4 +73,4 @@ def check_historical_data():
                 loggr.warning("a suspiciously large amount of {} historical data '\
                     'was missed".format(provider))
         else:
-            loggr.critical("all of {} historical data was missed".format(provider))
+            loggr.critical("all {} historical data was missed".format(provider))

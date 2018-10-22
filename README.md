@@ -147,8 +147,6 @@ Here is a very rough to-do list, which is constantly evolving.
     * Remove references to dB’s? Or just explain in readme that it’s because the project will be switching to a relational database eventually. 
     * PEP8
 
-* Set up a way of travelling back in time so that we can do heavy experimentation on hyperparameterization and not have to wait a day for testing the results because we don’t have the data yet. It would be wicked sweet to roll through the history in one loop and collect results for a certain set of hyperparameters 
-
 * How about we use a hybrid of models for the prediction? 1 recent country wide + 1 long term localized? 1 recent weighted heavy + 1 long term weighted less?
 
 * Turn (almost) all .py flies into functions. Then, current date could be passed in as a variable. This would allow us to time travel

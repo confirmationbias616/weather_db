@@ -21,17 +21,23 @@ loggr.setLevel(logging.INFO)
 
 def predict(**kwargs):
 
-    def load_model():
+    def load_model(date):
 
-        filename = '{}/Gym/pickeled_models/{}{}.pkl'.format(
-            PATH, time_travel_string, today)
+        if not time_travel:
+            filename = '{}/Gym/pickeled_models/{}.pkl'.format(PATH, date)
+        else:
+            filename = '{}/Gym/pickeled_models/time_travel/{}.pkl'.format(PATH, date)
+
         with open(filename, 'rb') as input_file:
             return pickle.load(input_file)
 
-    def load_features():
+    def load_features(date):
 
-        filename = '{}/Gym/feature_list/{}{}.pkl'.format(
-            PATH, time_travel_string, today)
+        if not time_travel:
+            filename = '{}/Gym/feature_list/{}.pkl'.format(PATH, date)
+        else:
+            filename = '{}/Gym/feature_list/time_travel/{}.pkl'.format(PATH, date)
+
         with open(filename, 'rb') as input_file:
             return pickle.load(input_file)
 
@@ -43,14 +49,15 @@ def predict(**kwargs):
         time_travel = False
     loggr.info('Predicting for date: {}...'.format(today))
 
-    if time_travel:
-        time_travel_string = 'time_travel/{} -> '.format(datetime.datetime.now().date())
+    if today == datetime.datetime.now().date():
+        model = load_model(today)
     else:
-        time_travel_string = ''
+        model = load_model(str(datetime.datetime.now().date()) + ' -> ' + today)
 
-    model = load_model()
-
-    ML_attr = load_features()
+    if today == datetime.datetime.now().date():
+        ML_attr = load_features(today)
+    else:
+        ML_attr = load_features(str(datetime.datetime.now().date()) + ' -> ' + today)
 
     # load data
     db = pd.read_csv('{}/Data/master_db.csv'.format(PATH), dtype={'date': 'str'})
@@ -103,5 +110,5 @@ def predict(**kwargs):
 
     ]
 
-    forecast_table.to_csv('{}/Predictions/{}{}_predict_tm_high.csv'.format(PATH, time_travel_string, today))
-    forecast_table.describe().to_csv('{}/Predictions/{}{}_describe.csv'.format(PATH, time_travel_string, today))
+    forecast_table.to_csv('{}/Predictions/{}_predict_tm_high.csv'.format(PATH, today))
+    forecast_table.describe().to_csv('{}/Predictions/{}_describe.csv'.format(PATH, today))

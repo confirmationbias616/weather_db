@@ -71,7 +71,7 @@ def predict(**kwargs):
     db_tomorrow = db[db['date'] == tomorrow]
 
     # drop all columns that are not being used at all to train the model
-    db_tomorrow = db_tomorrow[ML_attr]
+    db_tomorrow = db_tomorrow[list(ML_attr) + ['region', 'province']]
 
     # drop any column that is completely empty
     db_tomorrow.dropna(axis=1, how='all', inplace=True)
@@ -83,13 +83,13 @@ def predict(**kwargs):
 
     # normalize
     pipeline = Pipeline([('std_scaler', StandardScaler())])
-    X_today = pipeline.fit_transform(db_tomorrow)
+    X_today = pipeline.fit_transform(db_tomorrow.drop(['region','province'],axis=1))
 
     predictions = model.predict(X_today)
 
     forecast_table = db_tomorrow.loc[
-        #fc_ind][['region', 'province', 'TWN_high_T1', 'EC_high_T1']]
-        fc_ind][['TWN_high_T1', 'EC_high_T1']]
+        fc_ind][['region', 'province', 'TWN_high_T1', 'EC_high_T1']]
+        #fc_ind][['TWN_high_T1', 'EC_high_T1']]
 
 
     forecast_table['model_predictions'] = [

@@ -15,48 +15,62 @@ log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
-pred = pd.read_csv('{}/Predictions/{}_predict_tm_high.csv'.format(
-	PATH, datetime.datetime.now().date() - datetime.timedelta(days=2)),
-	dtype={'date': 'str'}).drop('Unnamed: 0', axis=1)
+def post_mortem(**kwargs):
 
-actual = pd.read_csv('{}/history_db.csv'.format(PATH))
+	try:
+		fc_date = kwargs['target_date']
+		actual_date = str(datetime.date(int(fc_date[:4]), int(fc_date[5:7]), int(fc_date[8:])) + datetime.timedelta(days=1))
+		time_travel = True
+	except KeyError:
+		today = datetime.datetime.now().date()
+		time_travel = False
+	loggr.info('Predicting for date: {}...'.format(fc_date))
 
-actual = actual[actual['date'] == str(
-	datetime.datetime.now().date() - datetime.timedelta(
-		days=1))][['region', 'high', 'province']]
+	if time_travel:
+		time_travel_string = 'time_travel/{} -> '.format(datetime.datetime.now().date())
+	else:
+		time_travel_string = ''
 
-try:
-	comp = pred.merge(actual, on=['region', 'province'], how='left')
-except KeyError:
-	comp = pred.merge(actual, on=['region'], how='left')
+	pred = pd.read_csv('{}/Predictions/{}{}_predict_tm_high.csv'.format(
+		PATH, time_travel_string, fc_date),
+		dtype={'date': 'str'}).drop('Unnamed: 0', axis=1)
 
-comp['diff'] = (comp['TWN_high_T1']) - comp['model_predictions']
-comp['diff_both'] = (
-	comp['TWN_high_T1'] + comp['EC_high_T1']) / 2 - comp['model_predictions']
-comp['diff_real'] = (comp['high']) - comp['model_predictions']
-comp['diff_TWN_rival'] = (comp['high']) - comp['TWN_high_T1']
-comp['diff_EC_rival'] = (comp['high']) - comp['EC_high_T1']
+	actual = pd.read_csv('{}/Data/history_db.csv'.format(PATH))
 
-comp = comp.sort_values('diff_real')
+	actual = actual[actual['date'] == actual_date][['region', 'high', 'province']]
 
-ML_perf = ((comp['diff_real'].apply(
-	lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
+	try:
+		comp = pred.merge(actual, on=['region', 'province'], how='left')
+	except KeyError:
+		comp = pred.merge(actual, on=['region'], how='left')
 
-TWN_rival_perf = ((comp['diff_TWN_rival'].apply(
-	lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
-EC_rival_perf = ((comp['diff_EC_rival'].apply(
-	lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
+	comp['diff'] = (comp['TWN_high_T1']) - comp['model_predictions']
+	comp['diff_both'] = (
+		comp['TWN_high_T1'] + comp['EC_high_T1']) / 2 - comp['model_predictions']
+	comp['diff_real'] = (comp['high']) - comp['model_predictions']
+	comp['diff_TWN_rival'] = (comp['high']) - comp['TWN_high_T1']
+	comp['diff_EC_rival'] = (comp['high']) - comp['EC_high_T1']
 
-comp.to_csv('{}/Predictions/{}_compare_actual.csv'.format(
-	PATH, datetime.datetime.now().date() - datetime.timedelta(days=1)))
+	comp = comp.sort_values('diff_real')
 
-loggr.info('ML performance: {}'.format(ML_perf))
-loggr.info('TWN Rival performance: {}'.format(TWN_rival_perf))
-loggr.info('EC Rival performance: {}'.format(EC_rival_perf))
+	ML_perf = ((comp['diff_real'].apply(
+		lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
 
-f = open('{}/Predictions/{}_compare_actual.txt'.format(
-	PATH, datetime.datetime.now().date() - datetime.timedelta(days=1)), "w")
+	TWN_rival_perf = ((comp['diff_TWN_rival'].apply(
+		lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
+	EC_rival_perf = ((comp['diff_EC_rival'].apply(
+		lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
 
-f.write('ML performance: {}\n'.format(ML_perf))
-f.write('TWN Rival performance: {}'.format(TWN_rival_perf))
-f.write('EC Rival performance: {}'.format(EC_rival_perf))
+	comp.to_csv('{}/Predictions/{}{}_compare_actual.csv'.format(
+		PATH, time_travel_string, actual_date))
+
+	loggr.info('ML performance: {}'.format(ML_perf))
+	loggr.info('TWN Rival performance: {}'.format(TWN_rival_perf))
+	loggr.info('EC Rival performance: {}'.format(EC_rival_perf))
+
+	f = open('{}/Predictions/{}{}_compare_actual.txt'.format(
+		PATH, time_travel_string, actual_date), "w")
+
+	f.write('ML performance: {}\n'.format(ML_perf))
+	f.write('TWN Rival performance: {}'.format(TWN_rival_perf))
+	f.write('EC Rival performance: {}'.format(EC_rival_perf))

@@ -8,6 +8,7 @@ from shutil import copyfile
 
 from Train import train
 from Predict import predict
+from Post_mortem import post_mortem
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -22,9 +23,12 @@ loggr.setLevel(logging.INFO)
 
 loggr.info('Time Travellin...')
 
+#MAKE THIS VARIABLE ACCESSIBLE TO CLI
+target_date = '2018-10-13'
 
-train(time_span=10,target_date='2018-10-15')
-predict(target_date='2018-10-15')
+train(time_span=10,target_date=target_date)
+predict(target_date=target_date)
+post_mortem(target_date=target_date)
 
 
 '''

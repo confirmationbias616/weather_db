@@ -19,13 +19,14 @@ def post_mortem(**kwargs):
 
 	try:
 		fc_date = kwargs['target_date']
-		actual_date = str(datetime.date(int(fc_date[:4]), int(fc_date[5:7]), int(fc_date[8:])) + datetime.timedelta(days=1))
 		time_travel = True
 	except KeyError:
-		today = datetime.datetime.now().date()
+		fc_date = datetime.datetime.now().date()
 		time_travel = False
 	loggr.info('Predicting for date: {}...'.format(fc_date))
 
+	actual_date = str(datetime.date(int(fc_date[:4]), int(fc_date[5:7]), int(fc_date[8:])) + datetime.timedelta(days=1))
+	
 	if time_travel:
 		time_travel_string = 'time_travel/{} -> '.format(datetime.datetime.now().date())
 	else:

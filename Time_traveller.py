@@ -23,10 +23,11 @@ loggr.setLevel(logging.INFO)
 
 loggr.info('Time Travellin...')
 
-#MAKE THIS VARIABLE ACCESSIBLE TO CLI
-target_date = '2018-10-13'
+#MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
+target_date = '2018-10-14'
+time_span = 10
 
-train(time_span=10,target_date=target_date)
+train(time_span=time_span,target_date=target_date)
 predict(target_date=target_date)
 post_mortem(target_date=target_date)
 

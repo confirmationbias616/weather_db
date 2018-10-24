@@ -2,6 +2,7 @@ Data/
 Gym/
 Predictions/
 weather_env/
+Launchd/
 
 TEST_ETL_history.py
 

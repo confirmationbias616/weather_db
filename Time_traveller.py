@@ -6,6 +6,7 @@ import datetime
 import time
 from shutil import copyfile
 
+from Wrangle import wrangle
 from Train import train
 from Predict import predict
 from Post_mortem import post_mortem
@@ -29,7 +30,13 @@ loggr.info("Time Travellin...")
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
 target_date = "2018-10-14"
 time_span = 10
+rolling_average_window = 30
+rolling_average_min_periods = 1
 
+wrangle(
+    rolling_average_window=rolling_average_window,
+    rolling_average_min_periods=rolling_average_min_periods,
+)
 train(time_span=time_span, target_date=target_date)
 predict(target_date=target_date)
 post_mortem(target_date=target_date)

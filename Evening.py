@@ -4,6 +4,8 @@ import sys
 import os
 import time
 from shutil import copyfile
+
+from Test_data import check_forecast_data
 from Predict import predict
 
 
@@ -32,6 +34,7 @@ while True:
             "Extracting forecast data available today " "(using ETL_forecast.py)..."
         )
         import ETL_forecast
+
         break
     except requests.exceptions.ConnectionError:
         loggr.critical(
@@ -56,7 +59,6 @@ while True:
 loggr.info("ETL process is now complete.")
 try:
     loggr.info("Running a few tests...")
-    from Test_data import check_forecast_data
     check_forecast_data()
     loggr.info("Tests are now complete.")
 except Exception as e:

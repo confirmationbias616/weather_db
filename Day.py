@@ -5,10 +5,12 @@ import os
 import datetime
 import time
 from shutil import copyfile
+
+from Wrangle import wrangle
 from Train import train
 from Post_mortem import post_mortem
 
-#Hyperparameters
+# Hyperparameters
 time_span = 10
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -34,6 +36,7 @@ while True:
         )  # create temporary backup of csv file
         loggr.info("Extracting Yesterday's recorded data " "(using ETL_history.py)...")
         import ETL_history
+
         break
     except requests.exceptions.ConnectionError:
         loggr.critical(
@@ -59,6 +62,7 @@ try:
     loggr.info("Running a few tests...")
     from Test_data import check_historical_data
     from Test_data import correct_bad_EC_data
+
     check_historical_data()
     correct_bad_EC_data()
     loggr.info("Tests are now complete.")
@@ -66,7 +70,7 @@ except Exception as e:
     loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 try:
     loggr.info("Wrangling data to prep for ML " "Analysis...")
-    import Wrangle
+    wrangle()
     loggr.info("'master_db.csv' is now updated with the latest weather!")
     copyfile(
         "{}/Data/master_db.csv".format(PATH),

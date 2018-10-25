@@ -28,7 +28,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def train(time_span=100, **kwargs):
+def train(time_span=10, **kwargs):
     def save_model(model):
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -68,7 +68,12 @@ def train(time_span=100, **kwargs):
         while True:
             try:
                 start_date = today - datetime.timedelta(days=date_jump)
-                end_date = today + datetime.timedelta(days=date_jump)
+                # If running normally (from Day.py), time span can only go into past - as we are
+                # at the edge of our records. Therefore, need to set 
+                if today == datetime.datetime.now().date():
+                    end_date = today
+                else:
+                    end_date = today + datetime.timedelta(days=date_jump)
                 start_date, end_date = str(start_date), str(end_date)
                 start_index = db.index[db.date == start_date][0]
                 end_index = db.index[db.date == end_date][-1]

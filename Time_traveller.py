@@ -15,24 +15,27 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 loggr = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - "+
-	"%(levelname)s - %(message)s - %(funcName)s - line %(lineno)d"))
+log_handler.setFormatter(
+    logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line %(lineno)d"
+    )
+)
 log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
-loggr.info('Time Travellin...')
+loggr.info("Time Travellin...")
 
-#MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-target_date = '2018-10-14'
+# MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
+target_date = "2018-10-14"
 time_span = 10
 
-train(time_span=time_span,target_date=target_date)
+train(time_span=time_span, target_date=target_date)
 predict(target_date=target_date)
 post_mortem(target_date=target_date)
 
 
-'''
+"""
 try:
 	loggr.info('Crunching the numbers with ML...')
 	import Train
@@ -50,4 +53,4 @@ except FileNotFoundError:
 			'for this date')
 except Exception as e:
 	loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")
-'''
+"""

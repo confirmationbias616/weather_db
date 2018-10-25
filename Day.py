@@ -5,7 +5,11 @@ import os
 import datetime
 import time
 from shutil import copyfile
+from Train import train
+from Post_mortem import post_mortem
 
+#Hyperparameters
+time_span = 10
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -73,7 +77,7 @@ except Exception as e:
 loggr.info("ETL process is now complete.")
 try:
     loggr.info("Crunching the numbers with ML...")
-    import Train
+    train(time_span=time_span)
     loggr.info("ML complete. Pickled model is ready!")
 except Exception as e:
     loggr.exception("ML.py could not run. Here's why: \n {e}")
@@ -82,7 +86,7 @@ try:
         "Comparing predictions with real-world results for date of "
         "{}".format(datetime.datetime.now().date() - datetime.timedelta(days=1))
     )
-    import Post_mortem
+    post_mortem()
     loggr.info("Post_mortem results are ready!")
 except FileNotFoundError:
     loggr.critical("Missing data - cannot compare performances " "for this date")

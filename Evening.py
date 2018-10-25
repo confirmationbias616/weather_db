@@ -4,6 +4,7 @@ import sys
 import os
 import time
 from shutil import copyfile
+from Predict import predict
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -62,7 +63,7 @@ except Exception as e:
     loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 try:
     loggr.info("Predicting forecast using today pickled model from today...")
-    import Predict
+    predict()
     loggr.info("ML forecast is ready!")
 except Exception as e:
     loggr.exception("Predict.py could not run. Here's why: \n {e}")

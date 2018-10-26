@@ -1,0 +1,312 @@
+,region,province,TWN_high_T1,EC_high_T1,model_predictions
+30765,Shelburne,nova-scotia,12.0,10.0,12.5
+30773,Digby,nova-scotia,11.0,10.0,12.0
+30777,Port Hawkesbury,nova-scotia,16.0,16.0,13.1
+30780,Sydney,nova-scotia,16.0,16.0,13.1
+30793,Campbellton,new-brunswick,7.0,0.0,8.5
+30813,Dalhousie,new-brunswick,7.0,0.0,8.9
+30817,Charlo,new-brunswick,7.0,0.0,9.0
+30820,Drummondville,quebec,7.0,8.0,8.1
+30830,Richelieu,quebec,9.0,9.0,9.6
+30832,Trois-Pistoles,quebec,6.0,7.0,6.6
+30833,Berthierville,quebec,8.0,8.0,8.8
+30837,Sainte-Agathe,quebec,6.0,7.0,6.8
+30841,Vanier,quebec,8.0,7.0,7.5
+30842,Val-des-Monts,quebec,7.0,6.0,8.0
+30844,Contrecoeur,quebec,8.0,9.0,8.8
+30846,Beauceville,quebec,5.0,5.0,5.8
+30847,Beauharnois,quebec,9.0,9.0,9.6
+30848,Bécancour,quebec,8.0,8.0,8.2
+30849,Bernières,quebec,6.0,7.0,7.1
+30850,Blainville,quebec,8.0,8.0,9.0
+30851,Boisbriand,quebec,8.0,8.0,9.0
+30852,Bonaventure,quebec,8.0,8.0,9.1
+30853,Candiac,quebec,9.0,9.0,9.7
+30854,Carignan,quebec,9.0,9.0,9.7
+30856,Chambly,quebec,9.0,9.0,9.7
+30857,Chelsea,quebec,8.0,6.0,8.3
+30858,Coaticook,quebec,6.0,6.0,7.2
+30860,Delson,quebec,9.0,9.0,9.6
+30861,Deux-Montagnes,quebec,8.0,8.0,9.1
+30862,Dolbeau-Mistassini,quebec,4.0,5.0,4.7
+30864,Vaudreuil-Dorion,quebec,9.0,9.0,9.6
+30865,Huntingdon,quebec,10.0,9.0,9.9
+30867,Kamouraska,quebec,7.0,7.0,7.5
+30868,La Prairie,quebec,9.0,9.0,9.6
+30870,Laval,quebec,8.0,9.0,9.0
+30871,L'Islet,quebec,6.0,6.0,7.1
+30872,Lévis,quebec,8.0,7.0,7.7
+30873,Lorraine,quebec,8.0,8.0,9.1
+30874,Magog,quebec,7.0,6.0,7.6
+30875,Marieville,quebec,9.0,9.0,9.4
+30876,Mascouche,quebec,8.0,8.0,9.0
+30878,Mingan,quebec,9.0,8.0,8.9
+30879,Mont Saint-Hilaire,quebec,8.0,9.0,8.7
+30880,Otterburn Park,quebec,8.0,9.0,9.0
+30881,Pincourt,quebec,9.0,9.0,9.6
+30885,Gaspé,quebec,10.0,9.0,10.1
+30886,Maniwaki,quebec,6.0,6.0,7.0
+30890,Rivière-du-Loup,quebec,6.0,7.0,6.8
+30891,Longueuil,quebec,9.0,9.0,9.6
+30892,Nicolet,quebec,8.0,8.0,8.5
+30893,New Carlisle,quebec,8.0,9.0,9.3
+30898,Aupaluk,quebec,-4.0,-3.0,-0.1
+30899,Kangiqsualujjuaq,quebec,-4.0,-3.0,-0.3
+30900,Cap Chat,quebec,7.0,8.0,7.4
+30902,Umiujaq,quebec,-1.0,-1.0,-0.7
+30903,Mirabel,quebec,8.0,8.0,8.9
+30904,Montmagny,quebec,6.0,6.0,7.1
+30906,Gatineau,quebec,9.0,9.0,9.7
+30907,Mont-Joli,quebec,6.0,7.0,6.9
+30910,Trois-Rivières,quebec,8.0,8.0,8.2
+30911,Inukjuak,quebec,-1.0,0.0,-0.8
+30912,Shawinigan,quebec,7.0,8.0,7.7
+30913,Québec,quebec,8.0,7.0,7.5
+30914,Roberval,quebec,5.0,5.0,4.9
+30916,Sherbrooke,quebec,7.0,6.0,7.4
+30917,Joliette,quebec,8.0,8.0,8.3
+30918,Rimouski,quebec,5.0,7.0,5.3
+30919,Farnham,quebec,8.0,6.0,8.0
+30920,Sept-Îles,quebec,9.0,10.0,9.0
+30922,Salaberry-de-Valleyfield,quebec,9.0,9.0,9.4
+30923,Alma,quebec,5.0,5.0,4.7
+30924,Tasiujaq,quebec,-3.0,-3.0,-0.2
+30925,Amqui,quebec,5.0,6.0,5.5
+30926,Montréal,quebec,9.0,9.0,9.3
+30927,Rouyn-Noranda,quebec,4.0,4.0,4.0
+30929,Kuujjuaq,quebec,-3.0,-2.0,-0.1
+30932,La Tuque,quebec,5.0,6.0,5.5
+30934,L'Assomption,quebec,8.0,8.0,8.7
+30935,Victoriaville,quebec,6.0,8.0,7.4
+30937,Baie-Comeau,quebec,8.0,10.0,7.8
+30939,Varennes,quebec,8.0,9.0,8.7
+30942,Saguenay,quebec,5.0,5.0,4.9
+30943,Mont-Tremblant,quebec,7.0,6.0,6.9
+30946,Belleville,ontario,9.0,10.0,10.4
+30947,Brampton,ontario,10.0,10.0,10.6
+30948,Guelph,ontario,9.0,8.0,10.4
+30949,Owen Sound,ontario,9.0,8.0,10.1
+30951,Bracebridge,ontario,7.0,8.0,8.4
+30952,Chatham-Kent,ontario,1.0,11.0,2.3
+30954,Orillia,ontario,9.0,9.0,10.2
+30962,Temiskaming Shores,ontario,6.0,5.0,6.0
+30963,Leamington,ontario,12.0,11.0,12.1
+30964,Mississauga,ontario,11.0,10.0,11.2
+30965,Newmarket,ontario,9.0,10.0,10.5
+30966,Nipigon,ontario,4.0,4.0,4.9
+30972,Dorion,ontario,5.0,3.0,5.0
+30974,Dundalk,ontario,7.0,8.0,8.2
+30976,Gravenhurst,ontario,8.0,8.0,9.1
+30982,Lincoln,ontario,11.0,12.0,12.6
+30983,Mine Centre,ontario,2.0,0.0,2.7
+30984,New Tecumseth,ontario,9.0,8.0,10.5
+30985,Norfolk,ontario,10.0,10.0,10.9
+30988,Pickering,ontario,10.0,10.0,11.1
+30989,Port Carling,ontario,8.0,8.0,9.1
+30990,Quinte West,ontario,10.0,10.0,11.0
+30992,Richmond Hill,ontario,10.0,10.0,11.2
+30995,South Bruce Peninsula,ontario,9.0,9.0,10.5
+30996,Sydenham,ontario,9.0,10.0,10.8
+30997,Vaughan,ontario,10.0,10.0,11.2
+31001,Halton Hills,ontario,9.0,10.0,11.0
+31002,Kingston,ontario,10.0,10.0,10.9
+31004,Dryden,ontario,1.0,0.0,0.8
+31005,Hearst,ontario,5.0,4.0,4.7
+31007,Cobourg,ontario,11.0,10.0,11.6
+31008,Kirkland Lake,ontario,4.0,5.0,4.8
+31009,Hamilton,ontario,10.0,10.0,11.1
+31011,Oakville,ontario,11.0,10.0,12.2
+31013,Cambridge,ontario,9.0,8.0,10.7
+31014,Deep River,ontario,7.0,5.0,7.9
+31016,Markham,ontario,10.0,10.0,11.2
+31017,Brantford,ontario,10.0,10.0,11.0
+31019,Huntsville,ontario,7.0,8.0,8.3
+31020,Mount Forest,ontario,8.0,8.0,9.2
+31022,Chapleau,ontario,4.0,4.0,4.5
+31023,Morrisburg,ontario,9.0,9.0,10.6
+31024,Muskoka,ontario,8.0,8.0,9.2
+31025,Windsor,ontario,11.0,11.0,12.4
+31026,Burlington,ontario,10.0,10.0,11.5
+31027,Kenora,ontario,1.0,1.0,1.6
+31029,Thunder Bay,ontario,5.0,3.0,5.5
+31030,Ogoki,ontario,2.0,1.0,2.6
+31031,Bancroft,ontario,8.0,7.0,8.3
+31032,Parry Sound,ontario,8.0,8.0,9.3
+31033,Red Lake,ontario,0.0,0.0,-0.2
+31034,Sachigo Lake,ontario,-1.0,-2.0,-1.1
+31036,Marathon,ontario,6.0,4.0,6.6
+31037,Vineland,ontario,11.0,12.0,12.5
+31039,Armstrong,ontario,6.0,2.0,5.8
+31040,Petawawa,ontario,7.0,7.0,8.0
+31041,Moosonee,ontario,2.0,2.0,3.6
+31042,Alliston,ontario,9.0,8.0,10.8
+31043,Stirling,ontario,10.0,10.0,11.1
+31045,Oshawa,ontario,11.0,10.0,11.8
+31046,Whitby,ontario,10.0,10.0,11.4
+31048,Peterborough,ontario,9.0,8.0,10.5
+31052,Niagara Falls,ontario,10.0,12.0,11.2
+31053,Trenton,ontario,10.0,10.0,11.0
+31054,Timmins,ontario,4.0,4.0,5.1
+31055,Sandy Lake,ontario,-1.0,-1.0,-1.1
+31056,Wiarton,ontario,9.0,9.0,10.5
+31057,Pembroke,ontario,8.0,7.0,8.2
+31060,Savant Lake,ontario,1.0,1.0,0.9
+31061,Sioux Lookout,ontario,1.0,1.0,1.6
+31062,Earlton,ontario,6.0,5.0,6.3
+31063,London,ontario,10.0,10.0,11.1
+31064,Wawa,ontario,6.0,4.0,6.1
+31067,Kapuskasing,ontario,5.0,4.0,5.6
+31068,Toronto,ontario,11.0,11.0,12.3
+31070,Kakabeka Falls,ontario,4.0,3.0,5.1
+31072,Sarnia,ontario,11.0,10.0,12.3
+31073,Atikokan,ontario,2.0,0.0,2.4
+31075,Collingwood,ontario,10.0,9.0,10.8
+31076,Barrie,ontario,9.0,9.0,10.4
+31078,Upsala,ontario,2.0,0.0,2.2
+31079,Winchester,ontario,9.0,9.0,9.9
+31081,Tobermory,ontario,10.0,9.0,10.6
+31083,Fort Frances,ontario,2.0,0.0,3.1
+31085,Simcoe,ontario,10.0,10.0,11.1
+31087,Attawapiskat,ontario,11.0,1.0,11.3
+31089,Sioux Narrows,ontario,1.0,1.0,1.8
+31090,Ear Falls,ontario,1.0,0.0,1.0
+31094,Rodney,ontario,10.0,11.0,10.8
+31095,Fort Albany,ontario,10.0,1.0,10.2
+31096,Dominion City,manitoba,4.0,3.0,5.1
+31097,Altona,manitoba,4.0,4.0,5.2
+31100,Richer,manitoba,2.0,3.0,3.4
+31101,Vita,manitoba,3.0,3.0,4.6
+31104,Morris,manitoba,4.0,4.0,5.3
+31105,Snow Lake,manitoba,0.0,1.0,0.8
+31106,Steinbach,manitoba,3.0,3.0,4.7
+31108,McCreary,manitoba,3.0,4.0,5.1
+31110,Morden,manitoba,4.0,4.0,5.5
+31116,Fisher Branch,manitoba,2.0,2.0,3.2
+31117,Winkler,manitoba,4.0,4.0,5.6
+31119,Portage la Prairie,manitoba,4.0,4.0,5.0
+31120,The Pas,manitoba,2.0,1.0,2.8
+31122,Roblin,manitoba,2.0,4.0,3.6
+31123,Bissett,manitoba,1.0,2.0,1.8
+31124,Thompson,manitoba,-2.0,-2.0,-1.9
+31126,Bloodvein,manitoba,2.0,3.0,2.5
+31127,Winnipeg,manitoba,3.0,3.0,4.6
+31130,Pinawa,manitoba,2.0,3.0,3.2
+31132,Swan River,manitoba,4.0,4.0,5.5
+31133,Emerson,manitoba,4.0,3.0,5.2
+31134,Gretna,manitoba,4.0,4.0,5.5
+31141,Dauphin,manitoba,4.0,4.0,5.5
+31142,Island Lake,manitoba,-1.0,-1.0,-1.2
+31143,Flin Flon,manitoba,1.0,1.0,1.9
+31145,Gimli,manitoba,3.0,3.0,4.6
+31146,Gods Lake,manitoba,-2.0,-1.0,-1.2
+31147,Gillam,manitoba,-3.0,-4.0,-1.7
+31148,Carman,manitoba,4.0,4.0,5.3
+31149,Rosthern,saskatchewan,8.0,11.0,10.8
+31150,Biggar,saskatchewan,9.0,12.0,11.8
+31153,Fort Qu'Appelle,saskatchewan,7.0,9.0,9.8
+31160,Tisdale,saskatchewan,4.0,5.0,5.7
+31161,La Loche,saskatchewan,3.0,3.0,3.9
+31164,Maple Creek,saskatchewan,15.0,14.0,17.4
+31165,Hudson Bay,saskatchewan,3.0,4.0,5.1
+31168,Kindersley,saskatchewan,12.0,12.0,15.1
+31169,Meadow Lake,saskatchewan,7.0,10.0,9.0
+31170,Rosetown,saskatchewan,10.0,12.0,13.0
+31171,Moose Jaw,saskatchewan,10.0,10.0,11.9
+31172,Spiritwood,saskatchewan,7.0,8.0,9.3
+31173,Scott,saskatchewan,8.0,12.0,11.3
+31174,Prince Albert,saskatchewan,6.0,8.0,8.2
+31176,Weyburn,saskatchewan,9.0,9.0,11.4
+31177,Regina,saskatchewan,8.0,9.0,10.4
+31179,North Battleford,saskatchewan,8.0,9.0,10.4
+31180,Stony Rapids,saskatchewan,-4.0,-5.0,-1.5
+31181,Outlook,saskatchewan,9.0,11.0,12.2
+31183,Buffalo Narrows,saskatchewan,3.0,3.0,3.3
+31184,Saskatoon,saskatchewan,8.0,11.0,10.9
+31185,Swift Current,saskatchewan,11.0,10.0,14.3
+31187,Indian Head,saskatchewan,7.0,9.0,9.8
+31190,Melfort,saskatchewan,4.0,5.0,5.5
+31193,Watrous,saskatchewan,7.0,11.0,10.3
+31195,Assiniboia,saskatchewan,10.0,10.0,12.0
+31199,Pelican Narrows,saskatchewan,2.0,1.0,2.2
+31200,Lloydminster,saskatchewan,8.0,11.0,10.6
+31201,Cochrane,alberta,17.0,18.0,18.7
+31203,Canmore,alberta,9.0,13.0,14.4
+31204,High River,alberta,17.0,19.0,19.4
+31205,Stettler,alberta,15.0,18.0,18.5
+31206,Strathmore,alberta,17.0,18.0,18.7
+31208,Westlock,alberta,13.0,14.0,16.8
+31210,Athabasca,alberta,13.0,14.0,16.1
+31211,Okotoks,alberta,17.0,19.0,18.9
+31212,Airdrie,alberta,17.0,18.0,18.5
+31214,Lloydminster,alberta,8.0,11.0,10.8
+31215,Rocky Mountain House,alberta,17.0,19.0,18.1
+31217,Camrose,alberta,14.0,16.0,17.3
+31219,Fort McMurray,alberta,5.0,6.0,5.9
+31221,Stony Plain,alberta,15.0,16.0,18.0
+31222,Cold Lake,alberta,7.0,9.0,8.8
+31225,Vegreville,alberta,13.0,14.0,15.7
+31229,Lethbridge,alberta,17.0,18.0,18.3
+31230,Grande Prairie,alberta,18.0,17.0,18.0
+31231,Lac La Biche,alberta,10.0,9.0,12.3
+31232,Mildred Lake,alberta,5.0,6.0,6.2
+31234,Breton,alberta,15.0,17.0,18.1
+31238,Bow Island,alberta,16.0,18.0,17.7
+31239,Stavely,alberta,16.0,19.0,18.1
+31241,Pincher Creek,alberta,13.0,13.0,15.9
+31242,Suffield,alberta,17.0,18.0,17.9
+31243,Drayton Valley,alberta,16.0,17.0,17.7
+31244,Banff,alberta,12.0,13.0,14.8
+31245,Edmonton,alberta,14.0,16.0,17.6
+31246,Medicine Hat,alberta,16.0,18.0,17.5
+31247,Calgary,alberta,17.0,17.0,18.5
+31248,Sundre,alberta,18.0,18.0,18.7
+31250,Wainwright,alberta,11.0,11.0,14.1
+31252,Beaverlodge,alberta,17.0,17.0,17.9
+31253,Brooks,alberta,18.0,18.0,18.5
+31254,Coronation,alberta,14.0,17.0,17.5
+31255,Claresholm,alberta,16.0,19.0,18.1
+31256,Drumheller,alberta,16.0,18.0,18.2
+31257,Cardston,alberta,16.0,17.0,18.4
+31261,Highvale,alberta,16.0,16.0,17.9
+31262,Three Hills,alberta,17.0,18.0,18.3
+31263,Jasper,alberta,15.0,15.0,16.1
+31264,Edson,alberta,17.0,17.0,17.6
+31265,Gibsons,british-columbia,18.0,18.0,17.5
+31266,Sechelt,british-columbia,19.0,18.0,17.5
+31276,Pemberton,british-columbia,24.0,19.0,19.4
+31279,Nanaimo,british-columbia,17.0,20.0,16.6
+31280,Castlegar,british-columbia,19.0,16.0,15.8
+31283,Chilliwack,british-columbia,25.0,21.0,20.2
+31285,Creston,british-columbia,18.0,15.0,15.8
+31286,Vernon,british-columbia,18.0,15.0,15.0
+31287,Lillooet,british-columbia,17.0,21.0,17.7
+31288,Malahat,british-columbia,19.0,19.0,19.1
+31292,Pitt Meadows,british-columbia,23.0,16.0,18.7
+31294,Nelson,british-columbia,19.0,16.0,15.7
+31295,Nakusp,british-columbia,18.0,14.0,14.3
+31297,Esquimalt,british-columbia,17.0,19.0,17.1
+31298,Princeton,british-columbia,21.0,19.0,18.7
+31299,Burns Lake,british-columbia,16.0,16.0,16.5
+31301,Kamloops,british-columbia,18.0,17.0,16.8
+31302,Port Alberni,british-columbia,21.0,21.0,19.8
+31306,Squamish,british-columbia,26.0,21.0,20.1
+31307,Salmon Arm,british-columbia,16.0,15.0,14.7
+31308,Sparwood,british-columbia,13.0,13.0,14.9
+31309,Summerland,british-columbia,21.0,18.0,17.2
+31313,Powell River,british-columbia,18.0,18.0,17.7
+31318,Quesnel,british-columbia,16.0,16.0,17.1
+31319,Revelstoke,british-columbia,17.0,13.0,13.9
+31321,Osoyoos,british-columbia,22.0,18.0,18.0
+31322,Agassiz,british-columbia,26.0,21.0,20.2
+31323,Trail,british-columbia,19.0,16.0,16.0
+31326,Vancouver,british-columbia,20.0,16.0,17.5
+31328,Cranbrook,british-columbia,16.0,13.0,15.0
+31329,Prince George,british-columbia,16.0,14.0,15.5
+31330,Terrace,british-columbia,17.0,14.0,15.2
+31333,Fort Nelson,british-columbia,11.0,13.0,13.8
+31334,Penticton,british-columbia,20.0,18.0,16.7
+31335,Victoria,british-columbia,16.0,19.0,16.5
+31343,Richmond,british-columbia,17.0,16.0,15.9
+31344,Duncan,british-columbia,20.0,20.0,19.6
+31345,Qualicum Beach,british-columbia,17.0,18.0,16.0
+31346,West Vancouver,british-columbia,19.0,16.0,16.9

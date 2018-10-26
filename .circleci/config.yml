@@ -77,9 +77,9 @@ jobs:
             cd Test
 
             mv \
-            'fl2018-10-21 -> 2018-10-15.pkl' \
-            'md2018-10-21 -> 2018-10-15.pkl' \
-            '2018-10-21 -> 2018-10-15_predict_tm_high.csv' \
+            'fl2018-10-22 -> 2018-10-15.pkl' \
+            'md2018-10-22 -> 2018-10-14.pkl' \
+            '2018-10-22 -> 2018-10-15_predict_tm_high.csv' \
             ..
             
             cd ..
@@ -87,15 +87,15 @@ jobs:
             DATE=`date -d "+4 hours" +%Y-%m-%d`
 
             mv \
-            'fl2018-10-21 -> 2018-10-15.pkl' \
+            'fl2018-10-22 -> 2018-10-15.pkl' \
             './Gym/feature_list/time_travel/$DATE -> 2018-10-15.pkl'
 
             mv \
-            'md2018-10-21 -> 2018-10-15.pkl' \
+            'md2018-10-22 -> 2018-10-14.pkl' \
             './Gym/pickled_models/time_travel/$DATE -> 2018-10-15.pkl'
 
             mv \
-            '2018-10-21 -> 2018-10-15_predict_tm_high.csv' \
+            '2018-10-22 -> 2018-10-15_predict_tm_high.csv' \
             './Predictions/time_travel/$DATE -> 2018-10-15_predict_tm_high.csv'
             
             python Time_traveller.py

@@ -92,7 +92,7 @@ jobs:
 
             mv \
             'md2018-10-22 -> 2018-10-14.pkl' \
-            './Gym/pickled_models/time_travel/$DATE -> 2018-10-15.pkl'
+            './Gym/pickled_models/time_travel/$DATE -> 2018-10-14.pkl'
 
             mv \
             '2018-10-22 -> 2018-10-15_predict_tm_high.csv' \

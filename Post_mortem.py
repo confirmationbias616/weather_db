@@ -53,7 +53,7 @@ def post_mortem(**kwargs):
     comp["diff_real"] = (comp["high"]) - comp["model_predictions"]
     comp["diff_TWN_rival"] = (comp["high"]) - comp["TWN_high_T1"]
     comp["diff_EC_rival"] = (comp["high"]) - comp["EC_high_T1"]
-    comp = comp.sort_values("diff_real")
+    #comp = comp.sort_values("diff_real")
     ML_perf = (
         (comp["diff_real"].apply(lambda x: x ** 2).sum()) / len(comp.index)) ** 0.5
     TWN_rival_perf = (

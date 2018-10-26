@@ -100,8 +100,6 @@ jobs:
             
             python ETL_history.py
             python ETL_forecast.py
-            python Day.py
-            python Evening.py
             python Time_traveller.py
 
       - store_artifacts:

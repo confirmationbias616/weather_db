@@ -155,6 +155,16 @@ def train(time_span=10, **kwargs):
         "precipitation_y.3",
         "precipitation_x.4",
         "precipitation_y.4",
+        #"normal_rolling_high"
+        #"high_2ago_delta",
+        #"TWN_high_delta",
+        #"EC_high_delta",
+        #"TWN_high_T1_delta",
+        #"EC_high_T1_delta",
+        #"TWN_high_T2_delta",
+        #"EC_high_T2_delta",
+        "TWN_high_T3_delta",
+        "EC_high_T3_delta",
     ]
     db.drop(drop_attr, axis=1, inplace=True)
     db.dropna(axis=0, how="any", inplace=True)

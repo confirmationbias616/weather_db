@@ -192,7 +192,20 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     dba_roll.drop(["date", "year"], axis=1, inplace=True)
     loggr.info("Merging normal high data into master_db")
     db = db.merge(dba_roll, on=["month", "day", "region", "province"], how="left")
-
+    loggr.info("Computing average deltas")
+    delta_req = [
+        "high_2ago",
+        "TWN_high",
+        "EC_high",
+        "TWN_high_T1",
+        "EC_high_T1",
+        "TWN_high_T2",
+        "EC_high_T2",
+        "TWN_high_T3",
+        "EC_high_T3",
+    ]
+    for label in delta_req:
+        db["{}_delta".format(label)] = db[label] - db["rolling normal high"]
     loggr.info("Loading geocoded info")
     dbll = pd.read_csv(
         "{}/Data/region_codes.csv".format(PATH),

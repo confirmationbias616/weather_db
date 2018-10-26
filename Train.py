@@ -188,8 +188,8 @@ def train(time_span=10, **kwargs):
         n_estimators=154,
         random_state=42,
     )
-    loggr.info("Baseline RMSE: {}".format(baseline_rmse))
-    loggr.info("Baseline average error: {}".format(baseline_ave_error))
+    loggr.info("Baseline RMSE: {}".format(round(baseline_rmse, 2)))
+    loggr.info("Baseline average error: {}".format(round(baseline_ave_error, 2)))
     loggr.debug("model: {}".format(model))
     loggr.debug("features: {}".format(ML_attr))
     X_train, X_test, y_train, y_test = train_test_split(

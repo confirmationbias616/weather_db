@@ -98,8 +98,8 @@ jobs:
             '2018-10-22 -> 2018-10-15_predict_tm_high.csv' \
             './Predictions/time_travel/$DATE -> 2018-10-15_predict_tm_high.csv'
             
-            python ETL_history.py
-            python ETL_forecast.py
+            #python ETL_history.py
+            #python ETL_forecast.py
             python Time_traveller.py
 
       - store_artifacts:

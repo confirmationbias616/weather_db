@@ -30,7 +30,7 @@ loggr.info("Time Travellin...")
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
 target_date = "2018-10-15"
 time_span = 10
-rolling_average_window = 30
+rolling_average_window = 10
 rolling_average_min_periods = 1
 
 wrangle(

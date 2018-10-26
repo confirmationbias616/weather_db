@@ -88,15 +88,15 @@ jobs:
 
             mv \
             'fl2018-10-21 -> 2018-10-15.pkl' \
-            `'/Gym/feature_list/time_travel/% -> 2018-10-15.pkl' $DATE`
+            `'./Gym/feature_list/time_travel/% -> 2018-10-15.pkl' $DATE`
 
             mv \
             'md2018-10-21 -> 2018-10-15.pkl' \
-            `'/Gym/pickled_models/time_travel/% -> 2018-10-15.pkl' $DATE`
+            `'./Gym/pickled_models/time_travel/% -> 2018-10-15.pkl' $DATE`
 
             mv \
             '2018-10-21 -> 2018-10-15_predict_tm_high.csv' \
-            `'/Gym/feature_list/time_travel/% -> 2018-10-15_predict_tm_high.csv' $DATE`
+            `'./Gym/feature_list/time_travel/% -> 2018-10-15_predict_tm_high.csv' $DATE`
             
             python Time_traveller.py
 

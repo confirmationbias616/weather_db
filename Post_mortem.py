@@ -72,17 +72,17 @@ def post_mortem(**kwargs):
             PATH, time_travel_string, actual_date
         )
     )
-    loggr.info("ML performance: {}".format(ML_perf))
-    loggr.info("TWN rival performance: {}".format(TWN_rival_perf))
-    loggr.info("EC rival performance: {}".format(EC_rival_perf))
-    loggr.info("Mean rival performance: {}".format(mean_rival_perf))
+    loggr.info("ML performance: {}".format(round(ML_perf, 2)))
+    loggr.info("TWN rival performance: {}".format(round(TWN_rival_perf, 2)))
+    loggr.info("EC rival performance: {}".format(round(EC_rival_perf, 2)))
+    loggr.info("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
     f = open(
         "{}/Predictions/{}{}_compare_actual.txt".format(
             PATH, time_travel_string, actual_date
         ),
         "w",
     )
-    f.write("ML performance: {}\n".format(ML_perf))
-    f.write("TWN rival performance: {}\n".format(TWN_rival_perf))
-    f.write("EC rival performance: {}".format(EC_rival_perf))
-    f.write("Mean rival performance: {}".format(mean_rival_perf))
+    f.write("ML performance: {}\n".format(round(ML_perf, 2)))
+    f.write("TWN rival performance: {}\n".format(round(TWN_rival_perf, 2)))
+    f.write("EC rival performance: {}\n".format(round(EC_rival_perf, 2)))
+    f.write("Mean rival performance: {}".format(round(mean_rival_perf, 2)))

@@ -1,9 +1,22 @@
+import logging
+import sys
 import pandas as pd
 import datetime
 import os
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
+
+loggr = logging.getLogger(__name__)
+log_handler = logging.StreamHandler(sys.stdout)
+log_handler.setFormatter(
+    logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line %(lineno)d"
+    )
+)
+log_handler.setLevel(logging.INFO)
+loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 province_dict = {
     "ns": "nova-scotia",
@@ -19,7 +32,8 @@ province_dict = {
 
 
 def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
-    # load historical data
+    loggr.info("Starting to Wrangle data into fresh version of master_db.csv...")
+    loggr.info("Loading forecast data")
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
     dbh.drop("time", axis=1, inplace=True)
     dbh["date"] = dbh["date"].apply(
@@ -27,7 +41,7 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     )
     dbh = dbh.set_index("provider")
 
-    # wrangle forecast data
+    loggr.info("Wrangling forecast data")
     dbh_per_provider = []
     for provider in ["TWN", "EC"]:
         dbh_P = dbh.xs(provider).reset_index()
@@ -70,13 +84,13 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     dbh_flat["day"] = dbh_flat["date"].apply(lambda x: x.day).apply(str)
     dbh_flat.drop("date", axis=1, inplace=True)
 
-    # load forecast data
+    loggr.info("Loading history data")
     dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH))
     dbf = dbf.set_index(["date", "provider", "day", "region", "province"])
     dbf_TWN = dbf.xs("TWN", level="provider")
     dbf_EC = dbf.xs("EC", level="provider")
 
-    # wrangle forecast data
+    loggr.info("Wrangling history data")
     dbf_date_shift = [0] * 10
     j = 0
     for provider, data in zip(["TWN", "EC"], [dbf_TWN, dbf_EC]):
@@ -134,12 +148,13 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     dbf_flat.day = dbf_flat.day.apply(int)
     dbf_flat.reset_index(inplace=True)
     dbh_flat.reset_index(inplace=True)
+    loggr.info("Merging forecast and history data into master_db")
     db = dbf_flat.merge(
         dbh_flat, on=["day", "month", "year", "region", "province"], how="left"
     )
     db.reset_index().drop(["index"], axis=1, inplace=True)
 
-    # Integrate Normals
+    loggr.info("Loading normal high data")
     dba = pd.read_csv(
         "{}/Data/dba.csv".format(PATH),
         dtype={
@@ -156,6 +171,7 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     dba.dropna(inplace=True)
     dba = dba.set_index(["region", "date"])
     dba_roll = dba.drop(dba.index)
+    loggr.info("Computiong rolling average of normal highs (per region)")
     for region, dba in dba.groupby(level=0):
         dba["rolling normal high"] = (
             dba["normal high"]
@@ -174,9 +190,10 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     dba_roll["day"] = dba_roll["date"].apply(lambda x: x[8:]).apply(int)
     dba_roll["province"] = dba_roll["province"].apply(lambda x: province_dict[x])
     dba_roll.drop(["date", "year"], axis=1, inplace=True)
+    loggr.info("Merging normal high data into master_db")
     db = db.merge(dba_roll, on=["month", "day", "region", "province"], how="left")
 
-    # Add in latitude & longitude features
+    loggr.info("Loading geocoded info")
     dbll = pd.read_csv(
         "{}/Data/region_codes.csv".format(PATH),
         dtype={
@@ -186,7 +203,6 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
             "longitude": "float",
         },
     ).drop("Unnamed: 0", axis=1)
+    loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
-
-    # output to csv
     db.to_csv("{}/Data/master_db.csv".format(PATH))

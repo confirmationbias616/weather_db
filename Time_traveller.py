@@ -40,24 +40,3 @@ wrangle(
 train(time_span=time_span, target_date=target_date)
 predict(target_date=target_date)
 post_mortem(target_date=target_date)
-
-
-"""
-try:
-	loggr.info('Crunching the numbers with ML...')
-	import Train
-	loggr.info('ML complete. Pickled model is ready!')
-except Exception as e:
-	loggr.exception("ML.py could not run. Here's why: \n {e}")
-
-try:
-	loggr.info('Comparing predictions with real-world results for date of '\
-		'{}'.format(datetime.datetime.now().date() - datetime.timedelta(days=1)))
-	import Post_mortem
-	loggr.info('Post_mortem results are ready!')
-except FileNotFoundError:
-		loggr.critical('Missing data - cannot compare performances '\
-			'for this date')
-except Exception as e:
-	loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")
-"""

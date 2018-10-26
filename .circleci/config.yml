@@ -48,6 +48,11 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            cd Test
+            mv *.csv ..
+            cd ..
+            mkdir Data
+            mv  master_db.csv ./Data
             python Time_traveller.py
 
       - store_artifacts:

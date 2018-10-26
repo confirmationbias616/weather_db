@@ -194,7 +194,7 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     db = db.merge(dba_roll, on=["month", "day", "region", "province"], how="left")
     loggr.info("Computing average deltas")
     delta_req = [
-        "high_2ago",
+        #"high_2ago",
         "TWN_high",
         "EC_high",
         "TWN_high_T1",

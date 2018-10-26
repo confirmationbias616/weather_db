@@ -52,7 +52,7 @@ jobs:
             mv *.csv ..
             cd ..
             mkdir Data
-            mv  master_db.csv ./Data
+            mv  *.csv ./Data
             python Time_traveller.py
 
       - store_artifacts:

@@ -49,10 +49,7 @@ def post_mortem(**kwargs):
         comp = pred.merge(actual, on=["region", "province"], how="left")
     except KeyError:
         comp = pred.merge(actual, on=["region"], how="left")
-    comp["diff"] = (comp["TWN_high_T1"]) - comp["model_predictions"]
-    comp["diff_both"] = (comp["TWN_high_T1"] + comp["EC_high_T1"]) / 2 - comp[
-        "model_predictions"
-    ]
+    comp["pv_ave"] = (comp["TWN_high_T1"] + comp["EC_high_T1"]) / 2
     comp["diff_real"] = (comp["high"]) - comp["model_predictions"]
     comp["diff_TWN_rival"] = (comp["high"]) - comp["TWN_high_T1"]
     comp["diff_EC_rival"] = (comp["high"]) - comp["EC_high_T1"]
@@ -78,5 +75,5 @@ def post_mortem(**kwargs):
         "w",
     )
     f.write("ML performance: {}\n".format(ML_perf))
-    f.write("TWN Rival performance: {}".format(TWN_rival_perf))
+    f.write("TWN Rival performance: {}\n".format(TWN_rival_perf))
     f.write("EC Rival performance: {}".format(EC_rival_perf))

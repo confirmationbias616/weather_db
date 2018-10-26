@@ -86,6 +86,8 @@ jobs:
 
             DATE=`date +%Y-%m-%d`
 
+            printf 'done'
+
             mv \
             'fl2018-10-21 -> 2018-10-15.pkl' \
             '/Gym/feature_list/time_travel/% -> 2018-10-15.pkl' $DATE

@@ -84,7 +84,7 @@ jobs:
             
             cd ..
 
-            DATE=`date +%Y-%m-%d`
+            DATE=`date -v +4H +%Y-%m-%d`
 
             mv \
             'fl2018-10-21 -> 2018-10-15.pkl' \

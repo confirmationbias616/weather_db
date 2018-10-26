@@ -84,7 +84,7 @@ jobs:
             
             cd ..
 
-            DATE=`date -v +4H +%Y-%m-%d`
+            DATE=`date -d "+4 hours" +%Y-%m-%d`
 
             mv \
             'fl2018-10-21 -> 2018-10-15.pkl' \

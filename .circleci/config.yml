@@ -48,11 +48,56 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            
+            mkdir Data 
+            mkdir -p Gym/feature_list/time_travel
+            mkdir -p Gym/pickled_models/time_travel
+            mkdir -p Predictions/time_travel
+            
             cd Test
-            mv *.csv ..
+            
+            mv \
+            forecat_db.csv \
+            history_db.csv \
+            master_db.csv \
+            dba.csv \
+            region_codes.csv \
+            ..
+            
             cd ..
-            mkdir Data
-            mv  *.csv ./Data
+            
+            mv \
+            forecat_db.csv \
+            history_db.csv \
+            master_db.csv \
+            dba.csv \
+            region_codes.csv \
+            ./Data
+            
+            cd Test
+            
+            mv \
+            'fl2018-10-21 -> 2018-10-15.pkl' \
+            'md2018-10-21 -> 2018-10-15.pkl' \
+            2018-10-21 -> 2018-10-15_predict_tm_high.csv \
+            ..
+            
+            cd ..
+
+            DATE=`date +%Y-%m-%d`
+
+            mv \
+            'fl2018-10-21 -> 2018-10-15.pkl' \
+            '/Gym/feature_list/time_travel/% -> 2018-10-15.pkl' $DATE
+
+            mv \
+            'md2018-10-21 -> 2018-10-15.pkl' \
+            '/Gym/pickled_models/time_travel/% -> 2018-10-15.pkl' $DATE
+
+            mv \
+            '2018-10-21 -> 2018-10-15_predict_tm_high.csv' \
+            '/Gym/feature_list/time_travel/% -> 2018-10-15_predict_tm_high.csv' $DATE
+            
             python Time_traveller.py
 
       - store_artifacts:

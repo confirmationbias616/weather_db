@@ -75,13 +75,11 @@ jobs:
             ./Data
             
             cd Test
-            
-            printf 'done'
 
             mv \
             'fl2018-10-21 -> 2018-10-15.pkl' \
             'md2018-10-21 -> 2018-10-15.pkl' \
-            2018-10-21 -> 2018-10-15_predict_tm_high.csv \
+            '2018-10-21 -> 2018-10-15_predict_tm_high.csv \
             ..
             
             cd ..

@@ -57,7 +57,7 @@ jobs:
             cd Test
             
             mv \
-            forecat_db.csv \
+            forecast_db.csv \
             history_db.csv \
             master_db.csv \
             dba.csv \
@@ -67,7 +67,7 @@ jobs:
             cd ..
             
             mv \
-            forecat_db.csv \
+            forecast_db.csv \
             history_db.csv \
             master_db.csv \
             dba.csv \

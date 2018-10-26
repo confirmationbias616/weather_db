@@ -1,5 +1,8 @@
 # weather_db
 
+[![CircleCI](https://circleci.com/gh/confirmationbias616/weather_db.svg?style=svg)](https://circleci.com/gh/confirmationbias616/weather_db)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 Forecasting Canada's weather by analyzing top forecasters's data and improving upon their prediction errors. What sets this weather forecasting engine apart from its competitors is that doesn't use meteorology at all — no fancy weather models, no radar projections. Pure data is its only knowledge and ML is the secret sauce. 
 
 

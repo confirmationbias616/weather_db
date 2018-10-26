@@ -8,9 +8,6 @@ TEST_ETL_history.py
 
 *.DS_Store
 
-# CSV
-*.csv
-
 # Logs
 *.log
 

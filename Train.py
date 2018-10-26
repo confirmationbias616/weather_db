@@ -212,7 +212,7 @@ def train(time_span=10, **kwargs):
     )
     model_rmses = np.sqrt(-scores)
     model_rmse = sum(model_rmses) / len(model_rmses)
-    loggr.info("Model RMSE:{}".format(model_rmse))
+    loggr.info("Model RMSE:{}".format(round(model_rmse, 2)))
     save_model(model)
     summary = list(
         zip(

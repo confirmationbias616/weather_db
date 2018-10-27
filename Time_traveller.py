@@ -60,7 +60,7 @@ for _ in range(iterations):
     for item in list(hp_inst.keys()):
         hp_inst[item] = random.choice(hp[item])
 
-    ML, TWN, EC, Mean = [], [], [], []
+    ML, TWN, EC, Mean = [[]*eval_days]*4
     counter = 0
     for target_date in [
         str(start_date + datetime.timedelta(days=x)) for x in range(eval_days + 1)
@@ -96,3 +96,4 @@ for _ in range(iterations):
         }
     )
     search_results = search_results.append(hp_inst, ignore_index=True)
+    search_results.to_csv("/Users/Alex/Dropbox Personal/HPResults.csv")

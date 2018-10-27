@@ -28,15 +28,19 @@ loggr.setLevel(logging.INFO)
 loggr.info("Time Travellin...")
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-target_date = "2018-10-15"
+start_date = "2018-10-15"
+end_date = "2018-10-17"
 time_span = 10
 rolling_average_window = 10
 rolling_average_min_periods = 1
 
-wrangle(
-    rolling_average_window=rolling_average_window,
-    rolling_average_min_periods=rolling_average_min_periods,
-)
-train(time_span=time_span, target_date=target_date)
-predict(target_date=target_date)
-post_mortem(target_date=target_date)
+day_span = int(str(end_date - start_date).split(' ')[0])
+
+for target_date in [start_date + datetime.timedelta(x) for x in range(1,day_span+1)]:
+	wrangle(
+	    rolling_average_window=rolling_average_window,
+	    rolling_average_min_periods=rolling_average_min_periods,
+	)
+	train(time_span=time_span, target_date=target_date)
+	predict(target_date=target_date)
+	post_mortem(target_date=target_date)

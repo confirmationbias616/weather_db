@@ -65,8 +65,8 @@ for i in range(iterations):
         str(start_date + datetime.timedelta(days=x)) for x in range(eval_days + 1)
     ]:
         wrangle(
-            rolling_average_window=hp["rolling_average_window"],
-            rolling_average_min_periods=hp["rolling_average_min_periods"],
+            rolling_average_window=hp_inst["rolling_average_window"],
+            rolling_average_min_periods=hp_inst["rolling_average_min_periods"],
         )
         train(
             time_span=hp_inst["time_span"],

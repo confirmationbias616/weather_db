@@ -79,7 +79,7 @@ for i in range(iterations):
             cv=hp_inst["cv"],
             precision=hp_inst["precision"],
         )
-        predict(target_date=target_date)
+        predict(precision=hp_inst["precision"], target_date=target_date)
         ML[i], TWN[i], EC[i], Mean[i] = post_mortem(target_date=target_date)
 
     hp_inst.update(

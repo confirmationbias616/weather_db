@@ -55,10 +55,8 @@ eval_days = int(str(end_date - start_date).split(" ")[0])
 
 try:
 	search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
-except:
+except FileNotFoundError:
 	search_results = pd.DataFrame(columns=hp)
-
-
 
 for _ in range(iterations):
     hp_inst = {key: [] for key in list(hp.keys())}
@@ -101,4 +99,9 @@ for _ in range(iterations):
         }
     )
     search_results = search_results.append(hp_inst, ignore_index=True)
-    search_results.to_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+    
+
+    try:
+    	search_results.to_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+    except FileNotFoundError:
+    	pass

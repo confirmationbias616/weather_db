@@ -31,12 +31,12 @@ loggr.info("Time Travellin...")
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
 start_date = "2018-10-11"
-end_date = "2018-10-13"
+end_date = "2018-10-12"
 iterations = 2
 hp = {
     "time_span": [5, 10],
     "rolling_average_window": [1, 10, 30],
-    "rolling_average_min_periods": [30],
+    "rolling_average_min_periods": [1],
     "time_span": [5, 10, 20, 40],
     "max_depth": [49, 100],
     "max_features": [9, 12],

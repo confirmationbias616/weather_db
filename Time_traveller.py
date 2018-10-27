@@ -34,13 +34,13 @@ time_span = 10
 rolling_average_window = 10
 rolling_average_min_periods = 1
 
-day_span = int(str(end_date - start_date).split(' ')[0])
+day_span = int(str(end_date - start_date).split(" ")[0])
 
-for target_date in [start_date + datetime.timedelta(x) for x in range(1,day_span+1)]:
-	wrangle(
-	    rolling_average_window=rolling_average_window,
-	    rolling_average_min_periods=rolling_average_min_periods,
-	)
-	train(time_span=time_span, target_date=target_date)
-	predict(target_date=target_date)
-	post_mortem(target_date=target_date)
+for target_date in [start_date + datetime.timedelta(x) for x in range(1, day_span + 1)]:
+    wrangle(
+        rolling_average_window=rolling_average_window,
+        rolling_average_min_periods=rolling_average_min_periods,
+    )
+    train(time_span=time_span, target_date=target_date)
+    predict(target_date=target_date)
+    post_mortem(target_date=target_date)

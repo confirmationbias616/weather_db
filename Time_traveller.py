@@ -30,9 +30,9 @@ loggr.setLevel(logging.INFO)
 loggr.info("Time Travellin...")
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-start_date = "2018-10-11"
-end_date = "2018-10-12"
-iterations = 2
+start_date = "2018-10-13"
+end_date = "2018-10-17"
+iterations = 20
 hp = {
     "time_span": [5, 10],
     "rolling_average_window": [1, 10, 30],
@@ -53,10 +53,15 @@ start_date = datetime.date(
 end_date = datetime.date(int(end_date[:4]), int(end_date[5:7]), int(end_date[8:]))
 eval_days = int(str(end_date - start_date).split(" ")[0])
 
-search_results = pd.DataFrame(columns=hp)
-hp_inst = {key: [] for key in list(hp.keys())}
+try:
+	search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+except:
+	search_results = pd.DataFrame(columns=hp)
+
+
 
 for _ in range(iterations):
+    hp_inst = {key: [] for key in list(hp.keys())}
     for item in list(hp_inst.keys()):
         hp_inst[item] = random.choice(hp[item])
 
@@ -96,4 +101,4 @@ for _ in range(iterations):
         }
     )
     search_results = search_results.append(hp_inst, ignore_index=True)
-    search_results.to_csv("{}/HPResults.csv".format(PATH))
+    search_results.to_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")

@@ -96,4 +96,4 @@ for _ in range(iterations):
         }
     )
     search_results = search_results.append(hp_inst, ignore_index=True)
-    search_results.to_csv("/Users/Alex/Dropbox Personal/HPResults.csv")
+    search_results.to_csv("{}/HPResults.csv".format(PATH))

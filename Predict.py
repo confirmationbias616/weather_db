@@ -23,7 +23,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def predict(**kwargs):
+def predict(precision=1, **kwargs):
     def load_model():
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -70,11 +70,7 @@ def predict(**kwargs):
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]
     forecast_table["model_predictions"] = [
-        # Comment out the line below depending on whether or not we want
-        # rounded predictions. Should make this an input parameter to the
-        # function.
-        # round(predictions[i]) for i in range(len(predictions))
-        round(predictions[i], 1) for i in range(len(predictions))
+        round(predictions[i], precision=precision) for i in range(len(predictions))
     ]
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(

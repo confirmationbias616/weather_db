@@ -86,3 +86,5 @@ def post_mortem(**kwargs):
     f.write("TWN rival performance: {}\n".format(round(TWN_rival_perf, 2)))
     f.write("EC rival performance: {}\n".format(round(EC_rival_perf, 2)))
     f.write("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
+
+    return ML_perf, TWN_rival_perf, EC_rival_perf, mean_rival_perf

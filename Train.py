@@ -28,7 +28,16 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def train(time_span=10, **kwargs):
+def train(
+    time_span=10,
+    max_depth=49,
+    max_features=9,
+    min_samples_leaf=5,
+    min_samples_split=2,
+    n_estimators=154,
+    cv=100,
+    **kwargs
+):
     def save_model(model):
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -69,7 +78,7 @@ def train(time_span=10, **kwargs):
             try:
                 start_date = today - datetime.timedelta(days=date_jump)
                 # If running normally (from Day.py), time span can only go into past - as we are
-                # at the edge of our records. Therefore, need to set 
+                # at the edge of our records. Therefore, need to set
                 if today == datetime.datetime.now().date():
                     end_date = today
                 else:
@@ -155,14 +164,14 @@ def train(time_span=10, **kwargs):
         "precipitation_y.3",
         "precipitation_x.4",
         "precipitation_y.4",
-        #"normal_rolling_high"
-        #"high_2ago_delta",
-        #"TWN_high_delta",
-        #"EC_high_delta",
-        #"TWN_high_T1_delta",
-        #"EC_high_T1_delta",
-        #"TWN_high_T2_delta",
-        #"EC_high_T2_delta",
+        # "normal_rolling_high"
+        # "high_2ago_delta",
+        # "TWN_high_delta",
+        # "EC_high_delta",
+        # "TWN_high_T1_delta",
+        # "EC_high_T1_delta",
+        # "TWN_high_T2_delta",
+        # "EC_high_T2_delta",
         "TWN_high_T3_delta",
         "EC_high_T3_delta",
     ]
@@ -191,11 +200,11 @@ def train(time_span=10, **kwargs):
     X = pipeline.fit_transform(X)
     model = RandomForestRegressor(
         bootstrap=True,
-        max_depth=49,
-        max_features=9,
-        min_samples_leaf=5,
-        min_samples_split=2,
-        n_estimators=154,
+        max_depth=max_depth,
+        max_features=max_features,
+        min_samples_leaf=min_samples_leaf,
+        min_samples_split=min_samples_split,
+        n_estimators=n_estimators,
         random_state=42,
     )
     loggr.info("Baseline RMSE: {}".format(round(baseline_rmse, 2)))
@@ -216,7 +225,7 @@ def train(time_span=10, **kwargs):
         X_test,
         y_test,
         scoring="neg_mean_squared_error",
-        cv=100,
+        cv=cv,
         n_jobs=-1,
         verbose=0,
     )

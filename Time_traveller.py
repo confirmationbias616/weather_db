@@ -54,10 +54,10 @@ end_date = datetime.date(int(end_date[:4]), int(end_date[5:7]), int(end_date[8:]
 eval_days = int(str(end_date - start_date).split(" ")[0])
 
 search_results = pd.DataFrame(columns=hp)
-hp_inst = {key: 0 for key in hp}
+hp_inst = {key: [] for key in hp.key()}
 
 for i in range(iterations):
-    for item in hp:
+    for item in hp_inst.key():
         hp_inst[item] = random.choice(hp[item])
 
     ML, TWN, EC, Mean = [], [], [], []

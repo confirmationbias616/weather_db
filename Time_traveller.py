@@ -69,18 +69,18 @@ for i in range(iterations):
             rolling_average_min_periods=hp_inst["rolling_average_min_periods"],
         )
         train(
+            target_date=target_date,
             time_span=hp_inst["time_span"],
             max_depth=hp_inst["max_depth"],
             max_features=hp_inst["max_features"],
             min_samples_leaf=hp_inst["min_samples_leaf"],
             min_samples_split=hp_inst["min_samples_split"],
             n_estimators=hp_inst["n_estimators"],
-            target_date=hp_inst["target_date"],
             cv=hp_inst["cv"],
             precision=hp_inst["precision"],
         )
-        predict(target_date=hp_inst["target_date"])
-        ML[i], TWN[i], EC[i], Mean[i] = post_mortem(target_date=hp_inst["target_date"])
+        predict(target_date=target_date)
+        ML[i], TWN[i], EC[i], Mean[i] = post_mortem(target_date=target_date)
 
     hp_inst.update(
         {

@@ -60,7 +60,7 @@ for _ in range(iterations):
     for item in list(hp_inst.keys()):
         hp_inst[item] = random.choice(hp[item])
 
-    ML, TWN, EC, Mean = [[0]*eval_days+1]*4
+    ML, TWN, EC, Mean = [[0] * (eval_days + 1)] * 4
     counter = 0
     for target_date in [
         str(start_date + datetime.timedelta(days=x)) for x in range(eval_days + 1)

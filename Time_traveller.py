@@ -35,11 +35,15 @@ rolling_average_window = 10
 rolling_average_min_periods = 1
 
 
-start_date = datetime.date(int(start_date[:4]),int(start_date[5:7]),int(start_date[8:]))
-end_date = datetime.date(int(end_date[:4]),int(end_date[5:7]),int(end_date[8:]))
+start_date = datetime.date(
+    int(start_date[:4]), int(start_date[5:7]), int(start_date[8:])
+)
+end_date = datetime.date(int(end_date[:4]), int(end_date[5:7]), int(end_date[8:]))
 day_span = int(str(end_date - start_date).split(" ")[0])
 
-for target_date in [start_date + datetime.timedelta(x) for x in range(1, day_span + 1)]:
+for target_date in [
+    str(start_date + datetime.timedelta(days=x)) for x in range(1, day_span + 1)
+]:
     wrangle(
         rolling_average_window=rolling_average_window,
         rolling_average_min_periods=rolling_average_min_periods,

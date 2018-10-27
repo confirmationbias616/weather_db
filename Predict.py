@@ -70,7 +70,7 @@ def predict(precision=1, **kwargs):
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]
     forecast_table["model_predictions"] = [
-        round(predictions[i], precision=precision) for i in range(len(predictions))
+        round(predictions[i], precision) for i in range(len(predictions))
     ]
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(

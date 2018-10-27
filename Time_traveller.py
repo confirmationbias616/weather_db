@@ -56,11 +56,12 @@ eval_days = int(str(end_date - start_date).split(" ")[0])
 search_results = pd.DataFrame(columns=hp)
 hp_inst = {key: [] for key in list(hp.keys())}
 
-for i in range(iterations):
+for _ in range(iterations):
     for item in list(hp_inst.keys()):
         hp_inst[item] = random.choice(hp[item])
 
     ML, TWN, EC, Mean = [], [], [], []
+    counter = 0
     for target_date in [
         str(start_date + datetime.timedelta(days=x)) for x in range(eval_days + 1)
     ]:
@@ -80,7 +81,8 @@ for i in range(iterations):
             precision=hp_inst["precision"],
         )
         predict(precision=hp_inst["precision"], target_date=target_date)
-        ML[i], TWN[i], EC[i], Mean[i] = post_mortem(target_date=target_date)
+        ML[counter], TWN[counter], EC[counter], Mean[counter] = post_mortem(target_date=target_date)
+        counter +=1
 
     hp_inst.update(
         {

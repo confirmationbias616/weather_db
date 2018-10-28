@@ -27,8 +27,6 @@ log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
-loggr.info("Time Travellin...")
-
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
 start_date = "2018-10-13"
 end_date = "2018-10-17"
@@ -54,11 +52,13 @@ end_date = datetime.date(int(end_date[:4]), int(end_date[5:7]), int(end_date[8:]
 eval_days = int(str(end_date - start_date).split(" ")[0])
 
 try:
-	search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+    search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
 except FileNotFoundError:
-	search_results = pd.DataFrame(columns=hp)
+    search_results = pd.DataFrame(columns=hp)
 
-for _ in range(iterations):
+loggr.info("Time Travellin...")
+
+for i in range(iterations):
     hp_inst = {key: [] for key in list(hp.keys())}
     for item in list(hp_inst.keys()):
         hp_inst[item] = random.choice(hp[item])
@@ -68,6 +68,11 @@ for _ in range(iterations):
     for target_date in [
         str(start_date + datetime.timedelta(days=x)) for x in range(eval_days + 1)
     ]:
+        loggr.info(
+            "Testing random hyperparameter set {} of {} on date {}".format(
+                i, iterations, target_date
+            )
+        )
         wrangle(
             rolling_average_window=hp_inst["rolling_average_window"],
             rolling_average_min_periods=hp_inst["rolling_average_min_periods"],
@@ -84,8 +89,10 @@ for _ in range(iterations):
             precision=hp_inst["precision"],
         )
         predict(precision=hp_inst["precision"], target_date=target_date)
-        ML[counter], TWN[counter], EC[counter], Mean[counter] = post_mortem(target_date=target_date)
-        counter +=1
+        ML[counter], TWN[counter], EC[counter], Mean[counter] = post_mortem(
+            target_date=target_date
+        )
+        counter += 1
 
     hp_inst.update(
         {
@@ -99,9 +106,8 @@ for _ in range(iterations):
         }
     )
     search_results = search_results.append(hp_inst, ignore_index=True)
-    
 
     try:
-    	search_results.to_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+        search_results.to_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
     except FileNotFoundError:
-    	pass
+        pass

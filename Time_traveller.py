@@ -124,8 +124,8 @@ for i in range(iterations):
                 )
             except FileNotFoundError:
                 pass
-        continue
         except Exception as e:
             loggr.exception("this loop could not finish. Here's why: \n {e}")
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue
+        break

@@ -61,9 +61,6 @@ except FileNotFoundError:
     search_results = pd.DataFrame(
         columns=(["log_time", "start_date", "end_date"] + list(hp.keys()))
     )
-    search_results.to_csv(
-            "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
-        )
 
 loggr.info("Time Travellin...")
 

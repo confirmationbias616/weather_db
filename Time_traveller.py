@@ -28,11 +28,12 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-start_date = "2018-10-28"
-end_date = "2018-10-28"
-iterations = 6
+start_date = "2018-10-13"
+end_date = "2018-10-13"
+iterations = 1
 hp = {
     "time_span": [2, 4, 6, 10],
+    "edge_forecasting": [True],
     "rolling_average_window": [10, 30],
     "rolling_average_min_periods": [1],
     "max_depth": [49, 100],
@@ -93,7 +94,7 @@ for i in range(iterations):
                     n_estimators=hp_inst["n_estimators"],
                     cv=hp_inst["cv"],
                     precision=hp_inst["precision"],
-                    edge_forecasting=True,
+                    edge_forecasting=hp_inst["edge_forecasting"],
                 )
                 predict(precision=hp_inst["precision"], target_date=target_date)
                 ML, TWN, EC, Mean = post_mortem(target_date=target_date)

@@ -28,7 +28,6 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-log_time = datetime.datetime.now()
 start_date = "2018-10-13"
 end_date = "2018-10-17"
 iterations = 50
@@ -100,6 +99,7 @@ for i in range(iterations):
         EC_agg.append(EC)
         Mean_agg.append(Mean)
 
+    log_time = datetime.datetime.now()
     hp_inst.update(
         {
             "log_time": log_time,

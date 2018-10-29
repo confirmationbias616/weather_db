@@ -36,6 +36,7 @@ def train(
     min_samples_split=2,
     n_estimators=154,
     cv=100,
+    edge_forecasting=True,
     **kwargs
 ):
     def save_model(model):
@@ -77,9 +78,7 @@ def train(
         while True:
             try:
                 start_date = today - datetime.timedelta(days=date_jump)
-                # If running normally (from Day.py), time span can only go into past - as we are
-                # at the edge of our records. Therefore, need to set
-                if today == datetime.datetime.now().date():
+                if today == datetime.datetime.now().date() or edge_forecasting is True:
                     end_date = today
                 else:
                     end_date = today + datetime.timedelta(days=date_jump)

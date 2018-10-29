@@ -32,15 +32,15 @@ start_date = "2018-10-28"
 end_date = "2018-10-28"
 iterations = 6
 hp = {
-    "time_span": [5],
+    "time_span": [2, 4, 6, 10],
     "rolling_average_window": [10, 30],
     "rolling_average_min_periods": [1],
     "max_depth": [49, 100],
     "max_features": [9, 12],
     "min_samples_leaf": [4, 5],
     "min_samples_split": [2],
-    "n_estimators": [145, 155, 165],
-    "cv": [20, 80, 100],
+    "n_estimators": [155],
+    "cv": [100],
     "precision": [1],
 }
 
@@ -93,6 +93,7 @@ for i in range(iterations):
                     n_estimators=hp_inst["n_estimators"],
                     cv=hp_inst["cv"],
                     precision=hp_inst["precision"],
+                    edge_forecasting=True,
                 )
                 predict(precision=hp_inst["precision"], target_date=target_date)
                 ML, TWN, EC, Mean = post_mortem(target_date=target_date)

@@ -28,14 +28,13 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-start_date = "2018-10-13"
-end_date = "2018-10-17"
-iterations = 3
+start_date = "2018-10-28"
+end_date = "2018-10-28"
+iterations = 6
 hp = {
-    "time_span": [5, 10],
-    "rolling_average_window": [1, 10, 30],
+    "time_span": [5],
+    "rolling_average_window": [10, 30],
     "rolling_average_min_periods": [1],
-    "time_span": [5, 10, 20, 40],
     "max_depth": [49, 100],
     "max_features": [9, 12],
     "min_samples_leaf": [4, 5],

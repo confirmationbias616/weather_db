@@ -257,3 +257,4 @@ def train(
     pd.DataFrame(summary).to_csv(
         "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today)
     )
+    return int(X.index)

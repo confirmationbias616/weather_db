@@ -32,9 +32,9 @@ start_date = "2018-10-13"
 end_date = "2018-10-13"
 iterations = 1
 hp = {
-    "time_span": [2, 4, 6, 10],
+    "time_span": [6, 8, 10],
     "edge_forecasting": [True],
-    "rolling_average_window": [10, 30],
+    "rolling_average_window": [10, 20, 30],
     "rolling_average_min_periods": [1],
     "max_depth": [49, 100],
     "max_features": [9, 12],
@@ -84,7 +84,7 @@ for i in range(iterations):
                     rolling_average_window=hp_inst["rolling_average_window"],
                     rolling_average_min_periods=hp_inst["rolling_average_min_periods"],
                 )
-                train(
+                points_used = train(
                     target_date=target_date,
                     time_span=hp_inst["time_span"],
                     max_depth=hp_inst["max_depth"],
@@ -115,6 +115,11 @@ for i in range(iterations):
                     "EC_rms": (sum([x ** 2 for x in EC_agg]) / len(EC_agg)) ** 0.5,
                     "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
                     ** 0.5,
+                    "ML": ML,
+                    "TWN": TWN,
+                    "EC": EC,
+                    "Mean": Mean,
+                    "points_used": points_used,
                 }
             )
             search_results = search_results.append(hp_inst, ignore_index=True)

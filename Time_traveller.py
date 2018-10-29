@@ -30,8 +30,8 @@ loggr.setLevel(logging.INFO)
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
 log_time = datetime.datetime.now()
 start_date = "2018-10-13"
-end_date = "2018-10-14"
-iterations = 2
+end_date = "2018-10-17"
+iterations = 50
 hp = {
     "time_span": [5, 10],
     "rolling_average_window": [1, 10, 30],
@@ -61,6 +61,9 @@ except FileNotFoundError:
     search_results = pd.DataFrame(
         columns=(["log_time", "start_date", "end_date"] + list(hp.keys()))
     )
+    search_results.to_csv(
+            "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
+        )
 
 loggr.info("Time Travellin...")
 
@@ -95,15 +98,10 @@ for i in range(iterations):
         )
         predict(precision=hp_inst["precision"], target_date=target_date)
         ML, TWN, EC, Mean = post_mortem(target_date=target_date)
-        print(ML)
         ML_agg.append(ML)
         TWN_agg.append(TWN)
         EC_agg.append(EC)
         Mean_agg.append(Mean)
-        print(ML_agg)
-        print(TWN_agg)
-        print(EC_agg)
-        print(Mean_agg)
 
     hp_inst.update(
         {

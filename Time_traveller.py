@@ -82,7 +82,7 @@ for i in range(hp['iterations']):
                 if type(hp[item]) is list:
                     hp_inst[item] = random.choice(hp[item])
                 else:
-                    hp_inst[item] = hp.item
+                    hp_inst[item] = hp[item]
             loggr.info(
                 "hperparameters randomly selected for this loop:\n"
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])

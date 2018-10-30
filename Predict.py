@@ -23,7 +23,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def predict(**kwargs):
+def predict(precision=1, **kwargs):
     def load_model():
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -52,7 +52,7 @@ def predict(**kwargs):
     model = load_model()
     ML_attr = load_features()
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    db = db.drop("Unnamed: 0", axis=1).drop_duplicates()
+    db = db.drop("Unnamed: 0", axis=1)
     tomorrow = str(
         datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
         + datetime.timedelta(days=1)
@@ -62,6 +62,12 @@ def predict(**kwargs):
     db_tomorrow = db_tomorrow[list(ML_attr) + ["region", "province"]]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
+    loggr.info(
+        (
+            "Features for prediction:\n"
+            + "".join(["{}\n".format(x) for x in db_tomorrow.columns])
+        )
+    )
     fc_ind = db_tomorrow.reset_index()["index"]
     pipeline = Pipeline([("std_scaler", StandardScaler())])
     X_today = pipeline.fit_transform(db_tomorrow.drop(["region", "province"], axis=1))
@@ -70,11 +76,7 @@ def predict(**kwargs):
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]
     forecast_table["model_predictions"] = [
-        # Comment out the line below depending on whether or not we want
-        # rounded predictions. Should make this an input parameter to the
-        # function.
-        # round(predictions[i]) for i in range(len(predictions))
-        round(predictions[i], 1) for i in range(len(predictions))
+        round(predictions[i], precision) for i in range(len(predictions))
     ]
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(

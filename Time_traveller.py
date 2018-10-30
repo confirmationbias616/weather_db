@@ -7,6 +7,7 @@ import time
 from shutil import copyfile
 import random
 import pandas as pd
+import json
 
 from Wrangle import wrangle
 from Train import train
@@ -27,23 +28,33 @@ log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
+
+def load_hyperparameters():
+    filename = "/Users/Alex/Dropbox (Personal)/hyperparameters.json"
+    try:
+        with open(filename, "rb") as input_file:
+            return json.load(input_file)
+    except FileNotFoundError:
+        return {
+            "time_span": [20],
+            "edge_forecasting": [1, 0],
+            "rolling_average_window": [30],
+            "rolling_average_min_periods": [1],
+            "max_depth": [100],
+            "max_features": [12],
+            "min_samples_leaf": [5],
+            "min_samples_split": [2],
+            "n_estimators": [155],
+            "cv": [100],
+            "precision": [1],
+        }
+
+
 # MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-start_date = "2018-10-13"
-end_date = "2018-10-13"
-iterations = 1
-hp = {
-    "time_span": [6, 8, 10],
-    "edge_forecasting": [True],
-    "rolling_average_window": [10, 20, 30],
-    "rolling_average_min_periods": [1],
-    "max_depth": [49, 100],
-    "max_features": [9, 12],
-    "min_samples_leaf": [4, 5],
-    "min_samples_split": [2],
-    "n_estimators": [155],
-    "cv": [100],
-    "precision": [1],
-}
+start_date = "2018-10-14"
+end_date = "2018-10-15"
+iterations = 2
+hp = load_hyperparameters()
 
 start_date = datetime.date(
     int(start_date[:4]), int(start_date[5:7]), int(start_date[8:])
@@ -66,9 +77,14 @@ loggr.info("Time Travellin...")
 for i in range(iterations):
     while True:
         try:
+            hp = load_hyperparameters()
             hp_inst = {key: [] for key in list(hp.keys())}
             for item in list(hp_inst.keys()):
                 hp_inst[item] = random.choice(hp[item])
+            loggr.info(
+                "hperparameters randomly selected for this loop:\n"
+                + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
+            )
 
             ML_agg, TWN_agg, EC_agg, Mean_agg = [], [], [], []
             for target_date in [

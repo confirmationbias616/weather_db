@@ -36,7 +36,7 @@ def train(
     min_samples_split=2,
     n_estimators=154,
     cv=100,
-    edge_forecasting=True,
+    edge_forecasting=1,
     **kwargs
 ):
     def save_model(model):
@@ -110,25 +110,25 @@ def train(
         "EC_precipitation",
         "EC_high",
         "EC_high_2ago",
-        # 'TWN_high_2ago',
+        'TWN_high_2ago',
         "TWN_low",
         "TWN_precipitation",
-        # 'TWN_day_pop_T1',
-        # 'TWN_night_pop_T1',
-        # 'TWN_high_T1',
-        # 'TWN_low_T1',
-        # 'EC_day_pop_T1',
-        # 'EC_high_T1',
-        # 'EC_low_T1',
-        # 'EC_night_pop_T1',
-        # 'TWN_day_pop_T2',
-        # 'TWN_night_pop_T2',
-        # 'TWN_high_T2',
-        # 'TWN_low_T2',
-        # 'EC_day_pop_T2',
-        # 'EC_high_T2',
-        # 'EC_low_T2',
-        # 'EC_night_pop_T2',
+        'TWN_day_pop_T1',
+        'TWN_night_pop_T1',
+        #'TWN_high_T1',
+        'TWN_low_T1',
+        'EC_day_pop_T1',
+        #'EC_high_T1',
+        'EC_low_T1',
+        'EC_night_pop_T1',
+        'TWN_day_pop_T2',
+        'TWN_night_pop_T2',
+        'TWN_high_T2',
+        'TWN_low_T2',
+        'EC_day_pop_T2',
+        'EC_high_T2',
+        'EC_low_T2',
+        'EC_night_pop_T2',
         "TWN_day_pop_T3",
         "TWN_night_pop_T3",
         "TWN_high_T3",
@@ -163,18 +163,32 @@ def train(
         "precipitation_y.3",
         "precipitation_x.4",
         "precipitation_y.4",
-        # "normal_rolling_high"
+        #'normal high'
+        # "normal rolling high"
         # "high_2ago_delta",
-        # "TWN_high_delta",
-        # "EC_high_delta",
+        "TWN_high_delta",
+        "EC_high_delta",
         # "TWN_high_T1_delta",
         # "EC_high_T1_delta",
         # "TWN_high_T2_delta",
         # "EC_high_T2_delta",
         "TWN_high_T3_delta",
         "EC_high_T3_delta",
+        "index_x",
+        "Unnamed: 0_x",
+        "Unnamed: 0_y",
+        "Unnamed: 0_x.1",
+        "Unnamed: 0_y.1",
+        "Unnamed: 0_x.2",
+        "Unnamed: 0_y.2",
+        "Unnamed: 0_x.3",
+        "Unnamed: 0_y.3",
+        "Unnamed: 0_x.4",
+        "Unnamed: 0_y.4",
+        "index_y",
     ]
     db.drop(drop_attr, axis=1, inplace=True)
+    db.dropna(axis=1, how="all", inplace=True)
     db.dropna(axis=0, how="any", inplace=True)
     # categorical column has to be left out of the ML models (might look into
     # one-hot-encoding in the future)
@@ -184,8 +198,9 @@ def train(
     X, y = db.drop(label_column, axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
+    points = len(X.index)
     loggr.info(
-        "Amount of data points being used in ML analysis: {}".format(len(X.index))
+        "Amount of data points being used in ML analysis: {}".format(points)
     )
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
@@ -195,6 +210,7 @@ def train(
     # daily prediction later in the evening
     ML_attr = X.columns
     save_features(ML_attr)
+    loggr.info(("".join(['{}\n'.format(x) for x in ML_attr])))
     pipeline = Pipeline([("std_scaler", StandardScaler())])
     X = pipeline.fit_transform(X)
     model = RandomForestRegressor(
@@ -257,4 +273,4 @@ def train(
     pd.DataFrame(summary).to_csv(
         "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today)
     )
-    return int(X.index)
+    return points

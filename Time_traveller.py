@@ -36,6 +36,9 @@ def load_hyperparameters():
             return json.load(input_file)
     except FileNotFoundError:
         return {
+            "iterations": [2],
+            "start_date": ["2018-10-15"],
+            "end_date": ["2018-10-15"],
             "time_span": [20],
             "edge_forecasting": [1, 0],
             "rolling_average_window": [30],
@@ -50,16 +53,14 @@ def load_hyperparameters():
         }
 
 
-# MAKE THESE HYPERPARAMETERS ACCESSIBLE TO CLI
-start_date = "2018-10-14"
-end_date = "2018-10-15"
-iterations = 2
 hp = load_hyperparameters()
 
 start_date = datetime.date(
-    int(start_date[:4]), int(start_date[5:7]), int(start_date[8:])
+    int(hp["start_date"][:4]), int(hp["start_date"][5:7]), int(hp["start_date"][8:])
 )
-end_date = datetime.date(int(end_date[:4]), int(end_date[5:7]), int(end_date[8:]))
+end_date = datetime.date(
+    int(hp["end_date"][:4]), int(hp["end_date"][5:7]), int(hp["end_date"][8:])
+)
 try:
     eval_days = int(str(end_date - start_date).split(" ")[0])
 except ValueError:
@@ -68,13 +69,11 @@ except ValueError:
 try:
     search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
 except FileNotFoundError:
-    search_results = pd.DataFrame(
-        columns=(["log_time", "start_date", "end_date"] + list(hp.keys()))
-    )
+    search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
 
 loggr.info("Time Travellin...")
 
-for i in range(iterations):
+for i in range(hp['iterations']):
     while True:
         try:
             hp = load_hyperparameters()
@@ -86,14 +85,14 @@ for i in range(iterations):
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
             )
 
-            ML_agg, TWN_agg, EC_agg, Mean_agg = [], [], [], []
+            ML_agg, TWN_agg, EC_agg, Mean_agg, points_used_agg = [], [], [], [], []
             for target_date in [
                 str(start_date + datetime.timedelta(days=x))
                 for x in range(eval_days + 1)
             ]:
                 loggr.info(
                     "Testing random hyperparameter set {} of {} on date {}".format(
-                        i + 1, iterations, target_date
+                        i + 1, hp['iterations'], target_date
                     )
                 )
                 wrangle(
@@ -112,6 +111,7 @@ for i in range(iterations):
                     precision=hp_inst["precision"],
                     edge_forecasting=hp_inst["edge_forecasting"],
                 )
+                points_used_agg.append(points_used)
                 predict(precision=hp_inst["precision"], target_date=target_date)
                 ML, TWN, EC, Mean = post_mortem(target_date=target_date)
                 ML_agg.append(ML)
@@ -123,19 +123,17 @@ for i in range(iterations):
             hp_inst.update(
                 {
                     "log_time": log_time,
-                    "start_date": start_date,
-                    "end_date": end_date,
                     "eval_days": eval_days,
                     "ML_rms": (sum([x ** 2 for x in ML_agg]) / len(ML_agg)) ** 0.5,
                     "TWN_rms": (sum([x ** 2 for x in TWN_agg]) / len(TWN_agg)) ** 0.5,
                     "EC_rms": (sum([x ** 2 for x in EC_agg]) / len(EC_agg)) ** 0.5,
                     "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
                     ** 0.5,
-                    "ML": ML,
-                    "TWN": TWN,
-                    "EC": EC,
-                    "Mean": Mean,
-                    "points_used": points_used,
+                    "ML": ML_agg,
+                    "TWN": TWN_agg,
+                    "EC": EC_agg,
+                    "Mean": Mean_agg,
+                    "points_used": points_used_agg,
                 }
             )
             search_results = search_results.append(hp_inst, ignore_index=True)

@@ -36,9 +36,9 @@ def load_hyperparameters():
             return json.load(input_file)
     except FileNotFoundError:
         return {
-            "iterations": [2],
-            "start_date": ["2018-10-15"],
-            "end_date": ["2018-10-15"],
+            "iterations": 2,
+            "start_date": "2018-10-15",
+            "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1, 0],
             "rolling_average_window": [30],
@@ -79,7 +79,10 @@ for i in range(hp['iterations']):
             hp = load_hyperparameters()
             hp_inst = {key: [] for key in list(hp.keys())}
             for item in list(hp_inst.keys()):
-                hp_inst[item] = random.choice(hp[item])
+                if type(item) is list:
+                    hp_inst[item] = random.choice(hp[item])
+                else:
+                    hp_inst[item] = item
             loggr.info(
                 "hperparameters randomly selected for this loop:\n"
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])

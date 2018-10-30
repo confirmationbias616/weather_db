@@ -110,25 +110,25 @@ def train(
         "EC_precipitation",
         "EC_high",
         "EC_high_2ago",
-        'TWN_high_2ago',
+        "TWN_high_2ago",
         "TWN_low",
         "TWN_precipitation",
-        'TWN_day_pop_T1',
-        'TWN_night_pop_T1',
+        "TWN_day_pop_T1",
+        "TWN_night_pop_T1",
         #'TWN_high_T1',
-        'TWN_low_T1',
-        'EC_day_pop_T1',
+        "TWN_low_T1",
+        "EC_day_pop_T1",
         #'EC_high_T1',
-        'EC_low_T1',
-        'EC_night_pop_T1',
-        'TWN_day_pop_T2',
-        'TWN_night_pop_T2',
-        'TWN_high_T2',
-        'TWN_low_T2',
-        'EC_day_pop_T2',
-        'EC_high_T2',
-        'EC_low_T2',
-        'EC_night_pop_T2',
+        "EC_low_T1",
+        "EC_night_pop_T1",
+        "TWN_day_pop_T2",
+        "TWN_night_pop_T2",
+        "TWN_high_T2",
+        "TWN_low_T2",
+        "EC_day_pop_T2",
+        "EC_high_T2",
+        "EC_low_T2",
+        "EC_night_pop_T2",
         "TWN_day_pop_T3",
         "TWN_night_pop_T3",
         "TWN_high_T3",
@@ -199,9 +199,7 @@ def train(
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
     points = len(X.index)
-    loggr.info(
-        "Amount of data points being used in ML analysis: {}".format(points)
-    )
+    loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
     baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
@@ -210,7 +208,9 @@ def train(
     # daily prediction later in the evening
     ML_attr = X.columns
     save_features(ML_attr)
-    loggr.info(("".join(['{}\n'.format(x) for x in ML_attr])))
+    loggr.info(
+        ("Features for training:\n" + "".join(["{}\n".format(x) for x in ML_attr]))
+    )
     pipeline = Pipeline([("std_scaler", StandardScaler())])
     X = pipeline.fit_transform(X)
     model = RandomForestRegressor(

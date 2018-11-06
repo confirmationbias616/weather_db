@@ -143,9 +143,6 @@ for i in range(hp["iterations"]):
                     "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
                     ** 0.5,
                     "ML": ML_agg,
-                    "TWN": TWN_agg,
-                    "EC": EC_agg,
-                    "Mean": Mean_agg,
                     "points_used": points_used_agg,
                 }
             )

@@ -50,6 +50,10 @@ def predict(precision=1, **kwargs):
             "TWN_high_T2_delta",
             "EC_high_T2_delta",
         ]
+    try:
+        label_column = kwargs["label"]
+    except KeyError:
+        label_column = "TWN_high"
     loggr.info("Predicting for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())

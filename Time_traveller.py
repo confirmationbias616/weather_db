@@ -104,6 +104,7 @@ for i in range(hp["iterations"]):
                     points_used = train(
                         target_date=target_date,
                         features=hp_inst['features'],
+                        label=hp_inst['label'],
                         latitude_limit=hp_inst['latitude_limit'],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
@@ -116,7 +117,7 @@ for i in range(hp["iterations"]):
                         edge_forecasting=hp_inst["edge_forecasting"],
                     )
                     points_used_agg.append(points_used)
-                    predict(features=hp_inst['features'], precision=hp_inst["precision"], target_date=target_date)
+                    predict(features=hp_inst['features'], label=hp_inst['label'], precision=hp_inst["precision"], target_date=target_date)
                     ML, TWN, EC, Mean = post_mortem(target_date=target_date)
                     ML_agg.append(ML)
                     TWN_agg.append(TWN)

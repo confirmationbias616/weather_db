@@ -98,102 +98,11 @@ def train(
         return start_index, end_index
 
     start_index, end_index = get_time_span_indices(today)
-    # drop useless columns and clean the whole thing up
-    """drop_attr = [
-        "date",
-        "day",
-        "month",
-        "year",
-        # 'latitude',
-        # 'longitude',
-        "EC_region_code",
-        "TWN_region_code",
-        "EC_low",
-        "EC_precipitation",
-        "EC_high",
-        "EC_high_2ago",
-        "TWN_high_2ago",
-        "TWN_low",
-        "TWN_precipitation",
-        "TWN_day_pop_T1",
-        "TWN_night_pop_T1",
-        #'TWN_high_T1',
-        "TWN_low_T1",
-        "EC_day_pop_T1",
-        #'EC_high_T1',
-        "EC_low_T1",
-        "EC_night_pop_T1",
-        "TWN_day_pop_T2",
-        "TWN_night_pop_T2",
-        "TWN_high_T2",
-        "TWN_low_T2",
-        "EC_day_pop_T2",
-        "EC_high_T2",
-        "EC_low_T2",
-        "EC_night_pop_T2",
-        "TWN_day_pop_T3",
-        "TWN_night_pop_T3",
-        "TWN_high_T3",
-        "TWN_low_T3",
-        "EC_day_pop_T3",
-        "EC_high_T3",
-        "EC_low_T3",
-        "EC_night_pop_T3",
-        "TWN_day_pop_T4",
-        "TWN_night_pop_T4",
-        "TWN_high_T4",
-        "TWN_low_T4",
-        "EC_day_pop_T4",
-        "EC_high_T4",
-        "EC_low_T4",
-        "EC_night_pop_T4",
-        "TWN_day_pop_T5",
-        "TWN_high_T5",
-        "TWN_low_T5",
-        "TWN_night_pop_T5",
-        "EC_day_pop_T5",
-        "EC_high_T5",
-        "EC_low_T5",
-        "EC_night_pop_T5",
-        "precipitation_x",
-        "precipitation_y",
-        "precipitation_x.1",
-        "precipitation_y.1",
-        "precipitation_x.2",
-        "precipitation_y.2",
-        "precipitation_x.3",
-        "precipitation_y.3",
-        "precipitation_x.4",
-        "precipitation_y.4",
-        #'normal high'
-        # "rolling normal high"
-        # "high_2ago_delta",
-        "TWN_high_delta",
-        "EC_high_delta",
-        # "TWN_high_T1_delta",
-        # "EC_high_T1_delta",
-        # "TWN_high_T2_delta",
-        # "EC_high_T2_delta",
-        "TWN_high_T3_delta",
-        "EC_high_T3_delta",
-        "index_x",
-        "Unnamed: 0_x",
-        "Unnamed: 0_y",
-        "Unnamed: 0_x.1",
-        "Unnamed: 0_y.1",
-        "Unnamed: 0_x.2",
-        "Unnamed: 0_y.2",
-        "Unnamed: 0_x.3",
-        "Unnamed: 0_y.3",
-        "Unnamed: 0_x.4",
-        "Unnamed: 0_y.4",
-        "index_y",
-    ]"""
+
     try:
         attr = kwargs["features"]
     except KeyError:
         attr = [
-            "TWN_high",
             "latitude",
             "longitude",
             "rolling normal high",
@@ -204,12 +113,16 @@ def train(
             "TWN_high_T2_delta",
             "EC_high_T2_delta",
         ]
-    db = db[list(attr)]
+    try:
+        label_column = kwargs["label"]
+    except KeyError:
+        label_column = "TWN_high"
+
+    db = db[list(attr)+[label_column]]
     db.dropna(axis=1, how="all", inplace=True)
     db.dropna(axis=0, how="any", inplace=True)
 
     # Create X as features set and Y as labeled set
-    label_column = "TWN_high"
     X, y = db.drop(label_column, axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]

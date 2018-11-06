@@ -97,7 +97,7 @@ def train(
 
     start_index, end_index = get_time_span_indices(today)
     # drop useless columns and clean the whole thing up
-    drop_attr = [
+    """drop_attr = [
         "date",
         "day",
         "month",
@@ -164,7 +164,7 @@ def train(
         "precipitation_x.4",
         "precipitation_y.4",
         #'normal high'
-        # "normal rolling high"
+        # "rolling normal high"
         # "high_2ago_delta",
         "TWN_high_delta",
         "EC_high_delta",
@@ -186,13 +186,24 @@ def train(
         "Unnamed: 0_x.4",
         "Unnamed: 0_y.4",
         "index_y",
+    ]"""
+    attr = [
+        "TWN_high",
+        "latitude",
+        "longitude",
+        "rolling normal high",
+        #"TWN_high_2ago_delta",
+        "TWN_high_T1_delta",
+        "TWN_high_T1",
+        "EC_high_T1",
+        "EC_high_T1_delta",
+        "TWN_high_T2_delta",
+        "EC_high_T2_delta",
     ]
-    db.drop(drop_attr, axis=1, inplace=True)
+    db = db[list(attr)]
     db.dropna(axis=1, how="all", inplace=True)
     db.dropna(axis=0, how="any", inplace=True)
-    # categorical column has to be left out of the ML models (might look into
-    # one-hot-encoding in the future)
-    db.drop(["region", "province"], axis=1, inplace=True)
+
     # Create X as features set and Y as labeled set
     label_column = "TWN_high"
     X, y = db.drop(label_column, axis=1), db[label_column]

@@ -59,9 +59,9 @@ def predict(precision=1, **kwargs):
     )
     tomorrow = "{}-{}-{}".format(tomorrow[:4], tomorrow[5:7], tomorrow[8:10])
     db_tomorrow = db[db["date"] == tomorrow]
-    db_tomorrow = db_tomorrow[list(ML_attr) + ["region", "province"]]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
+    db_tomorrow = db_tomorrow[list(ML_attr) + ["region", "province"]]
     loggr.info(
         (
             "Features for prediction:\n"

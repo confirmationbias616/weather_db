@@ -53,18 +53,11 @@ def load_hyperparameters():
         }
 
 
-hp = load_hyperparameters()
+def get_datetime(date):
+    return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
 
-start_date = datetime.date(
-    int(hp["start_date"][:4]), int(hp["start_date"][5:7]), int(hp["start_date"][8:])
-)
-end_date = datetime.date(
-    int(hp["end_date"][:4]), int(hp["end_date"][5:7]), int(hp["end_date"][8:])
-)
-try:
-    eval_days = int(str(end_date - start_date).split(" ")[0])
-except ValueError:
-    eval_days = 0
+
+hp = load_hyperparameters()
 
 try:
     search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
@@ -73,10 +66,19 @@ except FileNotFoundError:
 
 loggr.info("Time Travellin...")
 
-for i in range(hp['iterations']):
+for i in range(hp["iterations"]):
     while True:
         try:
             hp = load_hyperparameters()
+
+            start_date = get_datetime(hp["start_date"])
+            end_date = get_datetime(hp["end_date"])
+
+            try:
+                eval_days = int(str(end_date - start_date).split(" ")[0])
+            except ValueError:
+                eval_days = 0
+
             hp_inst = {key: [] for key in list(hp.keys())}
             for item in list(hp_inst.keys()):
                 if type(hp[item]) is list:
@@ -93,34 +95,42 @@ for i in range(hp['iterations']):
                 str(start_date + datetime.timedelta(days=x))
                 for x in range(eval_days + 1)
             ]:
-                loggr.info(
-                    "Testing random hyperparameter set {} of {} on date {}".format(
-                        i + 1, hp['iterations'], target_date
+                try:
+                    loggr.info(
+                        "Testing random hyperparameter set {} of {} on date {}".format(
+                            i + 1, hp["iterations"], target_date
+                        )
                     )
-                )
-                wrangle(
-                    rolling_average_window=hp_inst["rolling_average_window"],
-                    rolling_average_min_periods=hp_inst["rolling_average_min_periods"],
-                )
-                points_used = train(
-                    target_date=target_date,
-                    time_span=hp_inst["time_span"],
-                    max_depth=hp_inst["max_depth"],
-                    max_features=hp_inst["max_features"],
-                    min_samples_leaf=hp_inst["min_samples_leaf"],
-                    min_samples_split=hp_inst["min_samples_split"],
-                    n_estimators=hp_inst["n_estimators"],
-                    cv=hp_inst["cv"],
-                    precision=hp_inst["precision"],
-                    edge_forecasting=hp_inst["edge_forecasting"],
-                )
-                points_used_agg.append(points_used)
-                predict(precision=hp_inst["precision"], target_date=target_date)
-                ML, TWN, EC, Mean = post_mortem(target_date=target_date)
-                ML_agg.append(ML)
-                TWN_agg.append(TWN)
-                EC_agg.append(EC)
-                Mean_agg.append(Mean)
+                    wrangle(
+                        rolling_average_window=hp_inst["rolling_average_window"],
+                        rolling_average_min_periods=hp_inst[
+                            "rolling_average_min_periods"
+                        ],
+                    )
+                    points_used = train(
+                        target_date=target_date,
+                        time_span=hp_inst["time_span"],
+                        max_depth=hp_inst["max_depth"],
+                        max_features=hp_inst["max_features"],
+                        min_samples_leaf=hp_inst["min_samples_leaf"],
+                        min_samples_split=hp_inst["min_samples_split"],
+                        n_estimators=hp_inst["n_estimators"],
+                        cv=hp_inst["cv"],
+                        precision=hp_inst["precision"],
+                        edge_forecasting=hp_inst["edge_forecasting"],
+                    )
+                    points_used_agg.append(points_used)
+                    predict(precision=hp_inst["precision"], target_date=target_date)
+                    ML, TWN, EC, Mean = post_mortem(target_date=target_date)
+                    ML_agg.append(ML)
+                    TWN_agg.append(TWN)
+                    EC_agg.append(EC)
+                    Mean_agg.append(Mean)
+                except Exception as e:
+                    loggr.exception(
+                        "Something went wrong for this date. See next line for details. Skipping date..."
+                    )
+                    loggr.exception("{e}")
 
             log_time = datetime.datetime.now()
             hp_inst.update(
@@ -148,7 +158,7 @@ for i in range(hp['iterations']):
             except FileNotFoundError:
                 pass
         except Exception as e:
-            loggr.exception("this loop could not finish. Here's why: \n {e}")
+            loggr.exception("This loop could not finish. Here's why: \n {e}")
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue
         break

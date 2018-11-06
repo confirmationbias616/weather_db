@@ -187,19 +187,21 @@ def train(
         "Unnamed: 0_y.4",
         "index_y",
     ]"""
-    attr = [
-        "TWN_high",
-        "latitude",
-        "longitude",
-        "rolling normal high",
-        #"TWN_high_2ago_delta",
-        "TWN_high_T1_delta",
-        "TWN_high_T1",
-        "EC_high_T1",
-        "EC_high_T1_delta",
-        "TWN_high_T2_delta",
-        "EC_high_T2_delta",
-    ]
+    try:
+        attr = kwargs["features"]
+    except KeyError:
+        attr = [
+            "TWN_high",
+            "latitude",
+            "longitude",
+            "rolling normal high",
+            "TWN_high_T1",
+            "EC_high_T1",
+            "TWN_high_T1_delta",
+            "EC_high_T1_delta",
+            "TWN_high_T2_delta",
+            "EC_high_T2_delta",
+        ]
     db = db[list(attr)]
     db.dropna(axis=1, how="all", inplace=True)
     db.dropna(axis=0, how="any", inplace=True)

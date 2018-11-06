@@ -58,11 +58,6 @@ def get_datetime(date):
 
 hp = load_hyperparameters()
 
-try:
-    search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
-except FileNotFoundError:
-    search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
-
 loggr.info("Time Travellin...")
 
 for i in range(hp["iterations"]):
@@ -145,8 +140,11 @@ for i in range(hp["iterations"]):
                     "points_used": points_used_agg,
                 }
             )
+            try:
+                search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+            except FileNotFoundError:
+                search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
             search_results = search_results.append(hp_inst, ignore_index=True)
-
             try:
                 search_results.to_csv(
                     "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False

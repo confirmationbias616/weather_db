@@ -116,7 +116,7 @@ for i in range(hp["iterations"]):
                         edge_forecasting=hp_inst["edge_forecasting"],
                     )
                     points_used_agg.append(points_used)
-                    predict(precision=hp_inst["precision"], target_date=target_date)
+                    predict(features=hp_inst['features'], precision=hp_inst["precision"], target_date=target_date)
                     ML, TWN, EC, Mean = post_mortem(target_date=target_date)
                     ML_agg.append(ML)
                     TWN_agg.append(TWN)

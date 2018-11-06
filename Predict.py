@@ -29,26 +29,33 @@ def predict(precision=1, **kwargs):
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
 
-    def load_features():
-        filename = "{}/Gym/feature_list/{}{}.pkl".format(
-            PATH, time_travel_string, today
-        )
-        with open(filename, "rb") as input_file:
-            return pickle.load(input_file)
-
     try:
         today = kwargs["target_date"]
         time_travel = True
     except KeyError:
         today = datetime.datetime.now().date()
         time_travel = False
+    try:
+        attr = kwargs["features"]
+    except KeyError:
+        attr = [
+            "TWN_high",
+            "latitude",
+            "longitude",
+            "rolling normal high",
+            "TWN_high_T1",
+            "EC_high_T1",
+            "TWN_high_T1_delta",
+            "EC_high_T1_delta",
+            "TWN_high_T2_delta",
+            "EC_high_T2_delta",
+        ]
     loggr.info("Predicting for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())
     else:
         time_travel_string = ""
     model = load_model()
-    ML_attr = load_features()
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
     db = db.drop("Unnamed: 0", axis=1)
     tomorrow = str(
@@ -61,7 +68,7 @@ def predict(precision=1, **kwargs):
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
     print(db_tomorrow.shape)
-    db_tomorrow = db_tomorrow[list(ML_attr) + ["region", "province"]]
+    db_tomorrow = db_tomorrow[list(attr) + ["region", "province"]]
     loggr.info(
         (
             "Features for prediction:\n"

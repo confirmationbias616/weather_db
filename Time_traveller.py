@@ -25,7 +25,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.DEBUG)
+loggr.setLevel(logging.INFO)
 
 
 def load_hyperparameters():
@@ -103,6 +103,8 @@ for i in range(hp["iterations"]):
                     )
                     points_used = train(
                         target_date=target_date,
+                        features=hp_inst['features'],
+                        latitude_limit=hp_inst['latitude_limit'],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
                         max_features=hp_inst["max_features"],

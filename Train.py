@@ -69,7 +69,7 @@ def train(
     db = db.drop("Unnamed: 0", axis=1).drop_duplicates()
 
     if latitude_limit:
-        db = db[db[latitude]>latitude_limit]
+        db = db[db['latitude']<latitude_limit]
 
     # Get indices for selecting portion of data centered on target date by a
     # width of specified time span

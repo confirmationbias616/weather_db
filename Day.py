@@ -23,9 +23,8 @@ log_handler.setFormatter(
         + "%(lineno)d"
     )
 )
-log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+
 loggr.info("Starting ETL process...")
 
 while True:

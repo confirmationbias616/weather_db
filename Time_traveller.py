@@ -24,9 +24,8 @@ log_handler.setFormatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line %(lineno)d"
     )
 )
-log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+loggr.setLevel(logging.DEBUG)
 
 
 def load_hyperparameters():

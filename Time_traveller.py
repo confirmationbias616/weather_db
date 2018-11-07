@@ -32,7 +32,7 @@ def load_hyperparameters():
     filename = "/Users/Alex/Dropbox (Personal)/hyperparameters.json"
     try:
         with open(filename, "rb") as input_file:
-            return json.load(input_file), False
+            return json.load(input_file)
     except FileNotFoundError:
         return {
             "iterations": 2,
@@ -63,7 +63,7 @@ def load_hyperparameters():
             "precision": [1],
             "date_efficient": 1,
             "region_efficient": [1],
-            "exit_on_exception": 1,
+            "exit_on_exception": 1
         }
 
 

@@ -196,8 +196,6 @@ def wrangle(
     )
     if date_efficient:
         dba = shrink_dates(dba)
-    if region_efficient:
-        dba = shrink_regions(dba)
     dba.drop(["Unnamed: 0"], axis=1, inplace=True)
     dba.dropna(inplace=True)
     dba = dba.set_index(["region", "date"])

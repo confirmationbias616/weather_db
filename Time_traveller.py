@@ -31,23 +31,25 @@ loggr.setLevel(logging.INFO)
 def load_hyperparameters():
     filename = "/Users/Alex/Dropbox (Personal)/hyperparameters.json"
     try:
+        exit_on_exception = False
         with open(filename, "rb") as input_file:
             return json.load(input_file)
     except FileNotFoundError:
+        exit_on_exception = True
         return {
             "iterations": 2,
             "start_date": "2018-10-15",
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1, 0],
-            "rolling_average_window": [30],
+            "rolling_average_window": [5],
             "rolling_average_min_periods": [1],
-            "max_depth": [100],
-            "max_features": [12],
-            "min_samples_leaf": [5],
+            "max_depth": [20],
+            "max_features": [5],
+            "min_samples_leaf": [4],
             "min_samples_split": [2],
-            "n_estimators": [155],
-            "cv": [100],
+            "n_estimators": [50],
+            "cv": [3],
             "precision": [1],
         }
 
@@ -109,7 +111,6 @@ for i in range(hp["iterations"]):
                         target_date=target_date,
                         features=hp_inst['features'],
                         label=hp_inst['label'],
-                        latitude_limit=hp_inst['latitude_limit'],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
                         max_features=hp_inst["max_features"],
@@ -128,6 +129,8 @@ for i in range(hp["iterations"]):
                     EC_agg.append(EC)
                     Mean_agg.append(Mean)
                 except Exception as e:
+                    if exit_on_exception:
+                    	sys.exit(1)
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
                     )
@@ -159,6 +162,8 @@ for i in range(hp["iterations"]):
             except FileNotFoundError:
                 pass
         except Exception as e:
+            if exit_on_exception:
+                sys.exit(1)
             loggr.exception("This loop could not finish. Here's why: \n {e}")
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue

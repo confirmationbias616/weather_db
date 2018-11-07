@@ -24,6 +24,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 
 def train(
@@ -57,7 +58,7 @@ def train(
         today = kwargs["target_date"]
         time_travel = True
     except KeyError:
-        today = datetime.datetime.now().date()
+        today = str(datetime.datetime.now().date())
         time_travel = False
     loggr.info("Training for date: {}...".format(today))
     if time_travel:

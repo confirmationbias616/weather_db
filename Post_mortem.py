@@ -16,6 +16,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 
 def post_mortem(**kwargs):

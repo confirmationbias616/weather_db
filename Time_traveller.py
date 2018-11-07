@@ -80,7 +80,7 @@ for i in range(hp["iterations"]):
                 else:
                     hp_inst[item] = hp[item]
             loggr.info(
-                "hperparameters randomly selected for this loop:\n"
+                "hyperparameters randomly selected for this loop:\n"
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
             )
 
@@ -96,6 +96,8 @@ for i in range(hp["iterations"]):
                         )
                     )
                     wrangle(
+                        target_date=target_date,
+                        time_span=hp_inst["time_span"],
                         rolling_average_window=hp_inst["rolling_average_window"],
                         rolling_average_min_periods=hp_inst[
                             "rolling_average_min_periods"

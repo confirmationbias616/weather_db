@@ -15,6 +15,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 province_dict = {
     "ns": "nova-scotia",
@@ -29,8 +30,14 @@ province_dict = {
 }
 
 
-def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
+def wrangle(
+    time_span=10, rolling_average_window=30, rolling_average_min_periods=1, **kwargs
+):
     loggr.info("Starting to Wrangle data into fresh version of master_db.csv...")
+    try:
+        today = kwargs["target_date"]
+    except KeyError:
+        today = str(datetime.datetime.now().date())
     loggr.info("Loading forecast data")
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
     dbh.drop("time", axis=1, inplace=True)
@@ -167,6 +174,12 @@ def wrangle(rolling_average_window=30, rolling_average_min_periods=1):
     )
     dba.drop(["Unnamed: 0"], axis=1, inplace=True)
     dba.dropna(inplace=True)
+    pillow = rolling_average_window + time_span + 10
+    today_date = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
+    dba = dba[
+        (dba["date"] < str(today_date + datetime.timedelta(days=pillow))) &
+        (dba["date"] > str(today_date - datetime.timedelta(days=pillow)))
+    ]
     dba = dba.set_index(["region", "date"])
     dba_roll = dba.drop(dba.index)
     loggr.info("Computiong rolling average of normal highs (per region)")

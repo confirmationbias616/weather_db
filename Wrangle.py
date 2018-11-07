@@ -33,20 +33,30 @@ province_dict = {
 def wrangle(
     time_span=10, rolling_average_window=30, rolling_average_min_periods=1, **kwargs
 ):
+
+    def shrink(df):
+        pillow = rolling_average_window + time_span + 10
+        today_date = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
+        return df[
+            (df["date"] < str(today_date + datetime.timedelta(days=pillow))) &
+            (df["date"] > str(today_date - datetime.timedelta(days=pillow)))
+        ]
+
     loggr.info("Starting to Wrangle data into fresh version of master_db.csv...")
     try:
         today = kwargs["target_date"]
     except KeyError:
         today = str(datetime.datetime.now().date())
-    loggr.info("Loading forecast data")
+    loggr.info("Loading history data")
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
+    dbh = shrink(dbh)
     dbh.drop("time", axis=1, inplace=True)
     dbh["date"] = dbh["date"].apply(
         lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:]))
     )
     dbh = dbh.set_index("provider")
 
-    loggr.info("Wrangling forecast data")
+    loggr.info("Wrangling history data")
     dbh_per_provider = []
     for provider in ["TWN", "EC"]:
         dbh_P = dbh.xs(provider).reset_index()
@@ -89,13 +99,14 @@ def wrangle(
     dbh_flat["day"] = dbh_flat["date"].apply(lambda x: x.day).apply(str)
     dbh_flat.drop("date", axis=1, inplace=True)
 
-    loggr.info("Loading history data")
+    loggr.info("Loading forecast data")
     dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH))
+    dbf = shrink(dbf)
     dbf = dbf.set_index(["date", "provider", "day", "region", "province"])
     dbf_TWN = dbf.xs("TWN", level="provider")
     dbf_EC = dbf.xs("EC", level="provider")
 
-    loggr.info("Wrangling history data")
+    loggr.info("Wrangling forecast data")
     dbf_date_shift = [0] * 10
     j = 0
     for provider, data in zip(["TWN", "EC"], [dbf_TWN, dbf_EC]):
@@ -172,14 +183,9 @@ def wrangle(
             "longitude": "float",
         },
     )
+    dba = shrink(dba)
     dba.drop(["Unnamed: 0"], axis=1, inplace=True)
     dba.dropna(inplace=True)
-    pillow = rolling_average_window + time_span + 10
-    today_date = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
-    dba = dba[
-        (dba["date"] < str(today_date + datetime.timedelta(days=pillow))) &
-        (dba["date"] > str(today_date - datetime.timedelta(days=pillow)))
-    ]
     dba = dba.set_index(["region", "date"])
     dba_roll = dba.drop(dba.index)
     loggr.info("Computiong rolling average of normal highs (per region)")

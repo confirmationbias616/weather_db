@@ -65,9 +65,8 @@ def load_hyperparameters():
                 "precision": [1],
                 "date_efficient": 1,
                 "region_efficient": [1],
-            },
-            True,
-        )
+            }
+        ), True
 
 
 def get_datetime(date):

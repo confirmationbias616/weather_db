@@ -31,49 +31,47 @@ loggr.setLevel(logging.INFO)
 def load_hyperparameters():
     filename = "/Users/Alex/Dropbox (Personal)/hyperparameters.json"
     try:
-        exit_on_exception = False
         with open(filename, "rb") as input_file:
             return json.load(input_file), False
     except FileNotFoundError:
-        return (
-            {
-                "iterations": 2,
-                "start_date": "2018-10-15",
-                "end_date": "2018-10-15",
-                "time_span": [20],
-                "edge_forecasting": [1, 0],
-                "features": [
-                    [
-                        "latitude",
-                        "longitude",
-                        "rolling normal high",
-                        "TWN_high_T1",
-                        "EC_high_T1",
-                        "TWN_high_T1_delta",
-                        "EC_high_T1_delta",
-                    ]
-                ],
-                "label": "TWN_high",
-                "rolling_average_window": [5],
-                "rolling_average_min_periods": [1],
-                "max_depth": [20],
-                "max_features": [5],
-                "min_samples_leaf": [4],
-                "min_samples_split": [2],
-                "n_estimators": [50],
-                "cv": [3],
-                "precision": [1],
-                "date_efficient": 1,
-                "region_efficient": [1],
-            }
-        ), True
+        return {
+            "iterations": 2,
+            "start_date": "2018-10-15",
+            "end_date": "2018-10-15",
+            "time_span": [20],
+            "edge_forecasting": [1, 0],
+            "features": [
+                [
+                    "latitude",
+                    "longitude",
+                    "rolling normal high",
+                    "TWN_high_T1",
+                    "EC_high_T1",
+                    "TWN_high_T1_delta",
+                    "EC_high_T1_delta",
+                ]
+            ],
+            "label": "TWN_high",
+            "rolling_average_window": [5],
+            "rolling_average_min_periods": [1],
+            "max_depth": [20],
+            "max_features": [5],
+            "min_samples_leaf": [4],
+            "min_samples_split": [2],
+            "n_estimators": [50],
+            "cv": [3],
+            "precision": [1],
+            "date_efficient": 1,
+            "region_efficient": [1],
+            "exit_on_exception": 1,
+        }
 
 
 def get_datetime(date):
     return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
 
 
-hp, exit_on_exception = load_hyperparameters()
+hp = load_hyperparameters()
 
 loggr.info("Time Travellin...")
 
@@ -153,8 +151,8 @@ for i in range(hp["iterations"]):
                         "Something went wrong for this date. See next line for details. Skipping date..."
                     )
                     loggr.exception("{e}")
-                    if exit_on_exception:
-                    	sys.exit(1)
+                    if hp["exit_on_exception"]:
+                        sys.exit(1)
 
             log_time = datetime.datetime.now()
             hp_inst.update(
@@ -185,7 +183,7 @@ for i in range(hp["iterations"]):
                 pass
         except Exception as e:
             loggr.exception("This loop could not finish. Here's why: \n {e}")
-            if exit_on_exception:
+            if hp["exit_on_exception"]:
                 sys.exit(1)
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue

@@ -60,8 +60,6 @@ def wrangle(
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
     if date_efficient:
         dbh = shrink_dates(dbh)
-    if region_efficient:
-        dbh = shrink_regions(dbh)
     dbh.drop("time", axis=1, inplace=True)
     dbh["date"] = dbh["date"].apply(
         lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:]))
@@ -115,8 +113,6 @@ def wrangle(
     dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH))
     if date_efficient:
         dbf = shrink_dates(dbf)
-    if region_efficient:
-        dbf = shrink_regions(dbf)
     dbf = dbf.set_index(["date", "provider", "day", "region", "province"])
     dbf_TWN = dbf.xs("TWN", level="provider")
     dbf_EC = dbf.xs("EC", level="provider")
@@ -254,4 +250,6 @@ def wrangle(
     ).drop("Unnamed: 0", axis=1)
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
+    if region_efficient:
+        db = shrink_regions(db)
     db.to_csv("{}/Data/master_db.csv".format(PATH))

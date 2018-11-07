@@ -150,12 +150,13 @@ for i in range(hp["iterations"]):
                     EC_agg.append(EC)
                     Mean_agg.append(Mean)
                 except Exception as e:
-                    if exit_on_exception:
-                        sys.exit(1)
+
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
                     )
                     loggr.exception("{e}")
+                    if exit_on_exception:
+                		sys.exit(1)
 
             log_time = datetime.datetime.now()
             hp_inst.update(
@@ -185,9 +186,9 @@ for i in range(hp["iterations"]):
             except FileNotFoundError:
                 pass
         except Exception as e:
+            loggr.exception("This loop could not finish. Here's why: \n {e}")
             if exit_on_exception:
                 sys.exit(1)
-            loggr.exception("This loop could not finish. Here's why: \n {e}")
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue
         break

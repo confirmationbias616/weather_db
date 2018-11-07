@@ -102,6 +102,8 @@ for i in range(hp["iterations"]):
                         rolling_average_min_periods=hp_inst[
                             "rolling_average_min_periods"
                         ],
+                        date_efficient=hp_inst["date_efficient"],
+                        region_efficient=hp_inst["region_efficient"],
                     )
                     points_used = train(
                         target_date=target_date,

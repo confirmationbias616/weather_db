@@ -31,15 +31,24 @@ province_dict = {
 
 
 def wrangle(
-    time_span=10, rolling_average_window=30, rolling_average_min_periods=1, **kwargs
+    time_span=10,
+    rolling_average_window=30,
+    rolling_average_min_periods=1,
+    date_efficient=True,
+    region_efficient=False,
+    **kwargs
 ):
-
-    def shrink(df):
+    def shrink_dates(df):
         pillow = rolling_average_window + time_span + 10
         today_date = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
         return df[
-            (df["date"] < str(today_date + datetime.timedelta(days=pillow))) &
-            (df["date"] > str(today_date - datetime.timedelta(days=pillow)))
+            (df["date"] < str(today_date + datetime.timedelta(days=pillow)))
+            & (df["date"] > str(today_date - datetime.timedelta(days=pillow)))
+        ]
+
+    def shrink_regions(df):
+        return df[
+            ((df["longitude"] * -0.09) + 43 > df["latitude"]) & (df["latitude"] < 53)
         ]
 
     loggr.info("Starting to Wrangle data into fresh version of master_db.csv...")
@@ -49,7 +58,10 @@ def wrangle(
         today = str(datetime.datetime.now().date())
     loggr.info("Loading history data")
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
-    dbh = shrink(dbh)
+    if date_efficient:
+        dbh = shrink_dates(dbh)
+    if region_efficient:
+        dbh = shrink_regions(dbh)
     dbh.drop("time", axis=1, inplace=True)
     dbh["date"] = dbh["date"].apply(
         lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:]))
@@ -101,7 +113,10 @@ def wrangle(
 
     loggr.info("Loading forecast data")
     dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH))
-    dbf = shrink(dbf)
+    if date_efficient:
+        dbf = shrink_dates(dbf)
+    if region_efficient:
+        dbf = shrink_regions(dbf)
     dbf = dbf.set_index(["date", "provider", "day", "region", "province"])
     dbf_TWN = dbf.xs("TWN", level="provider")
     dbf_EC = dbf.xs("EC", level="provider")
@@ -183,7 +198,10 @@ def wrangle(
             "longitude": "float",
         },
     )
-    dba = shrink(dba)
+    if date_efficient:
+        dba = shrink_dates(dba)
+    if region_efficient:
+        dba = shrink_regions(dba)
     dba.drop(["Unnamed: 0"], axis=1, inplace=True)
     dba.dropna(inplace=True)
     dba = dba.set_index(["region", "date"])

@@ -18,9 +18,7 @@ log_handler.setFormatter(
         "%(lineno)d"
     )
 )
-log_handler.setLevel(logging.INFO)
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
 
 now = datetime.datetime.now()
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(

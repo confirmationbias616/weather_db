@@ -33,32 +33,48 @@ def load_hyperparameters():
     try:
         exit_on_exception = False
         with open(filename, "rb") as input_file:
-            return json.load(input_file)
+            return json.load(input_file), False
     except FileNotFoundError:
-        exit_on_exception = True
-        return {
-            "iterations": 2,
-            "start_date": "2018-10-15",
-            "end_date": "2018-10-15",
-            "time_span": [20],
-            "edge_forecasting": [1, 0],
-            "rolling_average_window": [5],
-            "rolling_average_min_periods": [1],
-            "max_depth": [20],
-            "max_features": [5],
-            "min_samples_leaf": [4],
-            "min_samples_split": [2],
-            "n_estimators": [50],
-            "cv": [3],
-            "precision": [1],
-        }
+        return (
+            {
+                "iterations": 2,
+                "start_date": "2018-10-15",
+                "end_date": "2018-10-15",
+                "time_span": [20],
+                "edge_forecasting": [1, 0],
+                "features": [
+                    [
+                        "latitude",
+                        "longitude",
+                        "rolling normal high",
+                        "TWN_high_T1",
+                        "EC_high_T1",
+                        "TWN_high_T1_delta",
+                        "EC_high_T1_delta",
+                    ]
+                ],
+                "label": "TWN_high",
+                "rolling_average_window": [5],
+                "rolling_average_min_periods": [1],
+                "max_depth": [20],
+                "max_features": [5],
+                "min_samples_leaf": [4],
+                "min_samples_split": [2],
+                "n_estimators": [50],
+                "cv": [3],
+                "precision": [1],
+                "date_efficient": 1,
+                "region_efficient": [1],
+            },
+            True,
+        )
 
 
 def get_datetime(date):
     return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
 
 
-hp = load_hyperparameters()
+hp, exit_on_exception = load_hyperparameters()
 
 loggr.info("Time Travellin...")
 
@@ -109,8 +125,8 @@ for i in range(hp["iterations"]):
                     )
                     points_used = train(
                         target_date=target_date,
-                        features=hp_inst['features'],
-                        label=hp_inst['label'],
+                        features=hp_inst["features"],
+                        label=hp_inst["label"],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
                         max_features=hp_inst["max_features"],
@@ -122,7 +138,12 @@ for i in range(hp["iterations"]):
                         edge_forecasting=hp_inst["edge_forecasting"],
                     )
                     points_used_agg.append(points_used)
-                    predict(features=hp_inst['features'], label=hp_inst['label'], precision=hp_inst["precision"], target_date=target_date)
+                    predict(
+                        features=hp_inst["features"],
+                        label=hp_inst["label"],
+                        precision=hp_inst["precision"],
+                        target_date=target_date,
+                    )
                     ML, TWN, EC, Mean = post_mortem(target_date=target_date)
                     ML_agg.append(ML)
                     TWN_agg.append(TWN)
@@ -130,7 +151,7 @@ for i in range(hp["iterations"]):
                     Mean_agg.append(Mean)
                 except Exception as e:
                     if exit_on_exception:
-                    	sys.exit(1)
+                        sys.exit(1)
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
                     )
@@ -151,7 +172,9 @@ for i in range(hp["iterations"]):
                 }
             )
             try:
-                search_results = pd.read_csv("/Users/Alex/Dropbox (Personal)/HPResults.csv")
+                search_results = pd.read_csv(
+                    "/Users/Alex/Dropbox (Personal)/HPResults.csv"
+                )
             except FileNotFoundError:
                 search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
             search_results = search_results.append(hp_inst, ignore_index=True)

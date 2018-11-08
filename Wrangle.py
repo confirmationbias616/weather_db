@@ -250,4 +250,5 @@ def wrangle(
     db = db.merge(dbll, on=["region", "province"], how="left")
     if region_efficient:
         db = shrink_regions(db)
+    db['days_sequence'] = db.reset_index()['index']
     db.to_csv("{}/Data/master_db.csv".format(PATH))

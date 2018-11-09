@@ -84,6 +84,18 @@ def predict(precision=1, **kwargs):
     pipeline = Pipeline([("std_scaler", StandardScaler())])
     X_today = pipeline.fit_transform(db_tomorrow.drop(["region", "province"], axis=1))
     predictions = model.predict(X_today)
+
+    try:
+        _ = db_tomorrow["TWN_high_T1"]
+        _ = db_tomorrow["EC_high_T1"]
+    except KeyError:
+        db_tomorrow["TWN_high_T1"] = (
+            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling normal high"]
+        )
+        db_tomorrow["EC_high_T1"] = (
+            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling normal high"]
+        )
+
     forecast_table = db_tomorrow.loc[fc_ind][
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]

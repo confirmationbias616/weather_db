@@ -164,7 +164,14 @@ for i in range(hp["iterations"]):
                     "EC_rms": (sum([x ** 2 for x in EC_agg]) / len(EC_agg)) ** 0.5,
                     "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
                     ** 0.5,
+                    "ML_ave": sum(ML_agg) / len(ML_agg),
+                    "TWN_ave": sum(TWN_agg) / len(TWN_agg),
+                    "EC_ave": sum(EC_agg) / len(EC_agg),
+                    "Mean_ave": sum(Mean_agg) / len(Mean_agg),
                     "ML": ML_agg,
+                    "TWN": TWN_agg,
+                    "EC": EC_agg,
+                    "TWN": Mean_agg,
                     "points_used": points_used_agg,
                 }
             )

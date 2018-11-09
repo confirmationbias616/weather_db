@@ -233,6 +233,12 @@ def wrangle(
         "EC_high_T2",
         "TWN_high_T3",
         "EC_high_T3",
+        "TWN_low_T1",
+        "EC_low_T1",
+        "TWN_low_T2",
+        "EC_low_T2",
+        "TWN_low_T3",
+        "EC_low_T3",
     ]
     for label in delta_req:
         db["{}_delta".format(label)] = db[label] - db["rolling normal high"]

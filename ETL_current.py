@@ -24,11 +24,11 @@ region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
 )
 providers = "TWN"
 readings = {
-    0: "temp",
-    1: "temp_feels",
-    2: "pressure",
-    3: "wind_speed",
-    4: "wind_direction",
+    0: "current_temp",
+    1: "current_temp_feels",
+    2: "current_pressure",
+    3: "current_wind_speed",
+    4: "current_wind_direction",
 }
 
 # province_dict has province labels from region_codes.csv as keys and TWN
@@ -90,11 +90,11 @@ for j in range(no_of_regions):
             "current_cond_time": datetime.datetime.now().time(),
             "province": region_codes.iloc[j]["province"],
             "region": region_codes.iloc[j]["region"],
-            "temp": data[0],
-            "temp_feels": data[1],
-            "pressure": data[2],
-            "wind_speed": data[3],
-            "wind_direction": data[4],
+            "current_temp": data[0],
+            "current_temp_feels": data[1],
+            "current_pressure": data[2],
+            "current_wind_speed": data[3],
+            "current_wind_direction": data[4],
         }, ignore_index=True
     )
     loggr.info("extracted current conditions for region #{}".format(j))

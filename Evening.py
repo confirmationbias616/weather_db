@@ -22,6 +22,12 @@ log_handler.setFormatter(
 loggr.addHandler(log_handler)
 
 loggr.info("Starting ETL process...")
+try:
+    loggr.info("Extracting current weather conditions (using ETL_current.py)...")
+    import ETL_current
+    loggr.info("ETL current process is now complete.")
+except Exception as e:
+    loggr.exception("ETL_current.py could not run. Here's why: \n {e}")
 
 while True:
     try:
@@ -55,7 +61,7 @@ while True:
         os.remove(
             "{}/Data/forecast_db_TEMP.csv".format(PATH)
         )  # clean up by deleting the temp backup
-loggr.info("ETL process is now complete.")
+loggr.info("ETL forecast process is now complete.")
 try:
     loggr.info("Running a few tests...")
     check_forecast_data()

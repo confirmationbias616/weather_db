@@ -73,6 +73,7 @@ def predict(precision=1, **kwargs):
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
     print(db_tomorrow.shape)
+    attr = [feature for feature in attr if feature in list(db_tomorrow.columns)] 
     db_tomorrow = db_tomorrow[list(attr) + ["region", "province"]]
     loggr.info(
         (

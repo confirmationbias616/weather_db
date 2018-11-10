@@ -184,9 +184,9 @@ def wrangle(
     loggr.info("Loading current conditions")
     dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
     dbc = dbc[dbc.date == today]
-    dbc["year"] = dbc["date"].apply(lambda x: x[:4])
-    dbc["month"] = dbc["date"].apply(lambda x: x[5:7])
-    dbc["day"] = dbc["date"].apply(lambda x: x[8:])
+    dbc["year"] = dbc["date"].apply(lambda x: x[:4]).apply(int)
+    dbc["month"] = dbc["date"].apply(lambda x: x[5:7]).apply(int)
+    dbc["day"] = dbc["date"].apply(lambda x: x[8:]).apply(int)
     dbc.drop("date", axis=1, inplace=True)
     loggr.info("Merging current conditions into master_db")
     db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")

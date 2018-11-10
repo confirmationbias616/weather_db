@@ -109,10 +109,6 @@ def train(
             "EC_high_T1_delta",
             "TWN_high_T2_delta",
             "EC_high_T2_delta",
-            "current_temp",
-            "current_temp_feels",
-            "current_pressure",
-            "current_wind_speed",
         ]
     try:
         label_column = kwargs["label"]

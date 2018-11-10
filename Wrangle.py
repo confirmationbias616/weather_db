@@ -181,6 +181,16 @@ def wrangle(
     )
     db.reset_index().drop(["index"], axis=1, inplace=True)
 
+    loggr.info("Loading current conditions")
+    dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
+    dbc = dbc[dbc.date == today]
+    dbc["year"] = dbc["date"].apply(lambda x: x[:4])
+    dbc["month"] = dbc["date"].apply(lambda x: x[5:7])
+    dbc["day"] = dbc["date"].apply(lambda x: x[8:])
+    dbc.drop("date", axis=1, inplace=True)
+    loggr.info("Merging current conditions into master_db")
+    db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")
+
     loggr.info("Loading normal high data")
     dba = pd.read_csv(
         "{}/Data/dba.csv".format(PATH),
@@ -221,6 +231,7 @@ def wrangle(
     dba_roll.drop(["date", "year"], axis=1, inplace=True)
     loggr.info("Merging normal high data into master_db")
     db = db.merge(dba_roll, on=["month", "day", "region", "province"], how="left")
+
     loggr.info("Computing average deltas")
     delta_req = [
         "TWN_high_2ago",
@@ -254,7 +265,10 @@ def wrangle(
     ).drop("Unnamed: 0", axis=1)
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
+
     if region_efficient:
         db = shrink_regions(db)
+    
     db['days_sequence'] = db.reset_index()['index']
+    
     db.to_csv("{}/Data/master_db.csv".format(PATH))

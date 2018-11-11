@@ -67,17 +67,11 @@ def predict(precision=1, **kwargs):
     model = load_model()
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
     db = db.drop("Unnamed: 0", axis=1)
-    tomorrow = str(
-        datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
-        + datetime.timedelta(days=1)
-    )
-    tomorrow = "{}-{}-{}".format(tomorrow[:4], tomorrow[5:7], tomorrow[8:10])
-    db_tomorrow = db[db["date"] == tomorrow]
-    print(db_tomorrow.shape)
+    tomorrow = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:])) + datetime.timedelta(days=1)
+    db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
-    print(db_tomorrow.shape)
-    attr = [feature for feature in attr if feature in list(db_tomorrow.columns)] 
+    attr = [feature for feature in attr if feature in list(db_tomorrow.columns)]
     db_tomorrow = db_tomorrow[list(attr) + ["region", "province"]]
     loggr.info(
         (

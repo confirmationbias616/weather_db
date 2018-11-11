@@ -18,6 +18,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
     "Unnamed: 0", axis=1

@@ -19,6 +19,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 now = datetime.datetime.now()
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(

@@ -182,14 +182,19 @@ def wrangle(
     db.reset_index().drop(["index"], axis=1, inplace=True)
 
     loggr.info("Loading current conditions")
-    dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
-    dbc = dbc[dbc.date == today]
-    dbc["year"] = dbc["date"].apply(lambda x: x[:4]).apply(int)
-    dbc["month"] = dbc["date"].apply(lambda x: x[5:7]).apply(int)
-    dbc["day"] = dbc["date"].apply(lambda x: x[8:]).apply(int)
-    dbc.drop("date", axis=1, inplace=True)
-    loggr.info("Merging current conditions into master_db")
-    db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")
+    
+    for days_back in range(1,4):
+        dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
+        variable_dbc_columns = list(dbc.columns)
+        variable_dbc_columns.remove('date', 'province', 'region')
+        dbc.date = dbc.date.apply(lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:])) + datetime.timedelta(days_back)).apply(str)
+        dbc.rename(columns={x:x+'_T{}'.format(days_back) for x in list(variable_dbc_columns)})
+        dbc["year"] = dbc["date"].apply(lambda x: x[:4]).apply(int)
+        dbc["month"] = dbc["date"].apply(lambda x: x[5:7]).apply(int)
+        dbc["day"] = dbc["date"].apply(lambda x: x[8:]).apply(int)
+        dbc.drop("date", axis=1, inplace=True)
+        loggr.info("Merging current conditions into master_db")
+        db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")
 
     loggr.info("Loading normal high data")
     dba = pd.read_csv(

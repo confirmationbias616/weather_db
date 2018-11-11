@@ -186,7 +186,8 @@ def wrangle(
     for days_back in range(1,4):
         dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
         variable_dbc_columns = list(dbc.columns)
-        variable_dbc_columns.remove(['date', 'province', 'region'])
+        for fixed_dbc_variable in ['date', 'province', 'region']:
+            variable_dbc_columns.remove(fixed_dbc_variable)
         dbc.date = dbc.date.apply(lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:])) + datetime.timedelta(days_back)).apply(str)
         dbc.rename(columns={x:x+'_T{}'.format(days_back) for x in list(variable_dbc_columns)})
         dbc["year"] = dbc["date"].apply(lambda x: x[:4]).apply(int)

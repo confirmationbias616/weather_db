@@ -87,9 +87,9 @@ for j in range(no_of_regions):
     current_db = current_db.append(
         {
             "date": datetime.datetime.now().date(),
-            "current_cond_time": datetime.datetime.now().time(),
             "province": region_codes.iloc[j]["province"],
             "region": region_codes.iloc[j]["region"],
+            "current_cond_time": datetime.datetime.now().time(),
             "current_temp": data[0],
             "current_temp_feels": data[1],
             "current_pressure": data[2],

@@ -24,7 +24,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+loggr.setLevel(logging.DEBUG)
 
 
 def train(
@@ -77,7 +77,7 @@ def train(
         while True:
             try:
                 start_date = today - datetime.timedelta(days=date_jump)
-                if today == datetime.datetime.now().date() or edge_forecasting is True:
+                if (today == datetime.datetime.now().date()) or edge_forecasting:
                     end_date = today
                 else:
                     end_date = today + datetime.timedelta(days=date_jump)
@@ -131,10 +131,10 @@ def train(
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
-    try:
+    if 'TWN_high_T1' in attr:
         baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
         baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
-    except KeyError:
+    else:
         baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling normal high']))
         baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling normal high']))) / len(y)
     # save attributes that are used for training ML model -> to be deployed in our

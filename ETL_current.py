@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 import os
 import logging
+import json
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -51,9 +52,14 @@ def get_TWN(prov, region, readings):
     TWN_region_code = region_codes[
         (region_codes["province"] == prov) & (region_codes["region"] == region)
     ].iloc[0]["TWN_region_code"]
-    response = requests.get(
-        url.format(province_dict[prov], str(TWN_region_code).zfill(4))
-    ).json()
+    while True:
+        try:    
+            response = requests.get(
+                url.format(province_dict[prov], str(TWN_region_code).zfill(4))
+            ).json()
+            break
+        except json.decoder.JSONDecodeError:
+            loggr.info("For some reason the JSON response was bad. Retrying this code...")
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "t", 1: "f", 2: "p", 3: "w", 4: "wd"}
     try:
@@ -66,12 +72,12 @@ def get_TWN(prov, region, readings):
                     TWN_data[i] = float(fc_response[TWN_translation[i]])
                 except ValueError:
                     TWN_data[i] = str(fc_response[TWN_translation[i]])
+        return TWN_data
     except KeyError:
         loggr.warning("bad region code?")
         loggr.warning(
             "JSON response we got from the " "region code: \n{}".format(response)
-        )
-    return TWN_data
+        )           
 
 
 loaded_current_db = pd.read_csv("{}/Data/current_db.csv".format(PATH))

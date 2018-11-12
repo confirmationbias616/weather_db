@@ -5,6 +5,7 @@ import pandas as pd
 import sys
 import os
 import logging
+import json
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -52,9 +53,14 @@ def get_TWN(prov, region, readings, fc_days):
     TWN_region_code = region_codes[
         (region_codes["province"] == prov) & (region_codes["region"] == region)
     ].iloc[0]["TWN_region_code"]
-    response = requests.get(
-        url.format(province_dict[prov], str(TWN_region_code).zfill(4))
-    ).json()
+    while True:    
+        try:
+            response = requests.get(
+                url.format(province_dict[prov], str(TWN_region_code).zfill(4))
+            ).json()
+            break
+        except json.decoder.JSONDecodeError:
+            loggr.info("For some reason the JSON response was bad. Retrying this code...")
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "tmac", 1: "tmic", 2: "pdp", 3: "pnp"}
     try:

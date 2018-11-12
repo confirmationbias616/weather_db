@@ -271,9 +271,11 @@ def wrangle(
     ).drop("Unnamed: 0", axis=1)
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
-
+    
     db = pd.merge(db,pd.get_dummies(db, columns=[
-        'province',
+        'province'
+    ]))
+    db = pd.merge(db,pd.get_dummies(db, columns=[
         'current_wind_direction_T1',
         'current_wind_direction_T2',
         'current_wind_direction_T3'

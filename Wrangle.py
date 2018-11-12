@@ -277,7 +277,12 @@ def wrangle(
         'current_wind_direction_T1',
         'current_wind_direction_T2',
         'current_wind_direction_T3'
-    ])
+    ]))
+    db.drop([
+        'current_wind_direction_T1',
+        'current_wind_direction_T2',
+        'current_wind_direction_T3'
+    ], axis=1, inplace=True)
 
     if region_efficient:
         db = shrink_regions(db)

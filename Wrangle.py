@@ -275,11 +275,10 @@ def wrangle(
     db = pd.merge(db,pd.get_dummies(db, columns=[
         'province'
     ]))
-    db = pd.merge(db,pd.get_dummies(db, columns=[
-        'current_wind_direction_T1',
+    for column in ['current_wind_direction_T1',
         'current_wind_direction_T2',
-        'current_wind_direction_T3'
-    ]))
+        'current_wind_direction_T3']:
+        db = pd.merge(db,pd.get_dummies(db, columns=[column]))
     db.drop([
         'current_wind_direction_T1',
         'current_wind_direction_T2',

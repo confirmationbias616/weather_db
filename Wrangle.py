@@ -272,6 +272,10 @@ def wrangle(
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
     
+    # not sure why but this is necessary for the code not to crash
+    db.to_csv("{}/Data/master_db.csv".format(PATH))
+    db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
+
     db = pd.merge(db,pd.get_dummies(db, columns=[
         'province'
     ]))

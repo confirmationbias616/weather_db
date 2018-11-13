@@ -194,7 +194,7 @@ def wrangle(
         dbc["month"] = dbc["date"].apply(lambda x: x[5:7]).apply(int)
         dbc["day"] = dbc["date"].apply(lambda x: x[8:]).apply(int)
         dbc.drop("date", axis=1, inplace=True)
-        loggr.info("Merging current conditions into master_db")
+        loggr.info("Merging current conditions T{}into master_db".format(days_back))
         db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")
 
     loggr.info("Loading normal high data")

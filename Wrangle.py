@@ -182,20 +182,30 @@ def wrangle(
     db.reset_index().drop(["index"], axis=1, inplace=True)
 
     loggr.info("Loading current conditions")
-    
-    for days_back in range(1,4):
+
+    for days_back in range(1, 4):
         dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
         variable_dbc_columns = list(dbc.columns)
-        for fixed_dbc_variable in ['date', 'province', 'region']:
+        for fixed_dbc_variable in ["date", "province", "region"]:
             variable_dbc_columns.remove(fixed_dbc_variable)
-        dbc.date = dbc.date.apply(lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:])) + datetime.timedelta(days_back)).apply(str)
-        dbc.rename(columns={x:x+'_T{}'.format(days_back) for x in list(variable_dbc_columns)}, inplace=True)
+        dbc.date = dbc.date.apply(
+            lambda x: datetime.date(int(x[:4]), int(x[5:7]), int(x[8:]))
+            + datetime.timedelta(days_back)
+        ).apply(str)
+        dbc.rename(
+            columns={
+                x: x + "_T{}".format(days_back) for x in list(variable_dbc_columns)
+            },
+            inplace=True,
+        )
         dbc["year"] = dbc["date"].apply(lambda x: x[:4]).apply(int)
         dbc["month"] = dbc["date"].apply(lambda x: x[5:7]).apply(int)
         dbc["day"] = dbc["date"].apply(lambda x: x[8:]).apply(int)
         dbc.drop("date", axis=1, inplace=True)
-        loggr.info("Merging current conditions T{}into master_db".format(days_back))
-        db = db.merge(dbc, on=["year", "month", "day", "region", "province"], how="left")
+        loggr.info("Merging current conditions T{} into master_db".format(days_back))
+        db = db.merge(
+            dbc, on=["year", "month", "day", "region", "province"], how="left"
+        )
 
     loggr.info("Loading normal high data")
     dba = pd.read_csv(
@@ -238,6 +248,13 @@ def wrangle(
     loggr.info("Merging normal high data into master_db")
     db = db.merge(dba_roll, on=["month", "day", "region", "province"], how="left")
 
+    loggr.info("Computing mean columns")
+    for metric in ["high", "low"]:
+        for T in ["1", "2", "3"]:
+            db["mean_{}_T{}".format(metric, T)] = (
+                db["TWN_{}_T{}".format(metric, T)] + db["EC_{}_T{}".format(metric, T)]
+            ) / 2
+
     loggr.info("Computing average deltas")
     delta_req = [
         "TWN_high_2ago",
@@ -256,6 +273,12 @@ def wrangle(
         "EC_low_T2",
         "TWN_low_T3",
         "EC_low_T3",
+        "mean_high_T1",
+        "mean_high_T2",
+        "mean_high_T3",
+        "mean_low_T1",
+        "mean_low_T2",
+        "mean_low_T3",
     ]
     for label in delta_req:
         db["{}_delta".format(label)] = db[label] - db["rolling normal high"]
@@ -271,27 +294,31 @@ def wrangle(
     ).drop("Unnamed: 0", axis=1)
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
-    
+
     # not sure why but this is necessary for the code not to crash
     db.to_csv("{}/Data/master_db.csv".format(PATH))
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
 
-    db = pd.merge(db,pd.get_dummies(db, columns=[
-        'province'
-    ]))
-    for column in ['current_wind_direction_T1',
-        'current_wind_direction_T2',
-        'current_wind_direction_T3']:
-        db = pd.merge(db,pd.get_dummies(db, columns=[column]))
-    db.drop([
-        'current_wind_direction_T1',
-        'current_wind_direction_T2',
-        'current_wind_direction_T3'
-    ], axis=1, inplace=True)
+    db = pd.merge(db, pd.get_dummies(db, columns=["province"]))
+    for column in [
+        "current_wind_direction_T1",
+        "current_wind_direction_T2",
+        "current_wind_direction_T3",
+    ]:
+        db = pd.merge(db, pd.get_dummies(db, columns=[column]))
+    db.drop(
+        [
+            "current_wind_direction_T1",
+            "current_wind_direction_T2",
+            "current_wind_direction_T3",
+        ],
+        axis=1,
+        inplace=True,
+    )
 
     if region_efficient:
         db = shrink_regions(db)
 
-    db['days_sequence'] = db.reset_index()['index']
+    db["days_sequence"] = db.reset_index()["index"]
 
     db.to_csv("{}/Data/master_db.csv".format(PATH))

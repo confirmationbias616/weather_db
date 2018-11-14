@@ -226,7 +226,7 @@ def wrangle(
     dba.dropna(inplace=True)
     dba = dba.set_index(["region", "date"])
     dba_roll = dba.drop(dba.index)
-    loggr.info("Computiong rolling average of normal highs (per region)")
+    loggr.info("Computing rolling average of normal highs (per region)")
     for region, dba in dba.groupby(level=0):
         dba["rolling normal high"] = (
             dba["normal high"]

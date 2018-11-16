@@ -66,7 +66,6 @@ def predict(precision=1, **kwargs):
         time_travel_string = ""
     model = load_model()
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    db = db.drop("Unnamed: 0", axis=1)
     tomorrow = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:])) + datetime.timedelta(days=1)
     db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
@@ -104,8 +103,8 @@ def predict(precision=1, **kwargs):
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(
             PATH, time_travel_string, today
-        )
+        ), index=False
     )
     forecast_table.describe().to_csv(
-        "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today)
+        "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today), index=False
     )

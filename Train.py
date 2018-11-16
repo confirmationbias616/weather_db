@@ -167,7 +167,7 @@ def train(
     importance_table = pd.DataFrame(
         feature_importances, columns=["importance", "feature"]
     )
-    importance_table.to_csv("{}/Gym/{}_importance.csv".format(PATH, today))
+    importance_table.to_csv("{}/Gym/{}_importance.csv".format(PATH, today), index=False)
     scores = cross_val_score(
         model,
         X_test,
@@ -204,6 +204,6 @@ def train(
         )
     )
     pd.DataFrame(summary).to_csv(
-        "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today)
+        "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today), index=False
     )
     return points

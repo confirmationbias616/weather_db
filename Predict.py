@@ -30,6 +30,9 @@ def predict(precision=1, **kwargs):
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
 
+    def get_date_object(date):
+        return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
+
     try:
         today = kwargs["target_date"]
         time_travel = True
@@ -66,7 +69,10 @@ def predict(precision=1, **kwargs):
         time_travel_string = ""
     model = load_model()
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    tomorrow = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:])) + datetime.timedelta(days=1)
+    db["year"] = db.date.apply(lambda x: get_date_object(x).year)
+    db["month"] = db.date.apply(lambda x: get_date_object(x).month)
+    db["day"] = db.date.apply(lambda x: get_date_object(x).day)
+    tomorrow = get_date_object(today) + datetime.timedelta(days=1)
     db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)

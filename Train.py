@@ -66,7 +66,7 @@ def train(
         time_travel_string = ""
 
     db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    db = db.drop("Unnamed: 0", axis=1).drop_duplicates()
+    db = db.drop_duplicates()
 
     # Get indices for selecting portion of data centered on target date by a
     # width of specified time span

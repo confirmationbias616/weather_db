@@ -94,7 +94,7 @@ def predict(precision=1, **kwargs):
         _ = db_tomorrow["EC_high_T1"]
     except KeyError:
         db_tomorrow["TWN_high_T1"] = (
-            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling_norma_high"]
+            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
         )
         db_tomorrow["EC_high_T1"] = (
             db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling_normal_high"]

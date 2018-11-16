@@ -41,7 +41,7 @@ def post_mortem(**kwargs):
             PATH, time_travel_string, fc_date
         ),
         dtype={"date": "str"},
-    ).drop("Unnamed: 0", axis=1)
+    )
     actual = pd.read_csv("{}/Data/history_db.csv".format(PATH))
     actual = actual[actual["date"] == actual_date][["region", "high", "province"]]
     try:

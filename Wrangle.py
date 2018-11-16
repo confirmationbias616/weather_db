@@ -212,4 +212,4 @@ def wrangle(
         db = shrink_regions(db)
 
     loggr.info("Wrangling complete. Saving master_db.csv to disk.")
-    db.to_csv("{}/Data/master_db.csv".format(PATH), ignore_index=True)
+    db.to_csv("{}/Data/master_db.csv".format(PATH), index=False)

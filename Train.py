@@ -102,7 +102,7 @@ def train(
         attr = [
             "latitude",
             "longitude",
-            "rolling normal high",
+            "rolling_normal_high",
             "TWN_high_T1",
             "EC_high_T1",
             "TWN_high_T1_delta",
@@ -135,8 +135,8 @@ def train(
         baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
         baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
     else:
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling normal high']))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling normal high']))) / len(y)
+        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
+        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns

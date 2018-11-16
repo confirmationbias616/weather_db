@@ -44,7 +44,7 @@ def load_hyperparameters():
                 [
                     "latitude",
                     "longitude",
-                    "rolling normal high",
+                    "rolling_normal_high",
                     "TWN_high_T1",
                     "EC_high_T1",
                     "TWN_high_T1_delta",

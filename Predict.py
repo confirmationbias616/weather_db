@@ -43,7 +43,7 @@ def predict(precision=1, **kwargs):
             "TWN_high",
             "latitude",
             "longitude",
-            "rolling normal high",
+            "rolling_normal_high",
             "TWN_high_T1",
             "EC_high_T1",
             "TWN_high_T1_delta",
@@ -89,10 +89,10 @@ def predict(precision=1, **kwargs):
         _ = db_tomorrow["EC_high_T1"]
     except KeyError:
         db_tomorrow["TWN_high_T1"] = (
-            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling normal high"]
+            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling_norma_high"]
         )
         db_tomorrow["EC_high_T1"] = (
-            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling normal high"]
+            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
         )
 
     forecast_table = db_tomorrow.loc[fc_ind][

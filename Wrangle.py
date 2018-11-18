@@ -182,9 +182,9 @@ def wrangle(
     loggr.info("Computing mean columns")
     for reading in ["high", "low"]:
         for T in ["1", "2", "3"]:
-            db["mean_{}_T{}".format(reading, T)] = (
-                db["TWN_{}_T{}".format(reading, T)] + db["EC_{}_T{}".format(reading, T)]
-            ) / 2
+            db["mean_{}_T{}".format(reading, T)] = db[
+                ["{}_{}_T{}".format(x, reading, T) for x in fc_providers]
+            ].apply(np.mean, axis=1)
 
     loggr.info("Computing average deltas")
     delta_req = [

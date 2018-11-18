@@ -59,7 +59,7 @@ jobs:
             mv \
             forecast_db.csv \
             history_db.csv \
-            master_db.csv \
+            current_db.csv \
             dba.csv \
             region_codes.csv \
             ..
@@ -69,7 +69,7 @@ jobs:
             mv \
             forecast_db.csv \
             history_db.csv \
-            master_db.csv \
+            current_db.csv \
             dba.csv \
             region_codes.csv \
             ./Data

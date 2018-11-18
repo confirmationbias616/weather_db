@@ -29,6 +29,16 @@ def predict(precision=1, **kwargs):
         )
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
+    
+    def load_features():
+        filename = "{}/Gym/feature_list/{}{}.pkl".format(
+            PATH, time_travel_string, today
+        )
+        with open(filename, "rb") as input_file:
+            return pickle.load(input_file)
+
+    def get_date_object(date):
+        return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
 
     try:
         today = kwargs["target_date"]
@@ -36,43 +46,35 @@ def predict(precision=1, **kwargs):
     except KeyError:
         today = datetime.datetime.now().date()
         time_travel = False
-    try:
-        attr = kwargs["features"]
-    except KeyError:
-        attr = [
-            "TWN_high",
-            "latitude",
-            "longitude",
-            "rolling normal high",
-            "TWN_high_T1",
-            "EC_high_T1",
-            "TWN_high_T1_delta",
-            "EC_high_T1_delta",
-            "TWN_high_T2_delta",
-            "EC_high_T2_delta",
-        ]
+
     try:
         label_column = kwargs["label"]
     except KeyError:
         label_column = "TWN_high"
+
     loggr.info("Predicting for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())
     else:
         time_travel_string = ""
+
     model = load_model()
-    db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    db = db.drop("Unnamed: 0", axis=1)
-    tomorrow = str(
-        datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
-        + datetime.timedelta(days=1)
-    )
-    tomorrow = "{}-{}-{}".format(tomorrow[:4], tomorrow[5:7], tomorrow[8:10])
-    db_tomorrow = db[db["date"] == tomorrow]
-    print(db_tomorrow.shape)
+
+    db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
+
+    try:
+        attr = load_features()
+    except:
+        attr = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'date'], axis=1)
+
+    db["year"] = db.date.apply(lambda x: get_date_object(x).year)
+    db["month"] = db.date.apply(lambda x: get_date_object(x).month)
+    db["day"] = db.date.apply(lambda x: get_date_object(x).day)
+    tomorrow = get_date_object(today) + datetime.timedelta(days=1)
+    db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
-    print(db_tomorrow.shape)
+    attr = [feature for feature in attr if feature in list(db_tomorrow.columns)]
     db_tomorrow = db_tomorrow[list(attr) + ["region", "province"]]
     loggr.info(
         (
@@ -90,10 +92,10 @@ def predict(precision=1, **kwargs):
         _ = db_tomorrow["EC_high_T1"]
     except KeyError:
         db_tomorrow["TWN_high_T1"] = (
-            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling normal high"]
+            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
         )
         db_tomorrow["EC_high_T1"] = (
-            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling normal high"]
+            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
         )
 
     forecast_table = db_tomorrow.loc[fc_ind][
@@ -105,8 +107,8 @@ def predict(precision=1, **kwargs):
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(
             PATH, time_travel_string, today
-        )
+        ), index=False
     )
     forecast_table.describe().to_csv(
-        "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today)
+        "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today), index=False
     )

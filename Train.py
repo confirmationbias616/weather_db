@@ -24,7 +24,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+loggr.setLevel(logging.DEBUG)
 
 
 def train(
@@ -38,6 +38,9 @@ def train(
     edge_forecasting=1,
     **kwargs
 ):
+    def get_date_object(date):
+        return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
+
     def save_model(model):
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -65,28 +68,50 @@ def train(
     else:
         time_travel_string = ""
 
-    db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
-    db = db.drop("Unnamed: 0", axis=1).drop_duplicates()
+    db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
 
     # Get indices for selecting portion of data centered on target date by a
     # width of specified time span
     def get_time_span_indices(today):
         date_jump = int(time_span / 2)
-        today = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
+        today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
+        potential_start_date = today - datetime.timedelta(days=date_jump)
+        if (today == datetime.datetime.now().date()) or edge_forecasting:
+            potential_end_date = today
+        else:
+            potential_end_date = today + datetime.timedelta(days=date_jump)
+        available_dates = list(db.date.unique())
+        available_dates.sort()
         while True:
-            try:
-                start_date = today - datetime.timedelta(days=date_jump)
-                if today == datetime.datetime.now().date() or edge_forecasting is True:
-                    end_date = today
-                else:
-                    end_date = today + datetime.timedelta(days=date_jump)
-                start_date, end_date = str(start_date), str(end_date)
-                start_index = db.index[db.date == start_date][0]
-                end_index = db.index[db.date == end_date][-1]
+            if str(potential_start_date) in available_dates:
+                start_date = str(potential_start_date)
+                loggr.info("Selected {} as start date".format(start_date))
                 break
-            except IndexError:
-                date_jump -= 1
+            elif (potential_start_date - get_date_object(available_dates[0])).days < 0:
+                start_date = available_dates[0]
+                loggr.info("Selected {} as start date".format(start_date))
+                break
+            else:
+                loggr.info("There was a missing date({}) in place of attempted start date for time span. Retrying...".format(potential_start_date))
+                potential_start_date += datetime.timedelta(1)
+        while True:
+            if str(potential_end_date) in available_dates:
+                end_date = str(potential_end_date)
+                loggr.info("Selected {} as end date".format(end_date))
+                break
+            elif (get_date_object(available_dates[-1]) - potential_end_date).days < 0:
+                end_date = available_dates[-1]
+                loggr.info("Selected {} as end date".format(end_date))
+                break
+            else:
+                loggr.info("There was a missing date({}) in place of attempted end date for time span. Retrying...".format(potential_end_date))
+                potential_end_date -= datetime.timedelta(1)
+
+        start_date, end_date = str(start_date), str(end_date)
+        start_index = db.index[db.date == start_date][0]
+        end_index = db.index[db.date == end_date][-1]
+
         loggr.info(
             "selected start date and end date for time span: {} -> {}".format(
                 start_date, end_date
@@ -94,49 +119,39 @@ def train(
         )
         return start_index, end_index
 
+    loggr.info("Selecting dates & indices for time span training surrounding date {}...".format(today))
     start_index, end_index = get_time_span_indices(today)
 
-    try:
-        attr = kwargs["features"]
-    except KeyError:
-        attr = [
-            "latitude",
-            "longitude",
-            "rolling normal high",
-            "TWN_high_T1",
-            "EC_high_T1",
-            "TWN_high_T1_delta",
-            "EC_high_T1_delta",
-            "TWN_high_T2_delta",
-            "EC_high_T2_delta",
-        ]
+    attr = list(db.columns)
+
     try:
         label_column = kwargs["label"]
     except KeyError:
         label_column = "TWN_high"
 
-    db = db[list(attr)+[label_column]]
-    db.dropna(axis=1, how="all", inplace=True)
-    db.dropna(axis=0, how="any", inplace=True)
-
-    # Create X as features set and Y as labeled set
-    X, y = db.drop(label_column, axis=1), db[label_column]
+    # Create X as features set and y as labeled set
+    X, y = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'region', 'province', 'date'], axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
-    points = len(X.index)
+    points = len(X)
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
-    try:
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
-    except KeyError:
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling normal high']))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling normal high']))) / len(y)
+    try:    
+        if 'TWN_high_T1' in attr:
+            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
+            baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
+        else:
+            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
+            baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
+    except ValueError:
+        loggr.info('Baseline rmse not available for eventual ML performance comparison :(')
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns
+    '''
     save_features(ML_attr)
+    '''
     loggr.info(
         ("Features for training:\n" + "".join(["{}\n".format(x) for x in ML_attr]))
     )
@@ -163,7 +178,7 @@ def train(
     importance_table = pd.DataFrame(
         feature_importances, columns=["importance", "feature"]
     )
-    importance_table.to_csv("{}/Gym/{}_importance.csv".format(PATH, today))
+    importance_table.to_csv("{}/Gym/{}_importance.csv".format(PATH, today), index=False)
     scores = cross_val_score(
         model,
         X_test,
@@ -200,6 +215,6 @@ def train(
         )
     )
     pd.DataFrame(summary).to_csv(
-        "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today)
+        "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today), index=False
     )
     return points

@@ -6,6 +6,7 @@ import numpy as np
 import sys
 import os
 import logging
+import json
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +20,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
+loggr.setLevel(logging.INFO)
 
 now = datetime.datetime.now()
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
@@ -54,7 +56,12 @@ def get_TWN(prov, region, readings):
         yesterday.month,
         yesterday.year,
     )
-    response = requests.get(url).json()
+    while True:    
+        try:
+            response = requests.get(url).json()
+            break
+        except json.decoder.JSONDecodeError:
+            loggr.info("For some reason the JSON response was bad. Retrying this code...")
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "temperatureMax", 1: "temperatureMin", 2: "precip"}
     now = datetime.datetime.now()

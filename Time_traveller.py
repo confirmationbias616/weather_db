@@ -40,17 +40,6 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1, 0],
-            "features": [
-                [
-                    "latitude",
-                    "longitude",
-                    "rolling normal high",
-                    "TWN_high_T1",
-                    "EC_high_T1",
-                    "TWN_high_T1_delta",
-                    "EC_high_T1_delta",
-                ]
-            ],
             "label": "TWN_high",
             "rolling_average_window": [5],
             "rolling_average_min_periods": [1],
@@ -58,7 +47,7 @@ def load_hyperparameters():
             "max_features": [5],
             "min_samples_leaf": [4],
             "min_samples_split": [2],
-            "n_estimators": [50],
+            "n_estimators": [40],
             "cv": [3],
             "precision": [1],
             "date_efficient": 1,
@@ -84,9 +73,9 @@ for i in range(hp["iterations"]):
             end_date = get_datetime(hp["end_date"])
 
             try:
-                eval_days = int(str(end_date - start_date).split(" ")[0])
+                eval_days = int(str(end_date - start_date).split(" ")[0]) + 1
             except ValueError:
-                eval_days = 0
+                eval_days = 1
 
             hp_inst = {key: [] for key in list(hp.keys())}
             for item in list(hp_inst.keys()):
@@ -102,7 +91,7 @@ for i in range(hp["iterations"]):
             ML_agg, TWN_agg, EC_agg, Mean_agg, points_used_agg = [], [], [], [], []
             for target_date in [
                 str(start_date + datetime.timedelta(days=x))
-                for x in range(eval_days + 1)
+                for x in range(eval_days)
             ]:
                 try:
                     loggr.info(
@@ -122,7 +111,6 @@ for i in range(hp["iterations"]):
                     )
                     points_used = train(
                         target_date=target_date,
-                        features=hp_inst["features"],
                         label=hp_inst["label"],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
@@ -136,7 +124,6 @@ for i in range(hp["iterations"]):
                     )
                     points_used_agg.append(points_used)
                     predict(
-                        features=hp_inst["features"],
                         label=hp_inst["label"],
                         precision=hp_inst["precision"],
                         target_date=target_date,

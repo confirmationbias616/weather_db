@@ -75,9 +75,9 @@ def wrangle(
     ]
 
     if date_efficient:
-        loggr.info('Shrinking data for speed')
-        for item in [dbh, dbf, dbc, dba]:
-            item = [shrink_dates(item)]
+        loggr.info("Shrinking data for speed...")
+        loggr.debug("Initially, df size was dbh:{}, dbf:{}, dbc:{}, dba:{}".format(len(dbh), len(dbf), len(dbc), len(dba)))
+        [dbh, dbf, dbc, dba] = [shrink_dates(df) for df in [dbh, dbf, dbc, dba]]
 
     fc_providers = dbf.provider.unique()
     fc_days = dbf.day.unique()

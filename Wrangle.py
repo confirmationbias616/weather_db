@@ -67,7 +67,12 @@ def wrangle(
     dbll = pd.read_csv(
         "{}/Data/region_codes.csv".format(PATH),
         dtype={"latitude": "float", "longitude": "float"},
-    ).drop("Unnamed: 0", axis=1)
+    )
+
+    [dbh, dbf, dbc, dba, dbll] = [
+        df[df.columns.drop(list(df.filter(regex="Unnamed")))]
+        for df in [dbh, dbf, dbc, dba, dbll]
+    ]
 
     if date_efficient:
         loggr.info('Shrinking data for speed')

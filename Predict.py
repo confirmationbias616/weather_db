@@ -84,11 +84,11 @@ def predict(precision=1, normalize_data=1, **kwargs):
     )
     fc_ind = db_tomorrow.reset_index()["index"]
 
+    X_today = db_tomorrow.drop(["region", "province"], axis=1)
+
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])
-        X_today = pipeline.fit_transform(db_tomorrow.drop(["region", "province"], axis=1))
-    else:
-        X_today = db_tomorrow.drop(["region", "province"], axis=1)
+        X_today = pipeline.fit_transform(db_tomorrow)
     
     predictions = model.predict(X_today)
 

@@ -40,6 +40,7 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1, 0],
+            "normalize_data": [1,0],
             "label": "TWN_high",
             "rolling_average_window": [5],
             "rolling_average_min_periods": [1],
@@ -121,6 +122,7 @@ for i in range(hp["iterations"]):
                         cv=hp_inst["cv"],
                         precision=hp_inst["precision"],
                         edge_forecasting=hp_inst["edge_forecasting"],
+                        normalize_data=hp_inst["normalize_data"],
                     )
                     points_used_agg.append(points_used)
                     predict(

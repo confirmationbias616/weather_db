@@ -36,6 +36,7 @@ def train(
     n_estimators=154,
     cv=100,
     edge_forecasting=1,
+    normalize_data=1,
     **kwargs
 ):
     def get_date_object(date):
@@ -155,8 +156,12 @@ def train(
     loggr.info(
         ("Features for training:\n" + "".join(["{}\n".format(x) for x in ML_attr]))
     )
-    pipeline = Pipeline([("std_scaler", StandardScaler())])
-    X = pipeline.fit_transform(X)
+
+    if normalize_data:
+        loggr.info("Normalizing data...")
+        pipeline = Pipeline([("std_scaler", StandardScaler())])
+        X = pipeline.fit_transform(X)
+
     model = RandomForestRegressor(
         bootstrap=True,
         max_depth=max_depth,

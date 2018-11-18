@@ -89,7 +89,7 @@ for i in range(hp["iterations"]):
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
             )
 
-            ML_agg, TWN_agg, EC_agg, Mean_agg, points_used_agg = [], [], [], [], []
+            ML_agg, TWN_agg, EC_agg, Mean_agg, Mean_pred_agg, points_used_agg = [], [], [], [], [], []
             for target_date in [
                 str(start_date + datetime.timedelta(days=x))
                 for x in range(eval_days)
@@ -131,11 +131,12 @@ for i in range(hp["iterations"]):
                         target_date=target_date,
                         normalize_data=hp_inst["normalize_data"],
                     )
-                    ML, TWN, EC, Mean = post_mortem(target_date=target_date)
+                    ML, TWN, EC, Mean, Mean_pred = post_mortem(target_date=target_date)
                     ML_agg.append(ML)
                     TWN_agg.append(TWN)
                     EC_agg.append(EC)
                     Mean_agg.append(Mean)
+                    Mean_pred_agg.append(Mean_pred)
                 except Exception as e:
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
@@ -154,14 +155,18 @@ for i in range(hp["iterations"]):
                     "EC_rms": (sum([x ** 2 for x in EC_agg]) / len(EC_agg)) ** 0.5,
                     "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
                     ** 0.5,
+                    "Mean_pred_rms": (sum([x ** 2 for x in Mean_pred_agg]) / len(Mean_pred_agg))
+                    ** 0.5,
                     "ML_ave": sum(ML_agg) / len(ML_agg),
                     "TWN_ave": sum(TWN_agg) / len(TWN_agg),
                     "EC_ave": sum(EC_agg) / len(EC_agg),
                     "Mean_ave": sum(Mean_agg) / len(Mean_agg),
+                    "Mean_pred_ave": sum(Mean_pred_agg) / len(Mean_pred_agg),
                     "ML": ML_agg,
                     "TWN": TWN_agg,
                     "EC": EC_agg,
                     "mean": Mean_agg,
+                    "mean_pred": Mean_pred_agg,
                     "points_used": points_used_agg,
                 }
             )

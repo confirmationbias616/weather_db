@@ -50,6 +50,7 @@ def post_mortem(**kwargs):
         comp = pred.merge(actual, on=["region"], how="left")
     comp["TWN_EC_ave"] = (comp["TWN_high_T1"] + comp["EC_high_T1"]) / 2
     comp["diff_real"] = (comp["high"]) - comp["model_predictions"]
+    comp["diff_mean_pred"] = (comp["high"]) - comp["mean_predictions"]
     comp["diff_TWN_rival"] = (comp["high"]) - comp["TWN_high_T1"]
     comp["diff_EC_rival"] = (comp["high"]) - comp["EC_high_T1"]
     comp["diff_mean_rival"] = (comp["high"]) - comp["TWN_EC_ave"]
@@ -66,6 +67,9 @@ def post_mortem(**kwargs):
     mean_rival_perf = (
         (comp["diff_mean_rival"].apply(lambda x: x ** 2).sum()) / len(comp.index)
     ) ** 0.5
+    mean_pred_perf = (
+        (comp["diff_mean_pred"].apply(lambda x: x ** 2).sum()) / len(comp.index)
+    ) ** 0.5
     comp.to_csv(
         "{}/Predictions/{}{}_compare_actual.csv".format(
             PATH, time_travel_string, actual_date
@@ -75,6 +79,7 @@ def post_mortem(**kwargs):
     loggr.info("TWN rival performance: {}".format(round(TWN_rival_perf, 2)))
     loggr.info("EC rival performance: {}".format(round(EC_rival_perf, 2)))
     loggr.info("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
+    loggr.info("Mean pred performance: {}".format(round(mean_pred_perf, 2)))
     f = open(
         "{}/Predictions/{}{}_compare_actual.txt".format(
             PATH, time_travel_string, actual_date
@@ -85,5 +90,6 @@ def post_mortem(**kwargs):
     f.write("TWN rival performance: {}\n".format(round(TWN_rival_perf, 2)))
     f.write("EC rival performance: {}\n".format(round(EC_rival_perf, 2)))
     f.write("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
+    f.write("Mean pred performance: {}".format(round(mean_pred_perf, 2)))
 
-    return ML_perf, TWN_rival_perf, EC_rival_perf, mean_rival_perf
+    return ML_perf, TWN_rival_perf, EC_rival_perf, mean_rival_perf, mean_pred_perf

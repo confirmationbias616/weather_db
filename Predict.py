@@ -92,6 +92,15 @@ def predict(precision=1, normalize_data=1, **kwargs):
     
     predictions = model.predict(X_today)
 
+    class MeanRegressor(BaseEstimator, RegressorMixin):  
+        """Just compares forecasts from providers and picks a number in between"""
+        
+        def predict(self, X, y=None):
+            return (X.TWN_high_T1 + X.EC_high_T1) / 2
+
+    mean_predictor = MeanRegressor()
+    mean_predictions = mean_predictor.predict(X_today)
+
     try:
         _ = db_tomorrow["TWN_high_T1"]
         _ = db_tomorrow["EC_high_T1"]
@@ -108,6 +117,9 @@ def predict(precision=1, normalize_data=1, **kwargs):
     ]
     forecast_table["model_predictions"] = [
         round(predictions[i], precision) for i in range(len(predictions))
+    ]
+    forecast_table["mean_predictions"] = [
+        round(mean_predictions[i], precision) for i in range(len(mean_predictions))
     ]
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(

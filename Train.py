@@ -96,24 +96,8 @@ def train(
 
     start_index, end_index = get_time_span_indices(today)
 
-    try:
-        attr = kwargs["features"]
-    except KeyError:
-        attr = [
-            "latitude",
-            "longitude",
-            "rolling_normal_high",
-            "TWN_high_T1",
-            "EC_high_T1",
-            "TWN_high_T1_delta",
-            "EC_high_T1_delta",
-            "TWN_high_T2_delta",
-            "EC_high_T2_delta",
-            "current_temp",
-            "current_temp_feels",
-            "current_pressure",
-            "current_wind_speed",
-        ]
+    attr = list(db.columns)
+
     try:
         label_column = kwargs["label"]
     except KeyError:
@@ -140,7 +124,9 @@ def train(
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns
+    '''
     save_features(ML_attr)
+    '''
     loggr.info(
         ("Features for training:\n" + "".join(["{}\n".format(x) for x in ML_attr]))
     )

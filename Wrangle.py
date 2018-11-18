@@ -97,6 +97,7 @@ def wrangle(
                 },
                 inplace=True,
             )
+            seg_dbf_list[seg_num].date = seg_dbf_list[seg_num].date.apply(lambda x: str(get_date_object(x) + datetime.timedelta(int(day))))
             seg_num += 1
 
     i = 0

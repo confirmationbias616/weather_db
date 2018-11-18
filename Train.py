@@ -74,7 +74,6 @@ def train(
     # width of specified time span
     def get_time_span_indices(today):
         date_jump = int(time_span / 2)
-        today = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
         today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
         while True:
@@ -114,7 +113,7 @@ def train(
     X, y = db.drop(label_column, axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
-    points = len(X.index)
+    points = len(X)
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction

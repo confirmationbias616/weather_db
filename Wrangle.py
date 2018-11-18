@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import datetime
 import os
+import numpy as np
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +16,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+loggr.setLevel(logging.DEBUG)
 
 
 def wrangle(
@@ -27,8 +28,8 @@ def wrangle(
     **kwargs
 ):
     def shrink_dates(df):
-        pillow = rolling_average_window + time_span + 10
-        today_date = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
+        pillow = time_span + 10 + rolling_average_window
+        today_date = get_date_object(today)
         return df[
             (df["date"] < str(today_date + datetime.timedelta(days=pillow)))
             & (df["date"] > str(today_date - datetime.timedelta(days=pillow)))

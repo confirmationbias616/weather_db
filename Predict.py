@@ -65,7 +65,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
     try:
         attr = load_features()
     except:
-        attr = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'date'], axis=1)
+        attr = db.drop(['TWN_high', 'TWN_precipitation', 'EC_precipitation', 'TWN_low', 'EC_high', 'EC_low', 'date'], axis=1)
 
     db["year"] = db.date.apply(lambda x: get_date_object(x).year)
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)

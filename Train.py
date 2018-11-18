@@ -76,19 +76,42 @@ def train(
         date_jump = int(time_span / 2)
         today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
+        potential_start_date = today - datetime.timedelta(days=date_jump)
+        if (today == datetime.datetime.now().date()) or edge_forecasting:
+            potential_end_date = today
+        else:
+            potential_end_date = today + datetime.timedelta(days=date_jump)
+        available_dates = list(db.date.unique())
+        available_dates.sort()
         while True:
-            try:
-                start_date = today - datetime.timedelta(days=date_jump)
-                if (today == datetime.datetime.now().date()) or edge_forecasting:
-                    end_date = today
-                else:
-                    end_date = today + datetime.timedelta(days=date_jump)
-                start_date, end_date = str(start_date), str(end_date)
-                start_index = db.index[db.date == start_date][0]
-                end_index = db.index[db.date == end_date][-1]
+            if str(potential_start_date) in available_dates:
+                start_date = str(potential_start_date)
+                loggr.info("Selected {} as start date".format(start_date))
                 break
-            except IndexError:
-                date_jump -= 1
+            elif (potential_start_date - get_date_object(available_dates[0])).days < 0:
+                start_date = available_dates[0]
+                loggr.info("Selected {} as start date".format(start_date))
+                break
+            else:
+                loggr.info("There was a missing date({}) in place of attempted start date for time span. Retrying...".format(potential_start_date))
+                potential_start_date += datetime.timedelta(1)
+        while True:
+            if str(potential_end_date) in available_dates:
+                end_date = str(potential_end_date)
+                loggr.info("Selected {} as end date".format(end_date))
+                break
+            elif (get_date_object(available_dates[-1]) - potential_end_date).days < 0:
+                end_date = available_dates[-1]
+                loggr.info("Selected {} as end date".format(end_date))
+                break
+            else:
+                loggr.info("There was a missing date({}) in place of attempted end date for time span. Retrying...".format(potential_end_date))
+                potential_end_date -= datetime.timedelta(1)
+
+        start_date, end_date = str(start_date), str(end_date)
+        start_index = db.index[db.date == start_date][0]
+        end_index = db.index[db.date == end_date][-1]
+
         loggr.info(
             "selected start date and end date for time span: {} -> {}".format(
                 start_date, end_date
@@ -96,6 +119,7 @@ def train(
         )
         return start_index, end_index
 
+    loggr.info("Selecting dates & indices for time span training surrounding date {}...".format(today))
     start_index, end_index = get_time_span_indices(today)
 
     attr = list(db.columns)

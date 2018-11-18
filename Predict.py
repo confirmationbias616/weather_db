@@ -88,7 +88,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
 
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])
-        X_today = pipeline.fit_transform(db_tomorrow)
+        X_today = pipeline.fit_transform(X_today)
     
     predictions = model.predict(X_today)
 

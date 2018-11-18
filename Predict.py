@@ -6,6 +6,7 @@ import os
 import pickle
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.base import BaseEstimator, RegressorMixin
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -89,7 +90,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])
         X_today = pipeline.fit_transform(X_today)
-    
+
     predictions = model.predict(X_today)
 
     class MeanRegressor(BaseEstimator, RegressorMixin):  

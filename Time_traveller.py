@@ -129,6 +129,7 @@ for i in range(hp["iterations"]):
                         label=hp_inst["label"],
                         precision=hp_inst["precision"],
                         target_date=target_date,
+                        normalize_data=hp_inst["normalize_data"],
                     )
                     ML, TWN, EC, Mean = post_mortem(target_date=target_date)
                     ML_agg.append(ML)

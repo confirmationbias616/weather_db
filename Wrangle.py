@@ -125,6 +125,8 @@ def wrangle(
     for seg_dbh in seg_dbh_list:
         db = db.merge(seg_dbh, on=["date", "region", "province"])
 
+    loggr.info("Dropping rows with any missing data")
+    db.dropna(axis=0, how="any", inplace=True)
     loggr.info("Loading current conditions")
     seg_dbc_list = [0] * 3
     seg_num = 0

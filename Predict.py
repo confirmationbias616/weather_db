@@ -29,6 +29,13 @@ def predict(precision=1, **kwargs):
         )
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
+    
+    def load_features():
+        filename = "{}/Gym/feature_list/{}{}.pkl".format(
+            PATH, time_travel_string, today
+        )
+        with open(filename, "rb") as input_file:
+            return pickle.load(input_file)
 
     def get_date_object(date):
         return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
@@ -39,36 +46,27 @@ def predict(precision=1, **kwargs):
     except KeyError:
         today = datetime.datetime.now().date()
         time_travel = False
-    try:
-        attr = kwargs["features"]
-    except KeyError:
-        attr = [
-            "TWN_high",
-            "latitude",
-            "longitude",
-            "rolling_normal_high",
-            "TWN_high_T1",
-            "EC_high_T1",
-            "TWN_high_T1_delta",
-            "EC_high_T1_delta",
-            "TWN_high_T2_delta",
-            "EC_high_T2_delta",
-            "current_temp",
-            "current_temp_feels",
-            "current_pressure",
-            "current_wind_speed",
-        ]
+
     try:
         label_column = kwargs["label"]
     except KeyError:
         label_column = "TWN_high"
+
     loggr.info("Predicting for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())
     else:
         time_travel_string = ""
+
     model = load_model()
-    db = pd.read_csv("{}/Data/master_db.csv".format(PATH), dtype={"date": "str"})
+
+    db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
+
+    try:
+        attr = load_features()
+    except:
+        attr = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'date'], axis=1)
+
     db["year"] = db.date.apply(lambda x: get_date_object(x).year)
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)
     db["day"] = db.date.apply(lambda x: get_date_object(x).day)

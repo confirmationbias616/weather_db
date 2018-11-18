@@ -117,12 +117,15 @@ def train(
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
-    if 'TWN_high_T1' in attr:
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
-    else:
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
+    try:    
+        if 'TWN_high_T1' in attr:
+            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
+            baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
+        else:
+            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
+            baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
+    except ValueError:
+        loggr.info('Baseline rmse not available for eventual ML performance comparison :(')
     # save attributes that are used for training ML model -> to be deployed in our
     # daily prediction later in the evening
     ML_attr = X.columns

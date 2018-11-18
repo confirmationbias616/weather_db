@@ -22,7 +22,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 
-def predict(precision=1, **kwargs):
+def predict(precision=1, normalize_data=1, **kwargs):
     def load_model():
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today

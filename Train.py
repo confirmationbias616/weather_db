@@ -131,7 +131,7 @@ def train(
         label_column = "TWN_high"
 
     # Create X as features set and y as labeled set
-    X, y = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'region', 'province', 'date'], axis=1), db[label_column]
+    X, y = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date'], axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
     points = len(X)

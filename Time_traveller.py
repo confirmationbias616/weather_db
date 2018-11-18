@@ -161,7 +161,7 @@ for i in range(hp["iterations"]):
                     "ML": ML_agg,
                     "TWN": TWN_agg,
                     "EC": EC_agg,
-                    "TWN": Mean_agg,
+                    "mean": Mean_agg,
                     "points_used": points_used_agg,
                 }
             )

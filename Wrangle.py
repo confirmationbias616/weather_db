@@ -213,6 +213,36 @@ def wrangle(
     if region_efficient:
         loggr.info("Shrinking data down to South portion of country that is dense in reports")
         db = shrink_regions(db)
+        loggr.debug("Number of rows in master_db: {}".format(len(db)))
+
+    loggr.info("Dropping a few columns that will be incompatible with ML training")
+    keyword_to_remove = ["current_cond_time", "region_code", "Unnamed", "index"]
+    for keyword in keyword_to_remove:
+        db = db[db.columns.drop(list(db.filter(regex=keyword)))]
+    loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
+
+    if len(np.isnan(db.current_temp_T1)) / len(db) > 0.5:
+        loggr.info("Dropping the current conditions columns (feture too young)")
+        db = db[db.columns.drop(list(db.filter(regex='current')))]
+        loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
+
+    loggr.info("Dropping completely NaN columns")
+    all_columns = db.columns
+    db.dropna(axis=1, how="all", inplace=True)
+    removed_columns = []
+    for column in all_columns:
+        if column not in db.columns:
+            removed_columns.append(column)
+    loggr.debug("Dropped: {}".format(removed_columns))
+    loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
+    
+    loggr.info("Dropping rows with any NaN data")
+    db.dropna(axis=0, how="any", inplace=True)
+    loggr.debug("Number of rows in master_db: {}".format(len(db)))
+    
+    loggr.info("Dropping any duplicate rows")
+    db.drop_duplicates(inplace=True)
+    loggr.debug("Number of rows in master_db: {}".format(len(db)))
 
     loggr.info("Wrangling complete. Saving master_db.csv to disk.")
     db.to_csv("{}/Data/master_db.csv".format(PATH), index=False)

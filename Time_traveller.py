@@ -40,7 +40,7 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1],
-            "normalize_data": [1,0],
+            "normalize_data": [1, 0],
             "label": "TWN_high",
             "rolling_average_window": [5],
             "rolling_average_min_periods": [1],

@@ -40,17 +40,6 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1, 0],
-            "features": [
-                [
-                    "latitude",
-                    "longitude",
-                    "rolling_normal_high",
-                    "TWN_high_T1",
-                    "EC_high_T1",
-                    "TWN_high_T1_delta",
-                    "EC_high_T1_delta",
-                ]
-            ],
             "label": "TWN_high",
             "rolling_average_window": [5],
             "rolling_average_min_periods": [1],
@@ -122,7 +111,6 @@ for i in range(hp["iterations"]):
                     )
                     points_used = train(
                         target_date=target_date,
-                        features=hp_inst["features"],
                         label=hp_inst["label"],
                         time_span=hp_inst["time_span"],
                         max_depth=hp_inst["max_depth"],
@@ -136,7 +124,6 @@ for i in range(hp["iterations"]):
                     )
                     points_used_agg.append(points_used)
                     predict(
-                        features=hp_inst["features"],
                         label=hp_inst["label"],
                         precision=hp_inst["precision"],
                         target_date=target_date,

@@ -38,6 +38,9 @@ def train(
     edge_forecasting=1,
     **kwargs
 ):
+    def get_date_object(date):
+        return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
+
     def save_model(model):
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
@@ -73,6 +76,7 @@ def train(
     def get_time_span_indices(today):
         date_jump = int(time_span / 2)
         today = datetime.date(int(today[:4]), int(today[5:7]), int(today[8:]))
+        today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
         while True:
             try:

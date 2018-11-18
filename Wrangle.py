@@ -78,7 +78,9 @@ def wrangle(
         loggr.info("Shrinking data for speed...")
         loggr.debug("Initially, df size was dbh:{}, dbf:{}, dbc:{}, dba:{}".format(len(dbh), len(dbf), len(dbc), len(dba)))
         [dbh, dbf, dbc, dba] = [shrink_dates(df) for df in [dbh, dbf, dbc, dba]]
+        loggr.debug("After shrinking, df size is dbh:{}, dbf:{}, dbc:{}, dba:{}".format(len(dbh), len(dbf), len(dbc), len(dba)))
 
+    loggr.info("Wrangling forecast data")
     fc_providers = dbf.provider.unique()
     fc_days = dbf.day.unique()
     seg_dbf_list = [0] * len(fc_providers) * len(fc_days)
@@ -108,6 +110,7 @@ def wrangle(
             db = db.merge(seg_dbf_list[i], on=["date", "region", "province"])
         i += 1
 
+    loggr.info("Wrangling history data")
     h_providers = dbh.provider.unique()
     seg_dbh_list = [0] * len(h_providers)
     seg_num = 0
@@ -127,6 +130,8 @@ def wrangle(
 
     loggr.info("Dropping rows with any missing data")
     db.dropna(axis=0, how="any", inplace=True)
+    loggr.debug("Number of rows in master_db: {}".format(len(db)))
+
     loggr.info("Loading current conditions")
     seg_dbc_list = [0] * 3
     seg_num = 0
@@ -209,6 +214,7 @@ def wrangle(
     # not sure why but this is necessary for the code not to crash
     db = db.reset_index()
 
+    loggr.info("One-hot encoding string columns")
     db = pd.merge(db, pd.get_dummies(db, columns=["province"]))
     for column in [
         "current_wind_direction_T1",
@@ -225,9 +231,13 @@ def wrangle(
         axis=1,
         inplace=True,
     )
+    loggr.debug("Number of rows in master_db: {}".format(len(db)))
+    loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
 
     if region_efficient:
-        loggr.info("Shrinking data down to South portion of country that is dense in reports")
+        loggr.info(
+            "Shrinking date reange of data down to South portion of country that is dense in reports"
+        )
         db = shrink_regions(db)
         loggr.debug("Number of rows in master_db: {}".format(len(db)))
 

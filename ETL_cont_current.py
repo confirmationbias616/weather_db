@@ -83,6 +83,6 @@ while True:
                 "current_wind_direction": data[4],
             }, ignore_index=True
         )
-        print("extracted current conditions for region #{}".format(j))
+        print("extracted current conditions for region #{}".format(j+1))
     current_db = loaded_current_db.append(current_db, ignore_index=True)
     current_db.to_csv("/Users/Alex/Coding/weather_db/Data/cont_current_db.csv", index=False)    

@@ -46,6 +46,7 @@ def train(
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
         )
+        loggr.debug("Saving model {}".format(filename))
         with open(filename, "wb") as output:
             pickle.dump(model, output)
 
@@ -54,6 +55,7 @@ def train(
         filename = "{}/Gym/feature_list/{}{}.pkl".format(
             PATH, time_travel_string, today
         )
+        loggr.debug("Saving features {}".format(filename))
         with open(filename, "wb") as output:
             pickle.dump(features, output)
 
@@ -132,6 +134,9 @@ def train(
 
     # Create X as features set and y as labeled set
     X, y = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date'], axis=1), db[label_column]
+    must_drop = ['TWN_high', 'TWN_high_delta', 'TWN_low', 'EC_high', 'EC_high_delta', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date']
+    must_drop = [column for column in must_drop if column in db.columns]
+    X, y = db.drop(must_drop, axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
     y = y[(y.index > start_index) & (y.index < end_index)]
     points = len(X)
@@ -147,15 +152,10 @@ def train(
             baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
     except ValueError:
         loggr.info('Baseline rmse not available for eventual ML performance comparison :(')
-    # save attributes that are used for training ML model -> to be deployed in our
-    # daily prediction later in the evening
-    ML_attr = X.columns
-    '''
-    save_features(ML_attr)
-    '''
-    loggr.info(
-        ("Features for training:\n" + "".join(["{}\n".format(x) for x in ML_attr]))
-    )
+        
+
+    features = X.columns
+    save_features(features)
 
     if normalize_data:
         loggr.info("Normalizing data...")
@@ -179,7 +179,8 @@ def train(
         X, y, shuffle=True, random_state=42
     )
     model.fit(X_train, y_train)
-    feature_importances = sorted(zip(model.feature_importances_, ML_attr), reverse=True)
+    
+    feature_importances = sorted(zip(model.feature_importances_, features), reverse=True)
     importance_table = pd.DataFrame(
         feature_importances, columns=["importance", "feature"]
     )
@@ -195,8 +196,10 @@ def train(
     )
     model_rmses = np.sqrt(-scores)
     model_rmse = sum(model_rmses) / len(model_rmses)
+    
     loggr.info("Model RMSE:{}".format(round(model_rmse, 2)))
     save_model(model)
+
     summary = list(
         zip(
             [
@@ -214,7 +217,7 @@ def train(
                 baseline_rmse,
                 baseline_ave_error,
                 model,
-                ML_attr,
+                features,
                 model_rmse,
             ],
         )

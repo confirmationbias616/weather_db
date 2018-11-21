@@ -55,7 +55,7 @@ def wrangle(
 
     loggr.info("Loading all the relevant data")
     try:
-        dbh = pd.read_csv("{}/Data/history_db.csv_TEMP".format(PATH)).drop(
+        dbh = pd.read_csv("{}/Data/history_db_TEMP.csv".format(PATH)).drop(
             "time", axis=1
         )
     except FileNotFoundError:

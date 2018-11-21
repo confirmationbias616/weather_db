@@ -22,7 +22,7 @@ log_handler.setFormatter(
     )
 )
 loggr.addHandler(log_handler)
-loggr.setLevel(logging.INFO)
+loggr.setLevel(logging.DEBUG)
 
 
 def predict(precision=1, normalize_data=1, **kwargs):
@@ -30,6 +30,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
         filename = "{}/Gym/pickeled_models/{}{}.pkl".format(
             PATH, time_travel_string, today
         )
+        loggr.debug("Loading model {}".format(filename))
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
     
@@ -37,6 +38,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
         filename = "{}/Gym/feature_list/{}{}.pkl".format(
             PATH, time_travel_string, today
         )
+        loggr.debug("Loading features {}".format(filename))
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
 

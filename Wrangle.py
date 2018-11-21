@@ -26,6 +26,9 @@ def wrangle(
     TWN_EC_split = 0.7,
     date_efficient=True,
     region_efficient=False,
+    drop_columns=False,
+    label="TWN_high",
+    include_only_columns=False,
     **kwargs
 ):
     def shrink_dates(df):
@@ -212,8 +215,8 @@ def wrangle(
         "mean_high_T2",
         "mean_high_T3",
     ]
-    for label in delta_req:
-        db["{}_delta".format(label)] = db[label] - db.rolling_normal_high
+    for column in delta_req:
+        db["{}_delta".format(column)] = db[column] - db.rolling_normal_high
 
     loggr.info("Merging geocoded data into master_db")
     db = db.merge(dbll, on=["region", "province"], how="left")
@@ -268,7 +271,24 @@ def wrangle(
             removed_columns.append(column)
     loggr.debug("Dropped: {}".format(removed_columns))
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
-    
+
+    if include_only_columns:
+        if type(include_only_columns) is str:
+            include_only_columns = [include_only_columns]
+        original_columns = db.columns
+        include_only_columns == [column for column in include_only_columns if column in db.columns]
+        db = db[include_only_columns + [label] + ['date', 'province', 'region']]
+        loggr.info("Kept only the hyperparameter-defined columns + the target column + essentials: {}".format(db.columns))
+        loggr.info("Dropped all other columns: {}".format([column for column in original_columns if column not in db.columns]))
+
+    if drop_columns:
+        if type(drop_columns) is str:
+            drop_columns = [drop_columns]
+        drop_columns == [column for column in drop_columns if column in db.columns]
+        db.drop(drop_columns, axis=1, inplace=True)
+        loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
+        loggr.info("Only columns that remain: {}".format(db.columns))
+
     loggr.info("Dropping rows with any NaN data")
     db.dropna(axis=0, how="any", inplace=True)
     loggr.debug("Number of rows in master_db: {}".format(len(db)))

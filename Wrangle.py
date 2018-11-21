@@ -23,6 +23,7 @@ def wrangle(
     time_span=10,
     rolling_average_window=30,
     rolling_average_min_periods=1,
+    TWN_EC_split = 0.7,
     date_efficient=True,
     region_efficient=False,
     **kwargs
@@ -187,9 +188,15 @@ def wrangle(
     loggr.info("Computing mean columns")
     for reading in ["high", "low"]:
         for T in ["1", "2", "3"]:
+            db["mean_{}_T{}".format(reading, T)] = TWN_EC_split * db["TWN_{}_T{}".format(reading, T)] + (1 - TWN_EC_split) * db["EC_{}_T{}".format(reading, T)]
+            # below is the generalized version with actual mean instead of offset split 
+            # (for future when more providers are added)
+            '''
             db["mean_{}_T{}".format(reading, T)] = db[
                 ["{}_{}_T{}".format(x, reading, T) for x in fc_providers]
             ].apply(np.mean, axis=1)
+            '''
+
 
     loggr.info("Computing average deltas")
     delta_req = [

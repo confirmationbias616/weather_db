@@ -257,8 +257,9 @@ def wrangle(
         db = db[db.columns.drop(list(db.filter(regex=keyword)))]
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
 
-    if len(np.isnan(db.current_temp_T1)) / len(db) > 0.5:
-        loggr.info("Dropping the current conditions columns (feture too young)")
+    nan_ratio = np.isnan(db.current_temp_T1).value_counts(normalize=True)[0]
+    if nan_ratio > 0.6:
+        loggr.info("Dropping the current conditions columns (feture too young with NaN ratio of {})".format(nan_ratio))
         db = db[db.columns.drop(list(db.filter(regex='current')))]
         loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
 

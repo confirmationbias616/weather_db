@@ -99,7 +99,6 @@ def predict(precision=1, normalize_data=1, **kwargs):
         """Just compares forecasts from providers and picks a number in between"""
         
         def predict(self, X, y=None):
-            return (X.TWN_high_T1 + X.EC_high_T1) / 2
             loggr.debug("dealing with data of type: {}".format(type(X_today)))
             try:
                 return (X[:,0] + X[:,1]) / 2
@@ -107,7 +106,6 @@ def predict(precision=1, normalize_data=1, **kwargs):
                 return (X['TWN_high_T1'] + X['EC_high_T1']) / 2
 
     mean_predictor = MeanRegressor()
-    mean_predictions = mean_predictor.predict(X_today)
     mean_predictions = list(mean_predictor.predict(X_today))
 
 

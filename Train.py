@@ -131,9 +131,7 @@ def train(
         label_column = kwargs["label"]
     except KeyError:
         label_column = "TWN_high"
-
     # Create X as features set and y as labeled set
-    X, y = db.drop(['TWN_high', 'TWN_low', 'EC_high', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date'], axis=1), db[label_column]
     must_drop = ['TWN_high', 'TWN_high_delta', 'TWN_low', 'EC_high', 'EC_high_delta', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date']
     must_drop = [column for column in must_drop if column in db.columns]
     X, y = db.drop(must_drop, axis=1), db[label_column]
@@ -143,14 +141,15 @@ def train(
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
-    try:    
-        if 'TWN_high_T1' in attr:
-            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
-            baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
-        else:
-            baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
-            baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
-    except ValueError:
+    if 'TWN_high_T1' in attr:
+        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
+        baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
+    elif ('TWN_high_T1_delta' in attr) and ('rolling_normal_high' in attr):
+        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
+        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
+    else:
+        baseline_rmse = 0
+        baseline_ave_error = 0
         loggr.info('Baseline rmse not available for eventual ML performance comparison :(')
         
 
@@ -171,8 +170,11 @@ def train(
         n_estimators=n_estimators,
         random_state=42,
     )
-    loggr.info("Baseline RMSE: {}".format(round(baseline_rmse, 2)))
-    loggr.info("Baseline average error: {}".format(round(baseline_ave_error, 2)))
+    
+    if baseline_rmse:
+        loggr.info("Baseline RMSE: {}".format(round(baseline_rmse, 2)))
+        loggr.info("Baseline average error: {}".format(round(baseline_ave_error, 2)))
+
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, shuffle=True, random_state=42
     )

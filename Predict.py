@@ -68,7 +68,8 @@ def predict(precision=1, normalize_data=1, **kwargs):
     try:
         attr = load_features()
     except:
-        attr = db.drop(['TWN_high', 'TWN_precipitation', 'EC_precipitation', 'TWN_low', 'EC_high', 'EC_low', 'date'], axis=1)
+        must_drop = ['TWN_high', 'TWN_high_delta', 'TWN_low', 'EC_high', 'EC_high_delta', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date']
+        attr = [column for column in db.columns if column not in must_drop]
 
     db["year"] = db.date.apply(lambda x: get_date_object(x).year)
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)
@@ -77,8 +78,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
     db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
     db_tomorrow.dropna(axis=1, how="all", inplace=True)
     db_tomorrow.dropna(axis=0, how="any", inplace=True)
-    attr = [feature for feature in attr if feature in list(db_tomorrow.columns)]
-    db_tomorrow = db_tomorrow[list(attr)]
+    db_tomorrow = db_tomorrow[list(attr)+['province', 'region']]
     loggr.info(
         (
             "Features for prediction:\n"
@@ -87,7 +87,8 @@ def predict(precision=1, normalize_data=1, **kwargs):
     )
     fc_ind = db_tomorrow.reset_index()["index"]
 
-    X_today = db_tomorrow.drop(["region", "province"], axis=1)
+    X_today = db_tomorrow.drop(['province', 'region'], axis=1)
+    X_today = X_today.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X_today.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))
 
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])

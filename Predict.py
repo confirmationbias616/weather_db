@@ -104,6 +104,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
             try:
                 return (X[:,0] + X[:,1]) / 2
             except TypeError:
+                return (X['TWN_high_T1'] + X['EC_high_T1']) / 2
 
     mean_predictor = MeanRegressor()
     mean_predictions = mean_predictor.predict(X_today)

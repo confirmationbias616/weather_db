@@ -13,6 +13,7 @@ from Wrangle import wrangle
 from Train import train
 from Predict import predict
 from Post_mortem import post_mortem
+from meta_hpr import analyze
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -42,8 +43,11 @@ def load_hyperparameters():
             "edge_forecasting": [1],
             "normalize_data": [1, 0],
             "label": "TWN_high",
+            "drop_columns": 0,
+            "include_only_columns": 0,
             "rolling_average_window": [5],
             "rolling_average_min_periods": [1],
+            "TWN_EC_split": 0.7,
             "max_depth": [20],
             "max_features": [5],
             "min_samples_leaf": [4],
@@ -107,8 +111,12 @@ for i in range(hp["iterations"]):
                         rolling_average_min_periods=hp_inst[
                             "rolling_average_min_periods"
                         ],
+                        TWN_EC_split = hp_inst["TWN_EC_split"],
                         date_efficient=hp_inst["date_efficient"],
                         region_efficient=hp_inst["region_efficient"],
+                        drop_columns=hp_inst['drop_columns'],
+                        include_only_columns=hp_inst['include_only_columns'],
+                        label="TWN_high",
                     )
                     points_used = train(
                         target_date=target_date,
@@ -190,3 +198,4 @@ for i in range(hp["iterations"]):
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue
         break
+    analyze()

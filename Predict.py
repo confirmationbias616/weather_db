@@ -7,6 +7,8 @@ import pickle
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn import model_selection
+from sklearn.ensemble import BaggingRegressor
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -98,9 +100,36 @@ def predict(precision=1, normalize_data=1, **kwargs):
         
         def predict(self, X, y=None):
             return (X.TWN_high_T1 + X.EC_high_T1) / 2
+            loggr.debug("dealing with data of type: {}".format(type(X_today)))
+            try:
+                return (X[:,0] + X[:,1]) / 2
+            except TypeError:
 
     mean_predictor = MeanRegressor()
     mean_predictions = mean_predictor.predict(X_today)
+    mean_predictions = list(mean_predictor.predict(X_today))
+
+
+
+
+    '''
+    g_truth = db['TWN_high'].loc[fc_ind]
+
+    kfold = model_selection.KFold(n_splits=10, random_state=42)
+    # create the sub models
+    estimators = []
+    model1 = model
+    estimators.append(('MLRF', model1))
+    model2 = MeanRegressor()
+    estimators.append(('Mean', model2))
+    # create the ensemble model
+    ensemble = BaggingRegressor(estimators)
+    results = model_selection.cross_val_score(ensemble, X_today, g_truth, cv=kfold)
+    '''
+
+
+
+
 
     try:
         _ = db_tomorrow["TWN_high_T1"]

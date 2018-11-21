@@ -80,8 +80,7 @@ def get_TWN(prov, region, readings):
         )           
 
 
-loaded_current_db = pd.read_csv("{}/Data/current_db.csv".format(PATH))
-current_db = loaded_current_db.drop(loaded_current_db.index)
+current_db = pd.read_csv("{}/Data/current_db.csv".format(PATH))
 no_of_regions = len(region_codes["TWN_region_code"])
 loggr.info(
     "starting to extract current conditions for 1st of "
@@ -103,6 +102,5 @@ for j in range(no_of_regions):
             "current_wind_direction": data[4],
         }, ignore_index=True
     )
-    loggr.info("extracted current conditions for region #{}".format(j))
-current_db = loaded_current_db.append(current_db, ignore_index=True)
+    loggr.info("extracted current conditions for region #{j+1}".format(j))
 current_db.to_csv("{}/Data/current_db.csv".format(PATH), index=False)

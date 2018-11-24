@@ -7,7 +7,7 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 
 
 ###### Primary Goal:
-* Predict tomorrow's high with as much accuracy as possible. 
+* Predict tomorrow's high with as much accuracy as possible. [Check out our progress!](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements)
  * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forecasters.
 
  

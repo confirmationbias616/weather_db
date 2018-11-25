@@ -116,7 +116,7 @@ for i in range(hp["iterations"]):
                         region_efficient=hp_inst["region_efficient"],
                         drop_columns=hp_inst['drop_columns'],
                         include_only_columns=hp_inst['include_only_columns'],
-                        label=hp_inst["TWN_high"],
+                        label=hp_inst["label"],
                     )
                     if wrangle_status == 1:
                         continue

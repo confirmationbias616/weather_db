@@ -82,7 +82,7 @@ def train(
         # If dates aren't present in DataFrame, get ones that are
         potential_start_date = today - datetime.timedelta(days=date_jump)
         if (today == datetime.datetime.now().date()) or edge_forecasting:
-            potential_end_date = today
+            potential_end_date = today - datetime.timedelta(1)
         else:
             potential_end_date = today + datetime.timedelta(days=date_jump)
         available_dates = list(db.date.unique())

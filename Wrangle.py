@@ -243,7 +243,9 @@ def wrangle(
     )
     loggr.debug("Number of rows in master_db: {}".format(len(db)))
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
-
+    loggr.debug("Done joining all data. Now shaving things down to the essentials...")
+    
+    loggr.debug("Starting column-wise cleaning first")
     if region_efficient:
         loggr.info(
             "Shrinking date reange of data down to South portion of country that is dense in reports"

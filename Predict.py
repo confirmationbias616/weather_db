@@ -64,58 +64,42 @@ def predict(precision=1, normalize_data=1, **kwargs):
         time_travel_string = ""
 
     model = load_model()
-
-    db = pd.read_csv("{}/Data/master_db.csv".format(PATH))
-
+    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
     try:
-        attr = load_features()
-    except:
-        must_drop = ['TWN_high', 'TWN_high_delta', 'TWN_low', 'EC_high', 'EC_high_delta', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date']
-        attr = [column for column in db.columns if column not in must_drop]
-
-    db["year"] = db.date.apply(lambda x: get_date_object(x).year)
-    db["month"] = db.date.apply(lambda x: get_date_object(x).month)
-    db["day"] = db.date.apply(lambda x: get_date_object(x).day)
-    tomorrow = get_date_object(today) + datetime.timedelta(days=1)
-    db_tomorrow = db[(db.year == tomorrow.year) & (db.month == tomorrow.month) & (db.day == tomorrow.day)]
-    db_tomorrow.dropna(axis=1, how="all", inplace=True)
-    db_tomorrow.dropna(axis=0, how="any", inplace=True)
-    db_tomorrow = db_tomorrow[list(attr)+['province', 'region']]
-    loggr.info(
-        (
-            "Features for prediction:\n"
-            + "".join(["{}\n".format(x) for x in db_tomorrow.columns])
-        )
-    )
-    fc_ind = db_tomorrow.reset_index()["index"]
-
-    X_today = db_tomorrow.drop(['province', 'region'], axis=1)
-    X_today = X_today.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X_today.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))
+        dbh = pd.read_csv("{}/Data/history_db_TEMP.csv".format(PATH)).drop("time", axis=1)
+    except FileNotFoundError:
+        dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    X = dbp.drop(['province', 'region', 'date'], axis=1)
+    loggr.info(("Features for prediction:\n" + "".join(["{}\n".format(feature) for feature in X.columns])))
+    X = X.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))
 
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])
-        X_today = pipeline.fit_transform(X_today)
+        X = pipeline.fit_transform(X)
 
-    predictions = model.predict(X_today)
+    predictions = model.predict(X)
+    dbp['predictions'] = model.predict(X)
+    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH))
 
+    dbp['date'] = today
+    dbh = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
+    dbp.merge(dbh, on=['date', 'region', 'province'])
+    dbp.to_csv("{}/Data/prediction_db_UPDATED.csv".format(PATH), index=False)
+
+    '''
     class MeanRegressor(BaseEstimator, RegressorMixin):  
         """Just compares forecasts from providers and picks a number in between"""
         
         def predict(self, X, y=None):
-            loggr.debug("dealing with data of type: {}".format(type(X_today)))
+            loggr.debug("dealing with data of type: {}".format(type(X)))
             try:
                 return (X[:,0] + X[:,1]) / 2
             except TypeError:
                 return (X['TWN_high_T1'] + X['EC_high_T1']) / 2
 
     mean_predictor = MeanRegressor()
-    mean_predictions = list(mean_predictor.predict(X_today))
+    mean_predictions = list(mean_predictor.predict(X))
 
-
-
-
-    '''
-    g_truth = db['TWN_high'].loc[fc_ind]
 
     kfold = model_selection.KFold(n_splits=10, random_state=42)
     # create the sub models
@@ -129,30 +113,24 @@ def predict(precision=1, normalize_data=1, **kwargs):
     results = model_selection.cross_val_score(ensemble, X_today, g_truth, cv=kfold)
     '''
 
-
-
-
-
     try:
-        _ = db_tomorrow["TWN_high_T1"]
-        _ = db_tomorrow["EC_high_T1"]
+        _ = dbp["TWN_high_T1"]
+        _ = dbp["EC_high_T1"]
     except KeyError:
-        db_tomorrow["TWN_high_T1"] = (
-            db_tomorrow["TWN_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
+        dbp["TWN_high_T1"] = (
+            dbp["TWN_high_T1_delta"] + dbp["rolling_normal_high"]
         )
-        db_tomorrow["EC_high_T1"] = (
-            db_tomorrow["EC_high_T1_delta"] + db_tomorrow["rolling_normal_high"]
+        dbp["EC_high_T1"] = (
+            dbp["EC_high_T1_delta"] + dbp["rolling_normal_high"]
         )
 
-    forecast_table = db_tomorrow.loc[fc_ind][
+    forecast_table = dbp[
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]
     forecast_table["model_predictions"] = [
         round(predictions[i], precision) for i in range(len(predictions))
     ]
-    forecast_table["mean_predictions"] = [
-        round(mean_predictions[i], precision) for i in range(len(mean_predictions))
-    ]
+
     forecast_table.to_csv(
         "{}/Predictions/{}{}_predict_tm_high.csv".format(
             PATH, time_travel_string, today
@@ -161,3 +139,4 @@ def predict(precision=1, normalize_data=1, **kwargs):
     forecast_table.describe().to_csv(
         "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today), index=False
     )
+

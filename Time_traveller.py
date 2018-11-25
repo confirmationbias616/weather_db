@@ -69,6 +69,7 @@ hp = load_hyperparameters()
 loggr.info("Time Travellin...")
 
 for i in range(hp["iterations"]):
+    wrangle_status = 0
     while True:
         try:
             hp = load_hyperparameters()
@@ -189,7 +190,7 @@ for i in range(hp["iterations"]):
                     "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
                 )
             except FileNotFoundError:
-                pass
+                loggr.warning("Could not save results!!!")
         except Exception as e:
             loggr.exception("This loop could not finish. Here's why: \n {e}")
             if hp["exit_on_exception"]:

@@ -257,23 +257,6 @@ def wrangle(
     for keyword in keyword_to_remove:
         db = db[db.columns.drop(list(db.filter(regex=keyword)))]
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
-
-    nan_ratio = np.isnan(db.current_temp_T1).value_counts(normalize=True)[0]
-    if nan_ratio > 0.6:
-        loggr.info("Dropping the current conditions columns (feture too young with NaN ratio of {})".format(nan_ratio))
-        db = db[db.columns.drop(list(db.filter(regex='current')))]
-        loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
-
-    loggr.info("Dropping completely NaN columns")
-    all_columns = db.columns
-    db.dropna(axis=1, how="all", inplace=True)
-    removed_columns = []
-    for column in all_columns:
-        if column not in db.columns:
-            removed_columns.append(column)
-    loggr.debug("Dropped: {}".format(removed_columns))
-    loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
-
     if include_only_columns:
         if type(include_only_columns) is str:
             include_only_columns = [include_only_columns]
@@ -289,14 +272,55 @@ def wrangle(
         db.drop(drop_columns, axis=1, inplace=True)
         loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
         loggr.info("Only columns that remain: {}".format(db.columns))
+    loggr.info("Pausing cleaning operations to prepare data as `prediction_db.csv` for forecasting tomorrow's highs")
+    tomorrow = str(get_date_object(today) + datetime.timedelta(1))
+    dbp = db[db.date==tomorrow].drop(label, axis=1)
+    if len(dbp) == 0:
+        loggr.warning("Aborting analysis since no historical data was available to form a ground truth table for this date")
+        return 1
+    loggr.debug("Scanning through selected features to see if we should drop some.")
+    drop_features = []
+    def feature_dropping(df, df_name):
+        for feature in df.columns:
+            try:
+                nan_list = np.isnan(df[feature])
+                if nan_list.nunique() == 2:
+                    nan_ratio = nan_list.value_counts()[1]/len(df)
+                elif (list(nan_list))[0] == True:
+                    nan_ratio = 1
+                else:
+                    nan_ratio = 0
+                if nan_ratio > 0.6:
+                    drop_features.append(feature)
+                    loggr.info("nan_ratio for `{}` feature in overall selected dataset `{}` is {}, which is too high. Will train and predict without this feature.".format(feature, df_name, nan_ratio))
+            except TypeError:
+                # column is not numerical and is safe to be retained. Assume nan_ratio of 0
+                pass
+            except (KeyError, IndexError):
+                drop_features.append(feature)
+                loggr.info("Feature `{}` was empty for `{}` so it will be dropped from training and prediction.".format(feature, df_name))
+        return drop_features
+    db_drop_features, dbp_drop_features = [feature_dropping(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
+    drop_features = set(db_drop_features + dbp_drop_features)
+    db.drop(drop_features, axis=1, inplace=True)
+    dbp.drop(drop_features, axis=1, inplace=True)
+    loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
+    loggr.debug("Done with column-wise cleaning")
+    loggr.debug("Starting row-wise operations but also applying it to `prediction_db` (as well as `master_db`)")
+    def row_cleaning(df, df_name):
+        loggr.info("Dropping rows with any NaN data...")
+        df.dropna(axis=0, how="any", inplace=True)
+        loggr.debug("Number of rows in `{}`: {}".format(df_name, len(df)))
+        loggr.info("Dropping any duplicate rows...")
+        df.drop_duplicates(inplace=True)
+        loggr.debug("Number of rows in `{}`: {}".format(df_name, len(df)))
+        return df
+    [db, dbp] = [row_cleaning(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
+    def row_cleaning(df, df_name):    
+        loggr.info("Writing `{}` to disk".format(df_name))
+        df.to_csv("{}/Data/{}.csv".format(PATH, df_name), index=False)
+    [row_cleaning(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
+    loggr.debug("Row and column cleaning is complete.")
 
-    loggr.info("Dropping rows with any NaN data")
-    db.dropna(axis=0, how="any", inplace=True)
-    loggr.debug("Number of rows in master_db: {}".format(len(db)))
-    
-    loggr.info("Dropping any duplicate rows")
-    db.drop_duplicates(inplace=True)
-    loggr.debug("Number of rows in master_db: {}".format(len(db)))
-
-    loggr.info("Wrangling complete. Saving master_db.csv to disk.")
-    db.to_csv("{}/Data/master_db.csv".format(PATH), index=False)
+    loggr.info("Wrangling complete")
+    return 0

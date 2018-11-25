@@ -64,7 +64,6 @@ def load_hyperparameters():
 def get_datetime(date):
     return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
 
-
 hp = load_hyperparameters()
 
 loggr.info("Time Travellin...")
@@ -104,7 +103,7 @@ for i in range(hp["iterations"]):
                             i + 1, hp["iterations"], target_date
                         )
                     )
-                    wrangle(
+                    wrangle_status = wrangle(
                         target_date=target_date,
                         time_span=hp_inst["time_span"],
                         rolling_average_window=hp_inst["rolling_average_window"],
@@ -118,6 +117,8 @@ for i in range(hp["iterations"]):
                         include_only_columns=hp_inst['include_only_columns'],
                         label="TWN_high",
                     )
+                    if wrangle_status == 1:
+                        continue
                     points_used = train(
                         target_date=target_date,
                         label=hp_inst["label"],
@@ -144,7 +145,6 @@ for i in range(hp["iterations"]):
                     TWN_agg.append(TWN)
                     EC_agg.append(EC)
                     Mean_agg.append(Mean)
-                    Mean_pred_agg.append(Mean_pred)
                 except Exception as e:
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
@@ -152,7 +152,8 @@ for i in range(hp["iterations"]):
                     loggr.exception("{e}")
                     if hp["exit_on_exception"]:
                         sys.exit(1)
-
+            if wrangle_status == 1:
+                break
             log_time = datetime.datetime.now()
             hp_inst.update(
                 {
@@ -174,6 +175,8 @@ for i in range(hp["iterations"]):
                     "points_used": points_used_agg,
                 }
             )
+            if wrangle_status == 1:
+                break
             try:
                 search_results = pd.read_csv(
                     "/Users/Alex/Dropbox (Personal)/HPResults.csv"

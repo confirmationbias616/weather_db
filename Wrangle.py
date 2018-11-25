@@ -252,7 +252,6 @@ def wrangle(
         )
         db = shrink_regions(db)
         loggr.debug("Number of rows in master_db: {}".format(len(db)))
-
     loggr.info("Dropping a few columns that will be incompatible with ML training")
     keyword_to_remove = ["current_cond_time", "region_code", "Unnamed", "index"]
     for keyword in keyword_to_remove:
@@ -279,15 +278,14 @@ def wrangle(
         if type(include_only_columns) is str:
             include_only_columns = [include_only_columns]
         original_columns = db.columns
-        include_only_columns == [column for column in include_only_columns if column in db.columns]
+        include_only_columns = [column for column in include_only_columns if column in db.columns]
         db = db[include_only_columns + [label] + ['date', 'province', 'region']]
         loggr.info("Kept only the hyperparameter-defined columns + the target column + essentials: {}".format(db.columns))
         loggr.info("Dropped all other columns: {}".format([column for column in original_columns if column not in db.columns]))
-
     if drop_columns:
         if type(drop_columns) is str:
             drop_columns = [drop_columns]
-        drop_columns == [column for column in drop_columns if column in db.columns]
+        drop_columns = [column for column in drop_columns if column in db.columns]
         db.drop(drop_columns, axis=1, inplace=True)
         loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
         loggr.info("Only columns that remain: {}".format(db.columns))

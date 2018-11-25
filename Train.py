@@ -76,6 +76,7 @@ def train(
     # Get indices for selecting portion of data centered on target date by a
     # width of specified time span
     def get_time_span_indices(today):
+        
         date_jump = int(time_span / 2)
         today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
@@ -86,7 +87,8 @@ def train(
             potential_end_date = today + datetime.timedelta(days=date_jump)
         available_dates = list(db.date.unique())
         available_dates.sort()
-        while True:
+        start_date_limit = datetime.date(2020, 12, 25)
+        while potential_start_date < start_date_limit:
             if str(potential_start_date) in available_dates:
                 start_date = str(potential_start_date)
                 loggr.info("Selected {} as start date".format(start_date))
@@ -98,7 +100,8 @@ def train(
             else:
                 loggr.info("There was a missing date({}) in place of attempted start date for time span. Retrying...".format(potential_start_date))
                 potential_start_date += datetime.timedelta(1)
-        while True:
+        end_date_limit = datetime.date(2017, 12, 25)
+        while potential_end_date > end_date_limit:
             if str(potential_end_date) in available_dates:
                 end_date = str(potential_end_date)
                 loggr.info("Selected {} as end date".format(end_date))
@@ -112,6 +115,7 @@ def train(
                 potential_end_date -= datetime.timedelta(1)
 
         start_date, end_date = str(start_date), str(end_date)
+
         start_index = db.index[db.date == start_date][0]
         end_index = db.index[db.date == end_date][-1]
 

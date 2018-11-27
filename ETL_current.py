@@ -81,7 +81,7 @@ def get_TWN(prov, region, readings):
 
 
 current_db = pd.read_csv("{}/Data/current_db.csv".format(PATH))
-if history_db["date"].iloc[-1] == (now.date() - datetime.timedelta(days=1)).strftime(
+if current_db["date"].iloc[-1] == (now.date() - datetime.timedelta(days=1)).strftime(
     "%Y-%m-%d"
 ):
     loggr.warning("Data already collected for today. Process terminated.")

@@ -31,15 +31,8 @@ except Exception as e:
 
 while True:
     try:
-        copyfile(
-            "{}/Data/forecast_db.csv".format(PATH),
-            "{}/Data/forecast_db_TEMP.csv".format(PATH),
-        )  # create temporary backup of csv file
-        loggr.info(
-            "Extracting forecast data available today " "(using ETL_forecast.py)..."
-        )
+        loggr.info("Extracting forecast data available today " "(using ETL_forecast.py)...")
         import ETL_forecast
-
         break
     except requests.exceptions.ConnectionError:
         loggr.critical(
@@ -48,20 +41,13 @@ while True:
             "pausing for 10 seconds and "
             "then trying again..."
         )
-        copyfile(
-            "{}/Data/forecast_db_TEMP.csv".format(PATH),
-            "{}/Data/forecast_db.csv".format(PATH),
-        )  # revert csv file back to temporary backup to delete today's failed attempt
         time.sleep(10)
         continue
     except Exception as e:
         loggr.exception("ETL_forecast.py could not run. Here's why: \n {e}")
         continue
-    finally:
-        os.remove(
-            "{}/Data/forecast_db_TEMP.csv".format(PATH)
-        )  # clean up by deleting the temp backup
 loggr.info("ETL forecast process is now complete.")
+
 try:
     loggr.info("Running a few tests...")
     check_forecast_data()

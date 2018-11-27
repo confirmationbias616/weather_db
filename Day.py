@@ -29,13 +29,8 @@ loggr.info("Starting ETL process...")
 
 while True:
     try:
-        copyfile(
-            "{}/Data/history_db.csv".format(PATH),
-            "{}/Data/history_db_TEMP.csv".format(PATH),
-        )  # create temporary backup of csv file
         loggr.info("Extracting Yesterday's recorded data " "(using ETL_history.py)...")
         import ETL_history
-
         break
     except requests.exceptions.ConnectionError:
         loggr.critical(
@@ -44,19 +39,13 @@ while True:
             "pausing for 10 seconds and "
             "then trying again..."
         )
-        copyfile(
-            "{}/Data/history_db_TEMP.csv".format(PATH),
-            "{}/Data/history_db.csv".format(PATH),
-        )  # revert csv file back to temporary backup to delete today's failed attempt
         time.sleep(10)
         continue
     except Exception as e:
         loggr.exception("ETL_history.py could not run. Here's why: \n {e}")
         continue
-    finally:
-        os.remove(
-            "{}/Data/history_db_TEMP.csv".format(PATH)
-        )  # clean up by deleting the temp backup
+loggr.info("ETL history process is now complete.")
+
 try:
     loggr.info("Running a few tests...")
     from Test_data import check_historical_data

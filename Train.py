@@ -66,8 +66,9 @@ def train(
         else:
             time_travel = True
     except KeyError:
-        today = str(datetime.datetime.now().date())
+        today = datetime.datetime.now().date()
         time_travel = False
+        
     loggr.info("Training for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())

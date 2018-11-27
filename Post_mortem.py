@@ -27,8 +27,9 @@ def post_mortem(**kwargs):
         else:
             time_travel = True
     except KeyError:
-        fc_date = str(datetime.datetime.now().date())
+        fc_date = datetime.datetime.now().date()
         time_travel = False
+
     loggr.info("Predicting for date: {}...".format(fc_date))
 
     actual_date = str(

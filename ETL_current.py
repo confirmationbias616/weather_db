@@ -102,5 +102,5 @@ for j in range(no_of_regions):
             "current_wind_direction": data[4],
         }, ignore_index=True
     )
-    loggr.info("extracted current conditions for region #{j+1}".format(j))
+    loggr.info("extracted current conditions for region #{}".format(j+1))
 current_db.to_csv("{}/Data/current_db.csv".format(PATH), index=False)

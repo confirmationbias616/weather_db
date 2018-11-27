@@ -61,7 +61,10 @@ def train(
 
     try:
         today = kwargs["target_date"]
-        time_travel = True
+        if today == datetime.datetime.now().date():
+            time_travel = False
+        else:
+            time_travel = True
     except KeyError:
         today = str(datetime.datetime.now().date())
         time_travel = False

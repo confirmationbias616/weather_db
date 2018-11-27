@@ -47,7 +47,10 @@ def predict(precision=1, normalize_data=1, **kwargs):
 
     try:
         today = kwargs["target_date"]
-        time_travel = True
+        if today == datetime.datetime.now().date():
+            time_travel = False
+        else:
+            time_travel = True
     except KeyError:
         today = datetime.datetime.now().date()
         time_travel = False

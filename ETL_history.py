@@ -195,4 +195,4 @@ else:
         j += 1
         loggr.info("extracted history for region #{}".format(j))
         history_db = history_db.append(history_yesterday, ignore_index=True)
-        history_db.to_csv("{}/Data/history_db.csv".format(PATH), index=False)
+    history_db.to_csv("{}/Data/history_db.csv".format(PATH), index=False)

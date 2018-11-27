@@ -157,4 +157,4 @@ else:
         j += 1
         loggr.info("extracted forecast for region #{}".format(j))
         forecast_db = forecast_db.append(forecast_today, ignore_index=True)
-        forecast_db.to_csv("{}/Data/forecast_db.csv".format(PATH), index=False)
+    forecast_db.to_csv("{}/Data/forecast_db.csv".format(PATH), index=False)

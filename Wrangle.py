@@ -242,7 +242,7 @@ def wrangle(
     loggr.debug("Number of rows in master_db: {}".format(len(db)))
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
     loggr.debug("Done joining all data. Now shaving things down to the essentials...")
-    
+
     loggr.debug("Starting column-wise cleaning first")
     if region_efficient:
         loggr.info(
@@ -270,6 +270,7 @@ def wrangle(
         db.drop(drop_columns, axis=1, inplace=True)
         loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
         loggr.info("Only columns that remain: {}".format(db.columns))
+
     loggr.info("Pausing cleaning operations to prepare data as `prediction_db.csv` for forecasting tomorrow's highs")
     tomorrow = str(get_date_object(today) + datetime.timedelta(1))
     dbp = db[db.date==tomorrow].drop(label, axis=1)

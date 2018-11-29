@@ -61,12 +61,12 @@ def train(
 
     try:
         today = kwargs["target_date"]
-        if today == datetime.datetime.now().date():
+        if today == str(datetime.datetime.now().date()):
             time_travel = False
         else:
             time_travel = True
     except KeyError:
-        today = datetime.datetime.now().date()
+        today = str(datetime.datetime.now().date())
         time_travel = False
         
     loggr.info("Training for date: {}...".format(today))

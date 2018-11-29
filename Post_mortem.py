@@ -22,12 +22,12 @@ loggr.setLevel(logging.INFO)
 def post_mortem(**kwargs):
     try:
         fc_date = kwargs["target_date"]
-        if fc_date == datetime.datetime.now().date():
+        if fc_date == str(datetime.datetime.now().date()):
             time_travel = False
         else:
             time_travel = True
     except KeyError:
-        fc_date = datetime.datetime.now().date()
+        fc_date = str(datetime.datetime.now().date())
         time_travel = False
 
     loggr.info("Predicting for date: {}...".format(fc_date))

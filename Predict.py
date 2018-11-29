@@ -4,6 +4,7 @@ import logging
 import sys
 import os
 import pickle
+import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator, RegressorMixin
@@ -68,6 +69,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
 
     model = load_model()
     dbpp = pd.read_csv("{}/Data/prediction_prep_db.csv".format(PATH))
+    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
     X = dbpp.drop(['province', 'region', 'date'], axis=1)
     loggr.info(("Features for prediction:\n" + "".join(["{}\n".format(feature) for feature in X.columns])))
@@ -79,13 +81,13 @@ def predict(precision=1, normalize_data=1, **kwargs):
 
     predictions = model.predict(X)
     dbpp['predictions'] = model.predict(X)
-    dbpp.to_csv("{}/Data/prediction_prep_db.csv".format(PATH))
-
-    dbpp['date'] = today
-    dbh = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
-    dbppu = dbpp.merge(dbh, on=['date', 'region', 'province'])
-    dbppu.to_csv("{}/Data/prediction_prep_db_UPDATED.csv".format(PATH), index=False)
-
+    dbpp.to_csv("{}/Data/prediction_prep_db.csv".format(PATH), index=False)
+    tomorrow = get_date_object(today) + datetime.timedelta(1)
+    dbp == dbp[dbp.date!=str(tomorrow)] # delete tomorrow's prediction to make room for new ones
+    dbpp['high'] = np.nan # for now!
+    '''Should add line here to add np.nan for and line in prediction_db that aren't present in this one so they can actually append properly (such as missing features'''
+    dbp = dbp.append(dbpp, axis=0, ignore_index=False)
+    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
 
     try:
         _ = dbpp["TWN_high_T1"]

@@ -55,18 +55,8 @@ def wrangle(
         today = str(datetime.datetime.now().date())
 
     loggr.info("Loading all the relevant data")
-    try:
-        dbh = pd.read_csv("{}/Data/history_db_TEMP.csv".format(PATH)).drop(
-            "time", axis=1
-        )
-    except FileNotFoundError:
-        dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
-    try:
-        dbf = pd.read_csv("{}/Data/forecast_db_TEMP.csv".format(PATH)).drop(
-            "time", axis=1
-        )
-    except FileNotFoundError:
-        dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH)).drop("time", axis=1)
+    dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH)).drop("time", axis=1)
     dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
     dba = pd.read_csv("{}/Data/dba.csv".format(PATH))
     dbll = pd.read_csv(

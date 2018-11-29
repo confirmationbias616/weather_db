@@ -317,11 +317,11 @@ def wrangle(
         loggr.debug("Number of rows in `{}`: {}".format(df_name, len(df)))
         return df
     [db, dbp] = [row_cleaning(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
-    def row_cleaning(df, df_name):    
+    loggr.debug("Row and column cleaning is complete.")
+    def df_saving(df, df_name):    
         loggr.info("Writing `{}` to disk".format(df_name))
         df.to_csv("{}/Data/{}.csv".format(PATH, df_name), index=False)
-    [row_cleaning(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
-    loggr.debug("Row and column cleaning is complete.")
+    [df_saving(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
 
     loggr.info("Wrangling complete")
     return 0

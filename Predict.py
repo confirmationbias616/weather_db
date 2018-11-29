@@ -68,10 +68,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
 
     model = load_model()
     dbpp = pd.read_csv("{}/Data/prediction_prep_db.csv".format(PATH))
-    try:
-        dbh = pd.read_csv("{}/Data/history_db_TEMP.csv".format(PATH)).drop("time", axis=1)
-    except FileNotFoundError:
-        dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
     X = dbpp.drop(['province', 'region', 'date'], axis=1)
     loggr.info(("Features for prediction:\n" + "".join(["{}\n".format(feature) for feature in X.columns])))
     X = X.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))

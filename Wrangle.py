@@ -130,7 +130,7 @@ def wrangle(
         seg_num += 1
 
     for seg_dbh in seg_dbh_list:
-        db = db.merge(seg_dbh, on=["date", "region", "province"])
+        db = db.merge(seg_dbh, how='left', on=["date", "region", "province"])
 
     loggr.info("Dropping rows with any missing data")
     db.dropna(axis=0, how="any", inplace=True)

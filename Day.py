@@ -133,10 +133,10 @@ try:
     hp.update(
         {
             "log_time": datetime.datetime.now(),
-            "1ML_rms": ML,
-            "1TWN_rms": TWN,
-            "1EC_rms": EC,
-            "1Mean_rms": Mean,
+            "ML_rms": ML,
+            "TWN_rms": TWN,
+            "EC_rms": EC,
+            "Mean_rms": Mean,
         }
     )
 except Exception as e:

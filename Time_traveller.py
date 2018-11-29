@@ -41,6 +41,7 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1],
+            "real_time": [0],
             "normalize_data": [1, 0],
             "label": "TWN_high",
             "drop_columns": 0,
@@ -117,6 +118,7 @@ for i in range(hp["iterations"]):
                         drop_columns=hp_inst['drop_columns'],
                         include_only_columns=hp_inst['include_only_columns'],
                         label=hp_inst["label"],
+                        real_time=hp_inst["real_time"],
                     )
                     if wrangle_status == 1:
                         continue

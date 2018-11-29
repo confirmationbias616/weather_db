@@ -28,6 +28,7 @@ def wrangle(
     region_efficient=False,
     drop_columns=False,
     label="TWN_high",
+    real_time=False,
     include_only_columns=False,
     **kwargs
 ):
@@ -274,9 +275,10 @@ def wrangle(
     loggr.info("Pausing cleaning operations to prepare data as `prediction_db.csv` for forecasting tomorrow's highs")
     tomorrow = str(get_date_object(today) + datetime.timedelta(1))
     dbp = db[db.date==tomorrow].drop(label, axis=1)
-    if len(dbp) == 0:
-        loggr.warning("Aborting analysis since no historical data was available to form a ground truth table for this date")
-        return 1
+    if not real_time:
+        if len(dbp) == 0:
+            loggr.warning("Aborting analysis since no historical data was available to form a ground truth table for this date")
+            return 1
     loggr.debug("Scanning through selected features to see if we should drop some.")
     drop_features = []
     def feature_dropping(df, df_name):

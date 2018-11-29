@@ -46,10 +46,7 @@ def post_mortem(**kwargs):
         ),
         dtype={"date": "str"},
     )
-    try:
-        actual = pd.read_csv("{}/Data/history_db.csv_TEMP".format(PATH)).drop("time", axis=1)
-    except FileNotFoundError:
-        actual = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    actual = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
 
     actual = actual[actual["date"] == actual_date][["region", "high", "province"]]
     try:

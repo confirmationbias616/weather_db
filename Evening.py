@@ -105,37 +105,13 @@ except Exception as e:
 
 try:
     loggr.info("Running predictions for tomorrow ({})".format(datetime.datetime.now().date() + datetime.timedelta(1)))
-    ML, TWN, EC, Mean = predict(
+    predict(
         label=hp["label"],
         precision=hp["precision"],
         target_date=hp['start_date'],
         normalize_data=hp["normalize_data"],
     )
-    hp.update(
-        {
-            "log_time": datetime.datetime.now(),
-            "1ML_rms": ML,
-            "1TWN_rms": TWN,
-            "1EC_rms": EC,
-            "1Mean_rms": Mean,
-        }
-    )
 
     loggr.info("Predictions are now ready")
 except Exception as e:
     loggr.exception("Predict.py could not run. Here's why: \n {e}")
-
-loggr.info("Saving results to `HPresults.csv`")
-try:
-    search_results = pd.read_csv(
-        "/Users/Alex/Dropbox (Personal)/HPResults.csv"
-    )
-except FileNotFoundError:
-    search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
-search_results = search_results.append(hp_inst, ignore_index=True)
-try:
-    search_results.to_csv(
-        "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
-    )
-except FileNotFoundError:
-    loggr.warning("Could not save results!!!")

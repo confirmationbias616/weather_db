@@ -67,12 +67,12 @@ def predict(precision=1, normalize_data=1, **kwargs):
         time_travel_string = ""
 
     model = load_model()
-    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
+    dbpp = pd.read_csv("{}/Data/prediction_prep_db.csv".format(PATH))
     try:
         dbh = pd.read_csv("{}/Data/history_db_TEMP.csv".format(PATH)).drop("time", axis=1)
     except FileNotFoundError:
         dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
-    X = dbp.drop(['province', 'region', 'date'], axis=1)
+    X = dbpp.drop(['province', 'region', 'date'], axis=1)
     loggr.info(("Features for prediction:\n" + "".join(["{}\n".format(feature) for feature in X.columns])))
     X = X.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))
 
@@ -81,13 +81,13 @@ def predict(precision=1, normalize_data=1, **kwargs):
         X = pipeline.fit_transform(X)
 
     predictions = model.predict(X)
-    dbp['predictions'] = model.predict(X)
-    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH))
+    dbpp['predictions'] = model.predict(X)
+    dbpp.to_csv("{}/Data/prediction_prep_db.csv".format(PATH))
 
-    dbp['date'] = today
+    dbpp['date'] = today
     dbh = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
-    dbp.merge(dbh, on=['date', 'region', 'province'])
-    dbp.to_csv("{}/Data/prediction_db_UPDATED.csv".format(PATH), index=False)
+    dbppu = dbpp.merge(dbh, on=['date', 'region', 'province'])
+    dbppu.to_csv("{}/Data/prediction_prep_db_UPDATED.csv".format(PATH), index=False)
 
     '''
     class MeanRegressor(BaseEstimator, RegressorMixin):  
@@ -117,17 +117,17 @@ def predict(precision=1, normalize_data=1, **kwargs):
     '''
 
     try:
-        _ = dbp["TWN_high_T1"]
-        _ = dbp["EC_high_T1"]
+        _ = dbpp["TWN_high_T1"]
+        _ = dbpp["EC_high_T1"]
     except KeyError:
-        dbp["TWN_high_T1"] = (
-            dbp["TWN_high_T1_delta"] + dbp["rolling_normal_high"]
+        dbpp["TWN_high_T1"] = (
+            dbpp["TWN_high_T1_delta"] + dbpp["rolling_normal_high"]
         )
-        dbp["EC_high_T1"] = (
-            dbp["EC_high_T1_delta"] + dbp["rolling_normal_high"]
+        dbpp["EC_high_T1"] = (
+            dbpp["EC_high_T1_delta"] + dbpp["rolling_normal_high"]
         )
 
-    forecast_table = dbp[
+    forecast_table = dbpp[
         ["region", "province", "TWN_high_T1", "EC_high_T1"]
     ]
     forecast_table["model_predictions"] = [

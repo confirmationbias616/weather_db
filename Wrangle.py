@@ -272,11 +272,11 @@ def wrangle(
         loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
         loggr.info("Only columns that remain: {}".format(db.columns))
 
-    loggr.info("Pausing cleaning operations to prepare data as `prediction_db.csv` for forecasting tomorrow's highs")
+    loggr.info("Pausing cleaning operations to prepare data as `prediction_prep_db.csv` for forecasting tomorrow's highs")
     tomorrow = str(get_date_object(today) + datetime.timedelta(1))
-    dbp = db[db.date==tomorrow].drop(label, axis=1)
+    dbpp = db[db.date==tomorrow].drop(label, axis=1)
     if not real_time:
-        if len(dbp) == 0:
+        if len(dbpp) == 0:
             loggr.warning("Aborting analysis since no historical data was available to form a ground truth table for this date")
             return 1
     loggr.debug("Scanning through selected features to see if we should drop some.")
@@ -301,13 +301,13 @@ def wrangle(
                 drop_features.append(feature)
                 loggr.info("Feature `{}` was empty for `{}` so it will be dropped from training and prediction.".format(feature, df_name))
         return drop_features
-    db_drop_features, dbp_drop_features = [feature_dropping(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
-    drop_features = set(db_drop_features + dbp_drop_features)
+    db_drop_features, dbpp_drop_features = [feature_dropping(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
+    drop_features = set(db_drop_features + dbpp_drop_features)
     db.drop(drop_features, axis=1, inplace=True)
-    dbp.drop(drop_features, axis=1, inplace=True)
+    dbpp.drop(drop_features, axis=1, inplace=True)
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
     loggr.debug("Done with column-wise cleaning")
-    loggr.debug("Starting row-wise operations but also applying it to `prediction_db` (as well as `master_db`)")
+    loggr.debug("Starting row-wise operations but also applying it to `prediction_prep_db` (as well as `master_db`)")
     def row_cleaning(df, df_name):
         loggr.info("Dropping rows with any NaN data...")
         df.dropna(axis=0, how="any", inplace=True)
@@ -316,12 +316,12 @@ def wrangle(
         df.drop_duplicates(inplace=True)
         loggr.debug("Number of rows in `{}`: {}".format(df_name, len(df)))
         return df
-    [db, dbp] = [row_cleaning(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
+    [db, dbpp] = [row_cleaning(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
     loggr.debug("Row and column cleaning is complete.")
     def df_saving(df, df_name):    
         loggr.info("Writing `{}` to disk".format(df_name))
         df.to_csv("{}/Data/{}.csv".format(PATH, df_name), index=False)
-    [df_saving(df, df_name) for df, df_name in zip([db, dbp],['master_db', 'prediction_db'])]
+    [df_saving(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
 
     loggr.info("Wrangling complete")
     return 0

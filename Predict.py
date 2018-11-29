@@ -86,32 +86,6 @@ def predict(precision=1, normalize_data=1, **kwargs):
     dbppu = dbpp.merge(dbh, on=['date', 'region', 'province'])
     dbppu.to_csv("{}/Data/prediction_prep_db_UPDATED.csv".format(PATH), index=False)
 
-    '''
-    class MeanRegressor(BaseEstimator, RegressorMixin):  
-        """Just compares forecasts from providers and picks a number in between"""
-        
-        def predict(self, X, y=None):
-            loggr.debug("dealing with data of type: {}".format(type(X)))
-            try:
-                return (X[:,0] + X[:,1]) / 2
-            except TypeError:
-                return (X['TWN_high_T1'] + X['EC_high_T1']) / 2
-
-    mean_predictor = MeanRegressor()
-    mean_predictions = list(mean_predictor.predict(X))
-
-
-    kfold = model_selection.KFold(n_splits=10, random_state=42)
-    # create the sub models
-    estimators = []
-    model1 = model
-    estimators.append(('MLRF', model1))
-    model2 = MeanRegressor()
-    estimators.append(('Mean', model2))
-    # create the ensemble model
-    ensemble = BaggingRegressor(estimators)
-    results = model_selection.cross_val_score(ensemble, X_today, g_truth, cv=kfold)
-    '''
 
     try:
         _ = dbpp["TWN_high_T1"]

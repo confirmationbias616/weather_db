@@ -2,6 +2,7 @@ import pandas as pd
 import datetime
 import logging
 import sys
+import numpy as np
 import os
 
 
@@ -53,6 +54,7 @@ def post_mortem(**kwargs):
     dbp_fc = dbp[dbp.date==fc_date]
     dbh_fc = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
     dbp_fc = dbp_fc.merge(dbh_fc, how='left', on=['date', 'province', 'region'])
+    dbp_fc['high'] = np.nan # for now!
     dbp = dbp.append(dbp_fc, ignore_index=False)
     dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
 

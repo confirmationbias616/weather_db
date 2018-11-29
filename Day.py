@@ -129,7 +129,8 @@ try:
 except Exception as e:
     loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")
 
-hp.update(
+try:
+    hp.update(
         {
             "log_time": datetime.datetime.now(),
             "1ML_rms": ML,
@@ -138,6 +139,8 @@ hp.update(
             "1Mean_rms": Mean,
         }
     )
+except Exception as e:
+    loggr.exception("Could not update hp for HPResulsts.csv. Here's why: \n {e}")
 
 loggr.info("Saving results to `HPresults.csv`")
 try:

@@ -47,8 +47,16 @@ def post_mortem(**kwargs):
         dtype={"date": "str"},
     )
     actual = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
+    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
 
     actual = actual[actual["date"] == actual_date][["region", "high", "province"]]
+    # Prep history_db and prediction_db to be merged into a glorious results_db
+    dbp_fc = dbp[dbp.date==fc_date]
+    dbh_fc = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
+    dbp_fc = dbp_fc.merge(dbh_fc, how='left', on=['date', 'province', 'region'])
+    dbp = dbp.append(dbp_fc, ignore_index=False)
+    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
     try:
         comp = pred.merge(actual, on=["region", "province"], how="left")
     except KeyError:

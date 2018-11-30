@@ -160,6 +160,7 @@ def wrangle(
         ]]
         dba.rename(index=str, columns={"rolling_normal_high_{}days".format(rolling_average_window): "rolling_normal_high"}, inplace=True)
     except KeyError:
+        loggr.info("No pre-rolled average column exists for a rolling_average_window of {}. Starting to calculate instead...".format(rolling_average_window))
         dba["month"] = dba.date.apply(lambda x: get_date_object(x).month)
         dba["day_of_month"] = dba.date.apply(lambda x: get_date_object(x).day)
 

@@ -58,7 +58,7 @@ def wrangle(
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
     dbf = pd.read_csv("{}/Data/forecast_db.csv".format(PATH)).drop("time", axis=1)
     dbc = pd.read_csv("{}/Data/current_db.csv".format(PATH))
-    dba = pd.read_csv("{}/Data/dba.csv".format(PATH))
+    dba = pd.read_csv("{}/Data/dba_rolled.csv".format(PATH))
     dbll = pd.read_csv(
         "{}/Data/region_codes.csv".format(PATH),
         dtype={"latitude": "float", "longitude": "float"},
@@ -151,28 +151,37 @@ def wrangle(
     loggr.info("Computing rolling average of normal highs (per region)")
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)
     db["day_of_month"] = db.date.apply(lambda x: get_date_object(x).day)
-    dba["month"] = dba.date.apply(lambda x: get_date_object(x).month)
-    dba["day_of_month"] = dba.date.apply(lambda x: get_date_object(x).day)
+    try:
+        dba = dba[[
+            'region',
+            'month',
+            'day_of_month',
+            'rolling_normal_high_{}days'.format(rolling_average_window)
+        ]]
+        dba.rename(index=str, columns={"rolling_normal_high_{}days".format(rolling_average_window): "rolling_normal_high"}, inplace=True)
+    except KeyError:
+        dba["month"] = dba.date.apply(lambda x: get_date_object(x).month)
+        dba["day_of_month"] = dba.date.apply(lambda x: get_date_object(x).day)
 
-    seg_dba_list = []
-    for region in dba.region.unique():
-        seg_dba_list.append(dba[dba.region == region])
+        seg_dba_list = []
+        for region in dba.region.unique():
+            seg_dba_list.append(dba[dba.region == region])
 
-    for seg_dba in seg_dba_list:
-        seg_dba["rolling_normal_high"] = (
-            seg_dba.normal_high.rolling(
-                window=rolling_average_window,
-                min_periods=rolling_average_min_periods,
-                center=True,
+        for seg_dba in seg_dba_list:
+            seg_dba["rolling_normal_high"] = (
+                seg_dba.normal_high.rolling(
+                    window=rolling_average_window,
+                    min_periods=rolling_average_min_periods,
+                    center=True,
+                )
+                .mean()
+                .round(1)
             )
-            .mean()
-            .round(1)
-        )
 
-    loggr.info("Merging normal high data into master_db")
-    dba_rolled = pd.concat(seg_dba_list, ignore_index=True).drop(
-        ["date", "province"], axis=1
-    )
+        loggr.info("Merging normal high data into master_db")
+        dba_rolled = pd.concat(seg_dba_list, ignore_index=True).drop(
+            ["date", "province"], axis=1
+        )
     db = db.merge(dba_rolled, on=["month", "day_of_month", "region"], how="left").drop(
         ["month", "day_of_month"], axis=1
     )

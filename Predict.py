@@ -86,7 +86,7 @@ def predict(precision=1, normalize_data=1, **kwargs):
     dbp = dbp[dbp.date!=str(tomorrow)] # delete tomorrow's prediction to make room for new ones
     dbpp['high'] = np.nan # for now!
     '''Should add line here to add np.nan for and line in prediction_db that aren't present in this one so they can actually append properly (such as missing features'''
-    dbp = dbp.append(dbpp, axis=0, ignore_index=False)
+    dbp = dbp.append(dbpp, ignore_index=False)
     dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
 
     try:

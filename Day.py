@@ -142,18 +142,18 @@ try:
 except Exception as e:
     loggr.exception("Could not update hp for HPResulsts.csv. Here's why: \n {e}")
 
-loggr.info("Saving results to `HPresults.csv`")
 try:
     search_results = pd.read_csv(
         "/Users/Alex/Dropbox (Personal)/HPResults.csv"
     )
 except FileNotFoundError:
     search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
-search_results = search_results.append(hp_inst, ignore_index=True)
 try:
+    search_results = search_results.append(hp_inst, ignore_index=True)
     search_results.to_csv(
         "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
     )
+    loggr.info("Saving results to `HPresults.csv`")
 except FileNotFoundError:
     loggr.warning("Could not save results!!!")
 

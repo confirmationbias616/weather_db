@@ -152,13 +152,13 @@ def wrangle(
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)
     db["day_of_month"] = db.date.apply(lambda x: get_date_object(x).day)
     try:
-        dba = dba[[
+        dba_rolled = dba[[
             'region',
             'month',
             'day_of_month',
             'rolling_normal_high_{}days'.format(rolling_average_window)
         ]]
-        dba.rename(index=str, columns={"rolling_normal_high_{}days".format(rolling_average_window): "rolling_normal_high"}, inplace=True)
+        dba_rolled.rename(index=str, columns={"rolling_normal_high_{}days".format(rolling_average_window): "rolling_normal_high"}, inplace=True)
     except KeyError:
         loggr.info("No pre-rolled average column exists for a rolling_average_window of {}. Starting to calculate instead...".format(rolling_average_window))
         dba["month"] = dba.date.apply(lambda x: get_date_object(x).month)

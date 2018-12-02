@@ -41,65 +41,34 @@ def post_mortem(**kwargs):
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())
     else:
         time_travel_string = ""
-    pred = pd.read_csv(
-        "{}/Predictions/{}{}_predict_tm_high.csv".format(
-            PATH, time_travel_string, fc_date
-        ),
-        dtype={"date": "str"},
-    )
-    dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
-    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
+    
+   
+    dbh = pd.read_csv('/Users/Alex/Coding/weather_db/Data/history_db.csv')
+    dbp = pd.read_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
 
-    # Prep history_db and prediction_db to be merged into a glorious results_db
-    dbp_fc = dbp[dbp.date==fc_date]
-    dbh_fc = dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']]
-    dbp_fc = dbp_fc.merge(dbh_fc, how='left', on=['date', 'province', 'region'])
-    dbp_fc['high'] = np.nan # for now!
-    dbp = dbp.append(dbp_fc, ignore_index=False)
-    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
+    dbp = dbp.drop('high', axis=1).merge(dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']], how='left', on=['date', 'province', 'region']).dropna(axis=0).reset_index().drop('index', axis=1)
 
-    actual = dbh[dbh["date"] == actual_date][["region", "high", "province"]]
-    try:
-        comp = pred.merge(actual, on=["region", "province"], how="left")
-    except KeyError:
-        comp = pred.merge(actual, on=["region"], how="left")
-    comp["TWN_EC_ave"] = (comp["TWN_high_T1"] + comp["EC_high_T1"]) / 2
-    comp["diff_real"] = (comp["high"]) - comp["model_predictions"]
-    comp["diff_TWN_rival"] = (comp["high"]) - comp["TWN_high_T1"]
-    comp["diff_EC_rival"] = (comp["high"]) - comp["EC_high_T1"]
-    comp["diff_mean_rival"] = (comp["high"]) - comp["TWN_EC_ave"]
-    # comp = comp.sort_values("diff_real")
-    ML_perf = (
-        (comp["diff_real"].apply(lambda x: x ** 2).sum()) / len(comp.index)
-    ) ** 0.5
-    TWN_rival_perf = (
-        (comp["diff_TWN_rival"].apply(lambda x: x ** 2).sum()) / len(comp.index)
-    ) ** 0.5
-    EC_rival_perf = (
-        (comp["diff_EC_rival"].apply(lambda x: x ** 2).sum()) / len(comp.index)
-    ) ** 0.5
-    mean_rival_perf = (
-        (comp["diff_mean_rival"].apply(lambda x: x ** 2).sum()) / len(comp.index)
-    ) ** 0.5
+    dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
 
-    comp.to_csv(
-        "{}/Predictions/{}{}_compare_actual.csv".format(
-            PATH, time_travel_string, actual_date
-        )
-    )
-    loggr.info("ML performance: {}".format(round(ML_perf, 2)))
-    loggr.info("TWN rival performance: {}".format(round(TWN_rival_perf, 2)))
-    loggr.info("EC rival performance: {}".format(round(EC_rival_perf, 2)))
-    loggr.info("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
-    f = open(
-        "{}/Predictions/{}{}_compare_actual.txt".format(
-            PATH, time_travel_string, actual_date
-        ),
-        "w",
-    )
-    f.write("ML performance: {}\n".format(round(ML_perf, 2)))
-    f.write("TWN rival performance: {}\n".format(round(TWN_rival_perf, 2)))
-    f.write("EC rival performance: {}\n".format(round(EC_rival_perf, 2)))
-    f.write("Mean rival performance: {}".format(round(mean_rival_perf, 2)))
+    dbp['ML_real_diff'] = dbp.high-dbp.predictions
+    dbp['ML_real_diff_r1'] = dbp.high-round(dbp.predictions,1)
+    dbp['ML_real_diff_r0'] = dbp.high-round(dbp.predictions,0)
+    dbp['mean_real_diff'] = dbp.high-dbp.mean_high_T1
+    dbp['TWN_real_diff'] = dbp.high-dbp.TWN_high_T1
+    dbp['EC_real_diff'] = dbp.high-dbp.EC_high_T1
+    dbp['ave_real_diff'] = dbp.high-dbp.rolling_normal_high
+    dbp['ML_real_diff_abs'] = abs(dbp.high-dbp.predictions)
+    dbp['ML_real_diff_r1_abs'] = abs(dbp.high-round(dbp.predictions,1))
+    dbp['ML_real_diff_r0_abs'] = abs(dbp.high-round(dbp.predictions,0))
+    dbp['mean_real_diff_abs'] = abs(dbp.high-dbp.mean_high_T1)
+    dbp['TWN_real_diff_abs'] = abs(dbp.high-dbp.TWN_high_T1)
+    dbp['EC_real_diff_abs'] = abs(dbp.high-dbp.EC_high_T1)
+    dbp['ave_real_diff_abs'] = abs(dbp.high-dbp.rolling_normal_high)
 
-    return ML_perf, TWN_rival_perf, EC_rival_perf, mean_rival_perf
+    dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv')
+
+    for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
+        loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column].apply(abs))/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
+
+    for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
+        loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column].apply(abs))/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))

@@ -11,8 +11,10 @@ import json
 
 from Test_data import check_historical_data
 from Test_data import correct_bad_EC_data
+from Test_data import check_forecast_data
 from Wrangle import wrangle
 from Train import train
+from Predict import predict
 from Post_mortem import post_mortem
 from meta_hpr import analyze
 
@@ -69,7 +71,33 @@ while True:
     except Exception as e:
         loggr.exception("ETL_history.py could not run. Here's why: \n {e}")
         continue
-loggr.info("ETL history process is now complete. Pausing 1 minute to make sure csv has time to save propperly.")
+
+loggr.info("Starting ETL process...")
+try:
+    loggr.info("Extracting current weather conditions (using ETL_current.py)...")
+    import ETL_current
+    loggr.info("ETL current process is now complete.")
+except Exception as e:
+    loggr.exception("ETL_current.py could not run. Here's why: \n {e}")
+
+while True:
+    try:
+        loggr.info("Extracting forecast data available today " "(using ETL_forecast.py)...")
+        import ETL_forecast
+        break
+    except requests.exceptions.ConnectionError:
+        loggr.critical(
+            "There must be a Wi-Fi connection error. "
+            "Deleting ETL_forecast progress for today, "
+            "pausing for 10 seconds and "
+            "then trying again..."
+        )
+        time.sleep(10)
+        continue
+    except Exception as e:
+        loggr.exception("ETL_forecast.py could not run. Here's why: \n {e}")
+        continue
+loggr.info("ETL forecast process is now complete. Pausing 1 minute to make sure csv has time to save propperly.")
 time.sleep(60)
 
 try:
@@ -79,6 +107,20 @@ try:
     loggr.info("Tests are now complete.")
 except Exception as e:
     loggr.exception("Test_data.py could not run. Here's why: \n {e}")
+try:
+    loggr.info("Running a few tests...")
+    check_forecast_data()
+    loggr.info("Tests are now complete.")
+except Exception as e:
+    loggr.exception("Test_data.py could not run. Here's why: \n {e}")
+
+###Post_mortem (Dates will be tricky here!)
+try:
+    loggr.info("Preparing predictions table for tomorrow ({})".format(datetime.datetime.now().date() + datetime.timedelta(1)))
+    ML, TWN, EC, Mean = post_mortem(target_date=str(get_datetime(hp['start_date'])-datetime.timedelta(1)))
+    loggr.info("Post_mortem results for yesterday ({}) are now ready".format(datetime.datetime.now().date() - datetime.timedelta(1)))
+except Exception as e:
+    loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")
 
 try:
     loggr.info("Wrangling data before training.")
@@ -121,13 +163,39 @@ try:
 except Exception as e:
     loggr.exception("Train.py could not run. Here's why: \n {e}")
 
-###Post_mortem (Dates will be tricky here!)
 try:
-    loggr.info("Preparing predictions table for tomorrow ({})".format(datetime.datetime.now().date() + datetime.timedelta(1)))
-    ML, TWN, EC, Mean = post_mortem(target_date=str(get_datetime(hp['start_date'])-datetime.timedelta(1)))
-    loggr.info("Post_mortem results for yesterday ({}) are now ready".format(datetime.datetime.now().date() - datetime.timedelta(1)))
+    loggr.info("Preparing predictions table for tomorrow ({})".format(datetime.datetime.now().date()+datetime.timedelta(1)))
+    wrangle_status = wrangle(
+        target_date=hp['start_date'],
+        time_span=hp["time_span"],
+        rolling_average_window=hp["rolling_average_window"],
+        rolling_average_min_periods=hp[
+            "rolling_average_min_periods"
+        ],
+        TWN_EC_split = hp["TWN_EC_split"],
+        date_efficient=hp["date_efficient"],
+        region_efficient=hp["region_efficient"],
+        drop_columns=hp['drop_columns'],
+        include_only_columns=hp['include_only_columns'],
+        label=hp["label"],
+        real_time=hp["real_time"],
+        )
+    loggr.info("Predictions table is now ready")
 except Exception as e:
-    loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")
+    loggr.exception("Wrangle.py could not run. Here's why: \n {e}")
+
+try:
+    loggr.info("Running predictions for tomorrow ({})".format(datetime.datetime.now().date() + datetime.timedelta(1)))
+    predict(
+        label=hp["label"],
+        precision=hp["precision"],
+        target_date=hp['start_date'],
+        normalize_data=hp["normalize_data"],
+    )
+
+    loggr.info("Predictions are now ready")
+except Exception as e:
+    loggr.exception("Predict.py could not run. Here's why: \n {e}")
 
 try:
     hp.update(
@@ -157,4 +225,5 @@ try:
 except FileNotFoundError:
     loggr.warning("Could not save results!!!")
 
-analyze()
+# Won't work until we rework meta_hpr.py
+#analyze()

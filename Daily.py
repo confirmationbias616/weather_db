@@ -117,7 +117,7 @@ except Exception as e:
 ###Post_mortem (Dates will be tricky here!)
 try:
     loggr.info("Preparing predictions table for tomorrow ({})".format(datetime.datetime.now().date() + datetime.timedelta(1)))
-    ML, TWN, EC, Mean = post_mortem(target_date=str(get_datetime(hp['start_date'])-datetime.timedelta(1)))
+    post_mortem(target_date=str(get_datetime(hp['start_date'])-datetime.timedelta(1)))
     loggr.info("Post_mortem results for yesterday ({}) are now ready".format(datetime.datetime.now().date() - datetime.timedelta(1)))
 except Exception as e:
     loggr.exception("Post_mortem.py could not run. Here's why: \n {e}")

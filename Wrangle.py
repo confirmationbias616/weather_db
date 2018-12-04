@@ -65,7 +65,7 @@ def wrangle(
     )
 
     [dbh, dbf, dbc, dba, dbll] = [
-        df[df.columns.drop(list(df.filter(regex="Unnamed")))]
+        df[df.columns.drop(list(df.filter(regex="Unnamed")), errors='ignore')]
         for df in [dbh, dbf, dbc, dba, dbll]
     ]
 
@@ -254,7 +254,7 @@ def wrangle(
     loggr.info("Dropping a few columns that will be incompatible with ML training")
     keyword_to_remove = ["current_cond_time", "region_code", "Unnamed", "index"]
     for keyword in keyword_to_remove:
-        db = db[db.columns.drop(list(db.filter(regex=keyword)))]
+        db = db[db.columns.drop(list(db.filter(regex=keyword)), errors='ignore')]
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
     if include_only_columns:
         if type(include_only_columns) is str:

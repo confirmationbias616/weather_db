@@ -7,7 +7,7 @@ import logging
 import json
 import time
 
-region_codes = pd.read_csv("/Users/Alex/Coding/weather_db/Data/region_codes.csv").drop("Unnamed: 0", axis=1)
+region_codes = pd.read_csv("/Users/Alex/Coding/weather_db/Data/region_codes.csv").drop("Unnamed: 0", axis=1, errors='ignore')
 providers = "TWN"
 readings = {
     0: "current_temp",

@@ -24,7 +24,7 @@ loggr.setLevel(logging.INFO)
 
 now = datetime.datetime.now()
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-    "Unnamed: 0", axis=1
+    "Unnamed: 0", axis=1, errors='ignore'
 )
 providers = ("TWN", "EC")
 readings = {0: "high", 1: "low", 2: "precipitation"}

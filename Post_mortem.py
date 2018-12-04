@@ -71,5 +71,5 @@ def post_mortem(**kwargs):
     for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
         loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column].apply(abs))/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
 
-    for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
+    for column in ['ML_real_diff_abs', 'ML_real_diff_r1_abs', 'ML_real_diff_r0_abs', 'mean_real_diff_abs', 'TWN_real_diff_abs', 'EC_real_diff_abs', 'ave_real_diff_abs']:
         loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column].apply(abs))/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))

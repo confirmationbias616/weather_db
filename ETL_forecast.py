@@ -58,7 +58,10 @@ def get_TWN(prov, region, readings, fc_days):
             response = requests.get(
                 url.format(province_dict[prov], str(TWN_region_code).zfill(4))
             ).json()
-            break
+            if len(response) < fc_days-1:
+            	loggr.warning("WTF")
+            	continue
+            break # I think this is a useless break.. remove?
         except json.decoder.JSONDecodeError:
             loggr.info("For some reason the JSON response was bad. Retrying this code...")
     TWN_data = [None] * len(readings)

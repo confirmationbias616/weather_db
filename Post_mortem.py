@@ -51,13 +51,6 @@ def post_mortem(**kwargs):
 
     dbp.dropna(axis=0, subset=['high', 'predictions'], inplace=True)
 
-    dbp['ML_real_diff'] = dbp.high-dbp.predictions
-    dbp['ML_real_diff_r1'] = dbp.high-round(dbp.predictions,1)
-    dbp['ML_real_diff_r0'] = dbp.high-round(dbp.predictions,0)
-    dbp['mean_real_diff'] = dbp.high-dbp.mean_high_T1
-    dbp['TWN_real_diff'] = dbp.high-dbp.TWN_high_T1
-    dbp['EC_real_diff'] = dbp.high-dbp.EC_high_T1
-    dbp['ave_real_diff'] = dbp.high-dbp.rolling_normal_high
     dbp['ML_real_diff_abs'] = abs(dbp.high-dbp.predictions)
     dbp['ML_real_diff_r1_abs'] = abs(dbp.high-round(dbp.predictions,1))
     dbp['ML_real_diff_r0_abs'] = abs(dbp.high-round(dbp.predictions,0))

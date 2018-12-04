@@ -46,10 +46,11 @@ def post_mortem(**kwargs):
     dbh = pd.read_csv('/Users/Alex/Coding/weather_db/Data/history_db.csv')
     dbp = pd.read_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
 
-    dbp = dbp.drop('high', axis=1).merge(dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']], how='left', on=['date', 'province', 'region']).dropna(axis=0).reset_index().drop('index', axis=1)
+    dbp = dbp.drop('high', axis=1).merge(dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']], how='left', on=['date', 'province', 'region']).reset_index().drop('index', axis=1)
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv', index=False)
 
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
+    dbp.dropna(axis=0, inplace=True)
 
     dbp['ML_real_diff'] = dbp.high-dbp.predictions
     dbp['ML_real_diff_r1'] = dbp.high-round(dbp.predictions,1)

@@ -58,6 +58,9 @@ def post_mortem(**kwargs):
     dbp['TWN_real_diff'] = abs(dbp.high-dbp.TWN_high_T1)
     dbp['EC_real_diff'] = abs(dbp.high-dbp.EC_high_T1)
     dbp['ave_real_diff'] = abs(dbp.high-dbp.rolling_normal_high)
+    dbp['ML_win'] = (dbp['ML_real_diff']<dbp['TWN_real_diff']) & (dbp['ML_real_diff']<dbp['EC_real_diff'])
+    dbp['TWN_win'] = (dbp['TWN_real_diff']<dbp['EC_real_diff']) & (dbp['TWN_real_diff']<dbp['ML_real_diff'])
+    dbp['EC_win'] = (dbp['EC_real_diff']<dbp['TWN_real_diff']) & (dbp['EC_real_diff']<dbp['ML_real_diff'])
 
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv', index=False)
 
@@ -66,3 +69,9 @@ def post_mortem(**kwargs):
 
     for column in ['ML_real_diff_abs', 'ML_real_diff_r1_abs', 'ML_real_diff_r0_abs', 'mean_real_diff_abs', 'TWN_real_diff_abs', 'EC_real_diff_abs', 'ave_real_diff_abs']:
         loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column])/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
+    loggr.info("Total ML wins: {}".format(sum(dbp.ML_win)))
+    loggr.info("Total TWN wins: {}".format(sum(dbp.TWN_win)))
+    loggr.info("Total EC wins: {}".format(sum(dbp.EC_win)))
+    loggr.info("Latest ML wins: {}".format(sum(dbp_latest.ML_win)))
+    loggr.info("Latest TWN wins: {}".format(sum(dbp_latest.TWN_win)))
+    loggr.info("Latest EC wins: {}".format(sum(dbp_latest.EC_win)))

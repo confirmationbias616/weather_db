@@ -47,6 +47,7 @@ def post_mortem(**kwargs):
     dbp = pd.read_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
 
     dbp = dbp.drop('high', axis=1).merge(dbh[dbh.provider=='TWN'][['date', 'region', 'province', 'high']], how='left', on=['date', 'province', 'region']).dropna(axis=0).reset_index().drop('index', axis=1)
+    dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv', index=False)
 
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db.csv')
 
@@ -65,7 +66,7 @@ def post_mortem(**kwargs):
     dbp['EC_real_diff_abs'] = abs(dbp.high-dbp.EC_high_T1)
     dbp['ave_real_diff_abs'] = abs(dbp.high-dbp.rolling_normal_high)
 
-    dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv')
+    dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv', index=False)
 
     for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
         loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column].apply(abs))/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))

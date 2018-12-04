@@ -64,11 +64,15 @@ def post_mortem(**kwargs):
 
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv', index=False)
 
+    loggr.info('For entire predictions history:')
     for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
-        loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column])/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
+        loggr.info('\tcolumn {} has an average of {} and an rmse of {}'. format(column, sum(dbp[column])/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
 
-    for column in ['ML_real_diff_abs', 'ML_real_diff_r1_abs', 'ML_real_diff_r0_abs', 'mean_real_diff_abs', 'TWN_real_diff_abs', 'EC_real_diff_abs', 'ave_real_diff_abs']:
-        loggr.info('column {} as an average of {} and an rmse of {}'. format(column, sum(dbp[column])/len(dbp), (sum(dbp[column].apply(lambda x: x**2))/len(dbp))**0.5))
+    dbp_latest = dbp[dbp.date==fc_date]
+    loggr.info('For yesterday only:')
+    for column in ['ML_real_diff', 'ML_real_diff_r1', 'ML_real_diff_r0', 'mean_real_diff', 'TWN_real_diff', 'EC_real_diff', 'ave_real_diff']:
+        loggr.info('\tcolumn {} has an average of {} and an rmse of {}'. format(column, sum(dbp_latest[column])/len(dbp_latest), (sum(dbp_latest[column].apply(lambda x: x**2))/len(dbp_latest))**0.5))
+
     loggr.info("Total ML wins: {}".format(sum(dbp.ML_win)))
     loggr.info("Total TWN wins: {}".format(sum(dbp.TWN_win)))
     loggr.info("Total EC wins: {}".format(sum(dbp.EC_win)))

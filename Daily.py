@@ -72,13 +72,20 @@ while True:
         loggr.exception("ETL_history.py could not run. Here's why: \n {e}")
         continue
 
-loggr.info("Starting ETL process...")
 try:
     loggr.info("Extracting current weather conditions (using ETL_current.py)...")
     import ETL_current
     loggr.info("ETL current process is now complete.")
 except Exception as e:
     loggr.exception("ETL_current.py could not run. Here's why: \n {e}")
+
+try:
+    loggr.info("Running a few tests...")
+    check_historical_data()
+    correct_bad_EC_data()
+    loggr.info("Tests are now complete.")
+except Exception as e:
+    loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 
 while True:
     try:
@@ -100,13 +107,6 @@ while True:
 loggr.info("ETL forecast process is now complete. Pausing 1 minute to make sure csv has time to save propperly.")
 time.sleep(60)
 
-try:
-    loggr.info("Running a few tests...")
-    check_historical_data()
-    correct_bad_EC_data()
-    loggr.info("Tests are now complete.")
-except Exception as e:
-    loggr.exception("Test_data.py could not run. Here's why: \n {e}")
 try:
     loggr.info("Running a few tests...")
     check_forecast_data()

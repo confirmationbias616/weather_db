@@ -34,14 +34,6 @@ def predict(precision=1, normalize_data=1, **kwargs):
         loggr.debug("Loading model {}".format(filename))
         with open(filename, "rb") as input_file:
             return pickle.load(input_file)
-    
-    def load_features():
-        filename = "{}/Gym/feature_list/{}{}.pkl".format(
-            PATH, time_travel_string, today
-        )
-        loggr.debug("Loading features {}".format(filename))
-        with open(filename, "rb") as input_file:
-            return pickle.load(input_file)
 
     def get_date_object(date):
         return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
@@ -91,31 +83,3 @@ def predict(precision=1, normalize_data=1, **kwargs):
     dbp = dbp[dbp.date!=str(tomorrow)] # delete tomorrow's prediction to make room for new ones
     dbp = dbp.append(dbpp, ignore_index=True)
     dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
-
-    try:
-        _ = dbpp["TWN_high_T1"]
-        _ = dbpp["EC_high_T1"]
-    except KeyError:
-        dbpp["TWN_high_T1"] = (
-            dbpp["TWN_high_T1_delta"] + dbpp["rolling_normal_high"]
-        )
-        dbpp["EC_high_T1"] = (
-            dbpp["EC_high_T1_delta"] + dbpp["rolling_normal_high"]
-        )
-
-    forecast_table = dbpp[
-        ["region", "province", "TWN_high_T1", "EC_high_T1"]
-    ]
-    forecast_table["model_predictions"] = [
-        round(predictions[i], precision) for i in range(len(predictions))
-    ]
-
-    forecast_table.to_csv(
-        "{}/Predictions/{}{}_predict_tm_high.csv".format(
-            PATH, time_travel_string, today
-        ), index=False
-    )
-    forecast_table.describe().to_csv(
-        "{}/Predictions/{}{}_describe.csv".format(PATH, time_travel_string, today), index=False
-    )
-

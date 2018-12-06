@@ -50,15 +50,6 @@ def train(
         with open(filename, "wb") as output:
             pickle.dump(model, output)
 
-    def save_features(features):
-
-        filename = "{}/Gym/feature_list/{}{}.pkl".format(
-            PATH, time_travel_string, today
-        )
-        loggr.debug("Saving features {}".format(filename))
-        with open(filename, "wb") as output:
-            pickle.dump(features, output)
-
     try:
         today = kwargs["target_date"]
         if today == str(datetime.datetime.now().date()):
@@ -162,7 +153,6 @@ def train(
         
 
     features = X.columns
-    save_features(features)
 
     if normalize_data:
         loggr.info("Normalizing data...")
@@ -207,30 +197,6 @@ def train(
     
     loggr.info("Model RMSE:{}".format(round(model_rmse, 2)))
     save_model(model)
+    loggr.info("Model has been pickled for future use")
 
-    summary = list(
-        zip(
-            [
-                "train data points",
-                "test data points",
-                "baseline RMSE",
-                "Baseline average error",
-                "model",
-                "features",
-                "model RMSE",
-            ],
-            [
-                len(X_train),
-                len(y_train),
-                baseline_rmse,
-                baseline_ave_error,
-                model,
-                features,
-                model_rmse,
-            ],
-        )
-    )
-    pd.DataFrame(summary).to_csv(
-        "{}/Predictions/{}{}_summary.csv".format(PATH, time_travel_string, today), index=False
-    )
     return points

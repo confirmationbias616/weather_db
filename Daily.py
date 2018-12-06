@@ -197,33 +197,4 @@ try:
 except Exception as e:
     loggr.exception("Predict.py could not run. Here's why: \n {e}")
 
-try:
-    hp.update(
-        {
-            "log_time": datetime.datetime.now(),
-            "ML_rms": ML,
-            "TWN_rms": TWN,
-            "EC_rms": EC,
-            "Mean_rms": Mean,
-        }
-    )
-except Exception as e:
-    loggr.exception("Could not update hp for HPResulsts.csv. Here's why: \n {e}")
-
-try:
-    search_results = pd.read_csv(
-        "/Users/Alex/Dropbox (Personal)/HPResults.csv"
-    )
-except FileNotFoundError:
-    search_results = pd.DataFrame(columns=(["log_time"] + list(hp.keys())))
-try:
-    search_results = search_results.append(hp_inst, ignore_index=True)
-    search_results.to_csv(
-        "/Users/Alex/Dropbox (Personal)/HPResults.csv", index=False
-    )
-    loggr.info("Saving results to `HPresults.csv`")
-except FileNotFoundError:
-    loggr.warning("Could not save results!!!")
-
-# Won't work until we rework meta_hpr.py
-#analyze()
+loggr.info('All done for today!')

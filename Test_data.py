@@ -56,12 +56,12 @@ def check_forecast_data():
 # it should actually be NaN.
 def correct_bad_EC_data():
     drop_ind = list(
-        fc[(fc.low > fc.high) & (fc.high == 0) & (fc.provider == "EC")].index
+        fc[(fc.high == 0) & (fc.provider == "EC")].index
     )
     if drop_ind:
         fc.loc[drop_ind, "high"] = np.nan
         fc.to_csv("{}/Data/forecast_db.csv".format(PATH))
-        loggr.info("Deleted {} bad entries from EC.".format(len(drop_ind)))
+        loggr.info("Deleted {} potentially bad entries from EC.".format(len(drop_ind)))
 
 
 # check for missed historical data collection

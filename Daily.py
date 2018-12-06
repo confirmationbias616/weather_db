@@ -104,8 +104,8 @@ while True:
     except Exception as e:
         loggr.exception("ETL_forecast.py could not run. Here's why: \n {e}")
         continue
-loggr.info("ETL forecast process is now complete. Pausing 1 minute to make sure csv has time to save propperly.")
-time.sleep(60)
+loggr.info("ETL forecast process is now complete. Pausing 15 seconds to make sure csv has time to save propperly.")
+time.sleep(15)
 
 try:
     loggr.info("Running a few tests...")

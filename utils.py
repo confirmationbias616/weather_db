@@ -145,10 +145,10 @@ def ETL_regions():
 
 
 def geocode():
-    API_KEY = "AIzaSyBxD48pNKyb_62nEtMBfl6bHyluq32uvSo"
+    API_KEY = "GET_YOUR_OWN"
     loggr.info(datetime.datetime.now())
     regions = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-        "Unnamed: 0", axis=1
+        "Unnamed: 0", axis=1, errors='ignore'
     )
     regions["prov_region"] = regions["province"].map(str) + "_" + regions["region"]
 
@@ -166,6 +166,21 @@ def geocode():
     regions["longitude"] = regions["geocode"].apply(lambda x: float(x.split("_")[1]))
     regions.drop(["prov_region", "geocode"], axis=1, inplace=True)
     loggr.info(regions)
+    regions.to_csv("{}/Data/region_codes.csv".format(PATH))
+    loggr.info(datetime.datetime.now())
+
+def elevate():
+    API_KEY = "GET_YOUR_OWN"
+    rc = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
+        "Unnamed: 0", axis=1, errors='ignore'
+    )
+    url = "https://maps.googleapis.com/maps/api/elevation/json?locations={},{}&key={}"
+    def get_elevation(latitude, longitude):
+        response = requests.get(url.format(latitude, longitude, API_KEY)).json()
+        elevation = round(response['results'][0]['elevation'],1)
+        print(elevation)
+        return elevation
+    rc['elevation'] = rc.apply(lambda row: get_elevation(row['latitude'], row['longitude']), axis=1)
     regions.to_csv("{}/Data/region_codes.csv".format(PATH))
     loggr.info(datetime.datetime.now())
 

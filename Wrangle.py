@@ -102,7 +102,7 @@ def wrangle(
         if i == 0:
             db = seg_dbf
         else:
-            db = db.merge(seg_dbf_list[i], on=["date", "region", "province"])
+            db = db.merge(seg_dbf_list[i], how='left', on=["date", "region", "province"])
         i += 1
 
     loggr.info("Wrangling history data")

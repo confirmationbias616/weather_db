@@ -54,14 +54,14 @@ def check_forecast_data():
 
 # This is to fix an EC bug where it seems like they record a high of '0' when
 # it should actually be NaN.
-def correct_bad_EC_data():
+def correct_bad_forecast_EC_data():
     drop_ind = list(
         fc[(fc.high == 0) & (fc.provider == "EC")].index
     )
     if drop_ind:
         fc.loc[drop_ind, "high"] = np.nan
         fc.to_csv("{}/Data/forecast_db.csv".format(PATH))
-        loggr.info("Deleted {} potentially bad entries from EC.".format(len(drop_ind)))
+        loggr.info("Deleted {} potentially bad forecast entries from EC.".format(len(drop_ind)))
 
 
 # check for missed historical data collection
@@ -78,3 +78,14 @@ def check_historical_data():
                 )
         else:
             loggr.critical("all {} historical data was missed".format(provider))
+
+# This is to fix an EC bug where it seems like they record a high of '0' when
+# it should actually be NaN.
+def correct_bad_historical_EC_data():
+    drop_ind = list(
+        ht[(ht.high == 0) & (ht.provider == "EC")].index
+    )
+    if drop_ind:
+        ht.loc[drop_ind, "high"] = np.nan
+        fc.to_csv("{}/Data/history_db.csv".format(PATH))
+        loggr.info("Deleted {} potentially bad historical entries from EC.".format(len(drop_ind)))

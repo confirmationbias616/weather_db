@@ -83,7 +83,7 @@ except Exception as e:
 try:
     loggr.info("Running a few tests...")
     check_historical_data()
-    #correct_bad_historical_EC_data()
+    correct_bad_historical_EC_data()
     loggr.info("Tests are now complete.")
 except Exception as e:
     loggr.exception("Test_data.py could not run. Here's why: \n {e}")
@@ -111,7 +111,7 @@ time.sleep(15)
 try:
     loggr.info("Running a few tests...")
     check_forecast_data()
-    correct_bad_forecast_EC_data()
+    #correct_bad_forecast_EC_data()
     loggr.info("Tests are now complete.")
 except Exception as e:
     loggr.exception("Test_data.py could not run. Here's why: \n {e}")

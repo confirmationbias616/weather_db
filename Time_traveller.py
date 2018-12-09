@@ -1,10 +1,7 @@
 import logging
-import requests
 import sys
 import os
 import datetime
-import time
-from shutil import copyfile
 import random
 import pandas as pd
 import json
@@ -94,7 +91,7 @@ for i in range(hp["iterations"]):
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
             )
 
-            ML_agg, TWN_agg, EC_agg, Mean_agg, Mean_pred_agg, points_used_agg = [], [], [], [], [], []
+            MLp_agg, MLa_agg, TWNa_agg, ECa_agg, MLw_agg, TWNw_agg, ECw_agg  = [], [], [], [], [], [], []
             for target_date in [
                 str(start_date + datetime.timedelta(days=x))
                 for x in range(eval_days)
@@ -122,7 +119,7 @@ for i in range(hp["iterations"]):
                     )
                     if wrangle_status == 1:
                         continue
-                    points_used = train(
+                    train(
                         target_date=target_date,
                         label=hp_inst["label"],
                         time_span=hp_inst["time_span"],
@@ -136,18 +133,20 @@ for i in range(hp["iterations"]):
                         edge_forecasting=hp_inst["edge_forecasting"],
                         normalize_data=hp_inst["normalize_data"],
                     )
-                    points_used_agg.append(points_used)
                     predict(
                         label=hp_inst["label"],
                         precision=hp_inst["precision"],
                         target_date=target_date,
                         normalize_data=hp_inst["normalize_data"],
                     )
-                    ML, TWN, EC, Mean = post_mortem(target_date=target_date)
-                    ML_agg.append(ML)
-                    TWN_agg.append(TWN)
-                    EC_agg.append(EC)
-                    Mean_agg.append(Mean)
+                    MLp, MLa, TWNa, ECa, MLw, TWNw, ECw = post_mortem(target_date=str(get_datetime(target_date)+datetime.timedelta(1)))
+                    MLp_agg.append(MLp)
+                    MLa_agg.append(MLa)
+                    TWNa_agg.append(TWNa)
+                    ECa_agg.append(ECa)
+                    MLw_agg.append(MLw)
+                    TWNw_agg.append(TWNw)
+                    ECw_agg.append(ECw)
                 except Exception as e:
                     loggr.exception(
                         "Something went wrong for this date. See next line for details. Skipping date..."
@@ -162,20 +161,16 @@ for i in range(hp["iterations"]):
                 {
                     "log_time": log_time,
                     "eval_days": eval_days,
-                    "ML_rms": (sum([x ** 2 for x in ML_agg]) / len(ML_agg)) ** 0.5,
-                    "TWN_rms": (sum([x ** 2 for x in TWN_agg]) / len(TWN_agg)) ** 0.5,
-                    "EC_rms": (sum([x ** 2 for x in EC_agg]) / len(EC_agg)) ** 0.5,
-                    "Mean_rms": (sum([x ** 2 for x in Mean_agg]) / len(Mean_agg))
-                    ** 0.5,
-                    "ML_ave": sum(ML_agg) / len(ML_agg),
-                    "TWN_ave": sum(TWN_agg) / len(TWN_agg),
-                    "EC_ave": sum(EC_agg) / len(EC_agg),
-                    "Mean_ave": sum(Mean_agg) / len(Mean_agg),
-                    "ML": ML_agg,
-                    "TWN": TWN_agg,
-                    "EC": EC_agg,
-                    "mean": Mean_agg,
-                    "points_used": points_used_agg,
+                    "ML_rms": (sum([x ** 2 for x in MLa_agg]) / len(MLa_agg)) ** 0.5,
+                    "TWN_rms": (sum([x ** 2 for x in TWNa_agg]) / len(TWNa_agg)) ** 0.5,
+                    "EC_rms": (sum([x ** 2 for x in ECa_agg]) / len(ECa_agg)) ** 0.5,
+                    "ML_ave": sum(MLa_agg) / len(MLa_agg),
+                    "TWN_ave": sum(TWNa_agg) / len(TWNa_agg),
+                    "EC_ave": sum(ECa_agg) / len(ECa_agg),
+                    "ML win %": sum(MLw_agg) / sum(MLp_agg),
+                    "TWN win %": sum(TWNw_agg) / sum(MLp_agg),
+                    "EC win %": sum(ECw_agg) / sum(MLp_agg),
+                    "points_used": sum(MLp) / len(MLp_agg),
                 }
             )
             if wrangle_status == 1:

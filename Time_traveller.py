@@ -170,7 +170,7 @@ for i in range(hp["iterations"]):
                     "ML win %": sum(MLw_agg) / sum(MLp_agg),
                     "TWN win %": sum(TWNw_agg) / sum(MLp_agg),
                     "EC win %": sum(ECw_agg) / sum(MLp_agg),
-                    "points_used": sum(MLp) / len(MLp_agg),
+                    "points_used": sum(MLp_agg) / len(MLp_agg),
                 }
             )
             if wrangle_status == 1:

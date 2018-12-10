@@ -91,5 +91,5 @@ def correct_bad_historical_EC_data():
     )
     if drop_ind:
         ht.loc[drop_ind, "high"] = np.nan
-        fc.to_csv("{}/Data/history_db.csv".format(PATH))
+        ht.to_csv("{}/Data/history_db.csv".format(PATH))
         loggr.info("Deleted {} potentially bad historical entries from EC.".format(len(drop_ind)))

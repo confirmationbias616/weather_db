@@ -195,4 +195,3 @@ for i in range(hp["iterations"]):
             loggr.exception("Abandoning this loop and skipping to the next one...")
             continue
         break
-    analyze()

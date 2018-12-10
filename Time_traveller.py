@@ -171,6 +171,9 @@ for i in range(hp["iterations"]):
                     "TWN win %": sum(TWNw_agg) / sum(MLp_agg),
                     "EC win %": sum(ECw_agg) / sum(MLp_agg),
                     "points_used": sum(MLp_agg) / len(MLp_agg),
+                    "TWN-ML ave": [TWNa_agg[x]-MLa_agg[x] for x in range(len(TWNa_agg))],
+                    "TWN-ML wins": [TWNw_agg[x]-MLw_agg[x] for x in range(len(TWNw_agg))],
+                    "points_used": MLp_agg,
                 }
             )
             if wrangle_status == 1:

@@ -58,9 +58,16 @@ def post_mortem(**kwargs):
     dbp['TWN_real_diff'] = abs(dbp.high-dbp.TWN_high_T1)
     dbp['EC_real_diff'] = abs(dbp.high-dbp.EC_high_T1)
     dbp['ave_real_diff'] = abs(dbp.high-dbp.rolling_normal_high)
-    dbp['ML_win'] = (dbp['ML_real_diff']<dbp['TWN_real_diff']) & (dbp['ML_real_diff']<dbp['EC_real_diff'])
-    dbp['TWN_win'] = (dbp['TWN_real_diff']<dbp['EC_real_diff']) & (dbp['TWN_real_diff']<dbp['ML_real_diff'])
-    dbp['EC_win'] = (dbp['EC_real_diff']<dbp['TWN_real_diff']) & (dbp['EC_real_diff']<dbp['ML_real_diff'])
+    dbp['ML_1win'] = (dbp['ML_real_diff']<dbp['TWN_real_diff']) & (dbp['ML_real_diff']<dbp['EC_real_diff'])
+    dbp['TWN_1win'] = (dbp['TWN_real_diff']<dbp['EC_real_diff']) & (dbp['TWN_real_diff']<dbp['ML_real_diff'])
+    dbp['EC_1win'] = (dbp['EC_real_diff']<dbp['TWN_real_diff']) & (dbp['EC_real_diff']<dbp['ML_real_diff'])
+    dbp['all_3tie'] = (dbp['EC_real_diff']==dbp['TWN_real_diff']) & (dbp['EC_real_diff']==dbp['ML_real_diff'])
+    dbp['ML_2tie'] = ((dbp['ML_real_diff']<=dbp['TWN_real_diff']) & (dbp['ML_real_diff']<=dbp['EC_real_diff'])) & (dbp['all_3tie']==0) & (dbp['ML_1win']==0)
+    dbp['TWN_2tie'] = ((dbp['TWN_real_diff']<=dbp['EC_real_diff']) & (dbp['TWN_real_diff']<=dbp['ML_real_diff'])) & (dbp['all_3tie']==0) & (dbp['TWN_1win']==0)
+    dbp['EC_2tie'] = ((dbp['EC_real_diff']<=dbp['TWN_real_diff']) & (dbp['EC_real_diff']<=dbp['ML_real_diff'])) & (dbp['all_3tie']==0) & (dbp['EC_1win']==0)
+    dbp['ML_win'] = dbp['ML_1win']*1 + dbp['ML_2tie']*0.5 + dbp['all_3tie']*0.3
+    dbp['TWN_win'] = dbp['TWN_1win']*1 + dbp['TWN_2tie']*0.5 + dbp['all_3tie']*0.3
+    dbp['EC_win'] = dbp['EC_1win']*1 + dbp['EC_2tie']*0.5 + dbp['all_3tie']*0.3
 
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv', index=False)
 

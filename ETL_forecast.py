@@ -54,40 +54,32 @@ def get_TWN(prov, region, readings, fc_days):
     TWN_region_code = region_codes[
         (region_codes["province"] == prov) & (region_codes["region"] == region)
     ].iloc[0]["TWN_region_code"]
-    max_retries = 100
+    max_retries = 20
     retries = 0
-    while retries < max_retries:
-        while True:    
-            try:
-                response = requests.get(
-                    url.format(province_dict[prov], str(TWN_region_code).zfill(4))
-                ).json()
-                if len(response) < fc_days-1:
-                	loggr.warning("WTF")
-                	continue
-                break # I think this is a useless break.. remove?
-            except json.decoder.JSONDecodeError:
-                loggr.info("For some reason the JSON response was bad. Retrying this code...")
+    while retries < max_retries:    
+        try:
+            response = requests.get(
+                url.format(province_dict[prov], str(TWN_region_code).zfill(4))
+            ).json()
+            if len(response) < fc_days-1:
+                loggr.warning("TWN returned bad data for this region. Retrying...")
+                retries += 1
+                continue
+        except json.decoder.JSONDecodeError:
+            loggr.warning("For some reason the JSON response was bad. Retrying this code...")
+            retries += 1
+            continue
         TWN_data = [None] * len(readings)
         TWN_translation = {0: "tmac", 1: "tmic", 2: "pdp", 3: "pnp"}
-        try:
-            for i in range(len(TWN_translation)):
-                fc_response = response["fourteendays"]["periods"]
-                TWN_data[i] = [
-                    int(fc_response[day][TWN_translation[i]]) for day in range(0, fc_days)
+        for i in range(len(TWN_translation)):
+            fc_response = response["fourteendays"]["periods"]
+            TWN_data[i] = [
+                int(fc_response[day][TWN_translation[i]]) for day in range(0, fc_days)
                 ]
-            break
-        except KeyError:
-            loggr.warning("bad region code?")
-            loggr.warning(
-                "JSON response we got from the " "region code: \n{}".format(response)
-            )
-        except IndexError:
-            loggr.warning("THIS IS A NEW TWN ERROR... WHAT'S GOING ONNNNNNNN?!")
-            retries += 1
-    if retries >= max_retries:
-        TWN_data =  [0] * len(readings)
-    return TWN_data
+        retries += 1
+        return TWN_data
+    loggr.warning('Exceeded retry limit. logging all NaNs and moving on to the next code.')
+    return [[np.nan] * fc_days] * len(readings)
 
 
 def get_EC(prov, region, readings, fc_days):

@@ -87,7 +87,7 @@ def get_TWN(prov, region, readings):
                         )
                     )
                     TWN_data[i] = np.nan
-    except KeyError:
+    except (KeyError,TypeError):
         loggr.critical(
             "TWN code {} is a bad region code? JSON response"
             'received from the region code: "{}"'.format(

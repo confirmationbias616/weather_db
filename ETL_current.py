@@ -92,20 +92,23 @@ else:
         "starting to extract current conditions for 1st of "
         "{} regions...".format(no_of_regions))
     for j in range(no_of_regions):
-        data = get_TWN(region_codes.province[j], region_codes.region[j], readings)
-        loggr.info(data)
-        current_db = current_db.append(
-            {
-                "date": datetime.datetime.now().date(),
-                "province": region_codes.iloc[j]["province"],
-                "region": region_codes.iloc[j]["region"],
-                "current_cond_time": datetime.datetime.now().time(),
-                "current_temp": data[0],
-                "current_temp_feels": data[1],
-                "current_pressure": data[2],
-                "current_wind_speed": data[3],
-                "current_wind_direction": data[4],
-            }, ignore_index=True
-        )
-        loggr.info("extracted current conditions for region #{}".format(j+1))
+        try:
+            data = get_TWN(region_codes.province[j], region_codes.region[j], readings)
+            loggr.info(data)
+            current_db = current_db.append(
+                {
+                    "date": datetime.datetime.now().date(),
+                    "province": region_codes.iloc[j]["province"],
+                    "region": region_codes.iloc[j]["region"],
+                    "current_cond_time": datetime.datetime.now().time(),
+                    "current_temp": data[0],
+                    "current_temp_feels": data[1],
+                    "current_pressure": data[2],
+                    "current_wind_speed": data[3],
+                    "current_wind_direction": data[4],
+                }, ignore_index=True
+            )
+            loggr.info("extracted current conditions for region #{}".format(j+1))
+        except TypeError:
+            loggr.info("Due to errors logged above, skipped region #{}".format(j+1))
     current_db.to_csv("{}/Data/current_db.csv".format(PATH), index=False)

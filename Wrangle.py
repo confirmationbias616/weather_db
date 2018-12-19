@@ -240,10 +240,11 @@ def wrangle(
         inplace=True,
     )
 
-    # EXPERIMENTAL!!!!
+    ### EXPERIMENTAL STUFF BEGINNING!!!!
+    #2ago
     db_date_shift = db.copy()
     db_date_shift['shift_date'] = db_date_shift.date.apply(lambda x: get_date_object(x) + datetime.timedelta(2)).apply(str)
-    shift_features = [x for x in (include_only_columns + [label]) if x[-4:] != '2ago']
+    shift_features = [x for x in (include_only_columns + [label]) if (x[-4:] != '2ago' and x[-4:] != 'lkah')]
     shifted_features = [x+'_2ago' for x in shift_features]
     for x,y in zip(shifted_features, shift_features):
         db_date_shift[x] = db_date_shift[y]
@@ -251,7 +252,19 @@ def wrangle(
     print(shifted_features)
     db_date_shift.drop([x for x in db_date_shift.columns if x not in shifted_features], axis=1, errors='ignore', inplace=True)
     db = db.merge(db_date_shift, left_on=['date','region','province'], right_on=['shift_date','region','province'], how='left')
-    # DONE BEING EXPERIMENTAL :D
+    
+    #look_ahead
+    db_date_shift = db.copy()
+    db_date_shift['shift_date'] = db_date_shift.date.apply(lambda x: get_date_object(x) + datetime.timedelta(1)).apply(str)
+    shift_features = [x for x in (include_only_columns + [label]) if (x[-4:] != '2ago' and x[-4:] != 'lkah')]
+    shifted_features = [x+'_lkah' for x in shift_features]
+    for x,y in zip(shifted_features, shift_features):
+        db_date_shift[x] = db_date_shift[y]
+    shifted_features = shifted_features + ['shift_date','region','province']
+    print(shifted_features)
+    db_date_shift.drop([x for x in db_date_shift.columns if x not in shifted_features], axis=1, errors='ignore', inplace=True)
+    db = db.merge(db_date_shift, left_on=['date','region','province'], right_on=['shift_date','region','province'], how='left')
+    ### DONE BEING EXPERIMENTAL :D
 
     loggr.debug("Number of rows in master_db: {}".format(len(db)))
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))

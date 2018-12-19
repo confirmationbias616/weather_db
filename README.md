@@ -7,8 +7,8 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 
 
 ###### Primary Goal:
-* Predict tomorrow's high with as much accuracy as possible. [Check out our progress!](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements)
- * A real success would be to have the lowest RMSE between predicted and recorded highs out of all tracked forecasters.
+* Predict tomorrow's high with as much accuracy as possible. [Check out my progress!](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements)
+ * A real success would be to have the lowest prediction errors (MAE) between forecast and recorded highs out of all tracked forecasters.
 
  
 ###### Secondary Goals:
@@ -29,27 +29,23 @@ See [Installation](#Installation) instructions to check out the source code on y
 
 ## Challenges
 
-### Data Drift
-Given that Canada is a country with 4 seasons, historical daily averages are constantly on the move from one day/week/month to the next. It's unreasonable to expect a machine learning model trained on January data to perform just as well in July. This boils down to the well-known issue of data drift, where the continuous mutation of feature characteristics results in unpredictability of the target variable. In this application, we are always trying to predict tomorrow's wether, which means we are trying to predict an edge case for which the model has been poorly trained on. One way to solve this would be to train the model on a period of time which equally straddles the forecast date. As we've been collecting data for less than 1 year however, this is solution is not yet possible. 
+### <a name="Drift"></a>Drift 
+Given that Canada is a country with 4 seasons, historical daily averages are constantly on the move from one day/week/month to the next. It's unreasonable to expect a machine learning model trained on January data to perform just as well in July. This boils down to the well-known issue of data drift, where the continuous mutation of feature characteristics results in unpredictability of the target variable. In this application, we are always trying to predict tomorrow's wether, which means we are trying to predict an edge case for which the model has been poorly trained on. One way to solve this would be to train the model on a period of time which equally straddles the forecast date. As we've been collecting data for less than 1 year however, this is solution is not yet possible. The only feasible solution for now is to keep the training sets short every new date's prediction model. So far, it seems like a 10-day trailing training period is optimal.
 
 ### Micro-Climates
-On any given day, the weather across Canada's vast territory tends to vary immensely depending on geographic location. If this is not controlled for, the ML model will be unsuccessful. We solve this issue by pulling in each location's latitude and longitude from Google's Geocoding API. This means the ML model can cater its predictions based on geographic location.
+On any given day, the weather across Canada's vast territory tends to vary immensely depending on geographic location. If this is not controlled for, the ML model will be unsuccessful. We solve this issue by pulling in each location's latitude, longitude, and elevation from Google's Geocoding API. This means the ML model can cater its predictions based on geographical information.
 
 ### Geographic Sparsity
-Given that Canada is sparsely populated, regions included in weather forecasts tend to be clustered and not very well distributed. This challenge is mostly resolved by using the latitude and longitude features, as described above, but there is still an issue with the fact that we have very little data on the North Territories. It might be worthwhile to exclude every datapoint above a certain latitude threshold — even if it means losing the functionality to predict in those regions.
+Given that Canada is sparsely populated, regions included in weather forecasts tend to be clustered and not very well distributed. This challenge is mostly resolved by using the latitude and longitude features, as described above, but there is still an issue with the fact that we have very little data originating from the Northern regions of the country. It might be worthwhile to exclude every datapoint above a certain latitude threshold — even if it means losing the functionality to predict in those regions. For now, Yukon, Northwest Territories, Nunavut, and Newfoundland and Labrador are excluded. Later, I plan on trying out over-sampling of the sparse regions or under-sampling the dense regions to allow these Northern back in the algorithm.
 
 ### Timing of Data Availability
-Since we are trying to predict next-day weather with the data we have during the current day, it behooves us to receive data in a timely manner. A major component of being able to forecast the weather lies in the concept of [weather persistence](<https://en.wikipedia.org/wiki/Weather_forecasting#Persistence>). Basically this means that the weather tends to maintain itself over short periods of time. The short-term past is a good predictor of the near future. Therefore, gathering current day conditions as a feature set would surely be of massive benefit for the ML model's performance.  
+Since we are trying to predict next-day weather with the data we have during the current day, it behooves us to receive data in a timely manner. A major component of being able to forecast the weather lies in the concept of [weather persistence](<https://en.wikipedia.org/wiki/Weather_forecasting#Persistence>). Basically this means that the weather tends to maintain itself over short periods of time. The short-term past is a good predictor of the near future. Therefore, gathering current day conditions as a feature set would surely be of massive benefit for the ML model's performance.  **-- Good news, this is now part of the model!**
 
-Unfortunately, both of our tracked forecasters (Environment Canada and The Weather Network) do not offer current day reports in terms of recorded highs and recorded lows. This means we can only use yesterday's conditions for the "persistence" component of our feature set. This data is 48 hours removed from our target prediction's occurrence, which is not very useful. 
+### Poor Historical Data
+The quality of historical data posted by the weather forecasters isn't great. There's a ton of inconsistencies and missing data. This really hurts model performance because the historical data scraped from the forecasting websites is what forms our ground truth.
 
-This realization leads us to 2 possible courses of actions — both of which will be explored in the future.
-
-1. Switch the forecasting service from predicting tomorrow's weather to predicting today's weather.
-    * To achieve this, the ETL process would have to happen ASAP in the morning. However, we would need as many data points as possible from our tracked forecasters. See [this notebook](<https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/History_ETL_Analysis.ipynb>) to see the analysis on what time of day we could potentially start predicting and using which forecaster's data points.
-     * This service would be less useful but still worthwhile to certain niche customers (such as scientists, construction consultants, festival organizers) 
-2. Find a weather forecaster who tracks and reports actual-day highs and lows for a wide range of Canadian locations. 
-
+### Inconsitent Occurence of Daily High
+The daily high usually occurs near mid-day. Under special circumstances however, the daily high can occur at any other time. These off-beat daily highs really throw off the model. It might be worth trying out a multitask learning (MLT) neural net to predict both timing and actual value of the daily high. This would add robustness to the model. However, neural nets are very data-hungry and our model can only train on short spans of recent data, [as explained above.](#Drift) Until a whole year's data has been collected, this is probably something that just has to be tolerated.
 
 ## End-to-End Machine Learning
 Here's a brief description of all the moving parts in this project.
@@ -86,10 +82,10 @@ Every time new data is collected, run a few tests to make sure data collection r
 Use Scikit-Learn to train a random forest model on historical data, using the reported daily high by The Weather Network as a the target variable. Pickle the model for future use in predicting daily highs.
 
 #### Predict
-Unpickle appropriate model generated in previous step and use it to predict
+Unpickle appropriate model generated in previous step and use it to predict.
 
 #### Report
-Provide some insight into how the model predicted the weather for yesterday.
+Feed prediction data into [Klipfolio](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements) to track performance and provide a way to explore model shortcomings to alow better planning for future improvements.
 
 ## Getting Started
 
@@ -101,14 +97,13 @@ Make sure you are running Python3 and have installed all required packages using
 ### <a name="Installation"></a>Installation
 * Clone this repo to your computer.
 * Get into the folder using ```cd weather_db```.
-* Run ```mkdir Data Gym Predictions```.
+* Run ```mkdir Data Gym```.
 * Download contents from each of the following dropbox links and copy them to your local respective newly created directories
     * [Data](https://www.dropbox.com/sh/wh9feldwhj3wagu/AADdnMciGo5Jk8WcIk3m5uTNa?dl=0)
     * [Gym](https://www.dropbox.com/sh/cai718eeplvb8fi/AAAF1Nnz5w098HDgIH0WoWg3a?dl=0)
-    * [Predictions](https://www.dropbox.com/sh/y0v5l20oyocyb7v/AADDkzurHZikFe9sfu5jYIq1a?dl=0)
 
 ### Schedule
-Currently, I run 2 scripts on a daily schedule, using launchd through a great little app called [LaunchControl](<http://www.soma-zone.com/LaunchControl/>):
-* `Day.py` at 5:10 PM
-* `Evening.py` at 10:10 PM
+Currently, I run the following script on a daily schedule, using launchd through a great little app called [LaunchControl](<http://www.soma-zone.com/LaunchControl/>):
+* `Daily.py` at 5:00 PM
+
 If you want the same results as me, you should do the same.

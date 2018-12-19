@@ -72,8 +72,12 @@ for i in range(hp["iterations"]):
         try:
             hp = load_hyperparameters()
 
-            start_date = get_datetime(hp["start_date"])
-            end_date = get_datetime(hp["end_date"])
+            if type(hp['start_date']) is list:
+                start_date = get_datetime(random.choice(hp['start_date']))
+                end_date = start_date
+            else:
+                start_date = get_datetime(hp["start_date"])
+                end_date = get_datetime(hp["end_date"])
 
             try:
                 eval_days = int(str(end_date - start_date).split(" ")[0]) + 1
@@ -159,6 +163,8 @@ for i in range(hp["iterations"]):
             log_time = datetime.datetime.now()
             hp_inst.update(
                 {
+                    "start_date": start_date,
+                    "end_date": end_date,
                     "log_time": log_time,
                     "eval_days": eval_days,
                     "ML_rms": (sum([x ** 2 for x in MLa_agg]) / len(MLa_agg)) ** 0.5,

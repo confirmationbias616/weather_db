@@ -69,6 +69,28 @@ def post_mortem(**kwargs):
     dbp['TWN_win'] = dbp['TWN_1win']*1 + dbp['TWN_2tie']*0.5 + dbp['all_3tie']*0.3
     dbp['EC_win'] = dbp['EC_1win']*1 + dbp['EC_2tie']*0.5 + dbp['all_3tie']*0.3
 
+    ML_reg_diff_mean = dbp.groupby('region')['ML_real_diff'].mean().sort_values()
+    TWN_reg_diff_mean = dbp.groupby('region')['TWN_real_diff'].mean().sort_values()
+    EC_reg_diff_mean = dbp.groupby('region')['EC_real_diff'].mean().sort_values()
+    dbpr = pd.concat([ML_reg_diff_mean, TWN_reg_diff_mean, EC_reg_diff_mean], axis=1)
+    dbpr['ML_lowest'] = (dbpr.ML_real_diff<dbpr.TWN_real_diff) & (dbpr.ML_real_diff<dbpr.EC_real_diff)
+    dbpr['TWN_lowest'] = (dbpr.TWN_real_diff<dbpr.ML_real_diff) & (dbpr.TWN_real_diff<dbpr.EC_real_diff)
+    dbpr['EC_lowest'] = (dbpr.EC_real_diff<dbpr.TWN_real_diff) & (dbpr.EC_real_diff<dbpr.ML_real_diff)
+    def decode_lowest(ML_lowest, TWN_lowest, EC_lowest):
+        if ML_lowest:
+            return 'ML'
+        elif TWN_lowest:
+            return 'TWN'
+        elif EC_lowest:
+            return 'EC'
+        else:
+            return '?'
+    dbpr['lowest'] = dbpr.apply(lambda row: decode_lowest(row.ML_lowest, row.TWN_lowest, row.EC_lowest), axis=1)
+    dbpr = dbpr.reset_index().rename(columns={'index':'region'})
+    dbpr.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_regional_analysis.csv', index=False)
+
+    dbp = dbp.merge(dbpr.reset_index()[['region','lowest']], how='left', on='region')
+    dbp = dbp.sort_values(['date','province','region'])
     dbp.to_csv('/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv', index=False)
 
     loggr.info('For entire predictions history:')

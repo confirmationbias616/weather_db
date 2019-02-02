@@ -132,10 +132,11 @@ This leaves the project at a fork in the road, stuck between 2 possible paths it
 
 This fork in the road calls for 2 separate branches.
 
-***TL;DR***  
-*The moral of the story is that domain knowledge is absolutely crucial for for any data science project. A solid understanding of the features and underlying data is required in order to build a useful model.  
+#### ***TL;DR***  
+*The moral of the story is that domain knowledge is absolutely crucial for for any data science project. A solid understanding of the features and underlying data is required in order to build a useful model.*  
 
-Now that there is a deeper understanding of the forecasting domain knowledge, this project's development will be corrected in 2 different ways, through 2 different branches.  
-Stay tuned!* :smirk: :wave:
+*Now that there is a deeper understanding of the forecasting domain knowledge, this project's development will be corrected in 2 different ways, through 2 different branches.*  
+
+Stay tuned! :smirk: :wave:
 
 ---

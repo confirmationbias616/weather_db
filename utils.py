@@ -17,8 +17,8 @@ loggr = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setFormatter(
     logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line " +
-        "%(lineno)d"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line "
+        + "%(lineno)d"
     )
 )
 loggr.addHandler(log_handler)
@@ -40,17 +40,22 @@ def str_date_gen(y1=False, y2=False, m1=1, m2=12, d1=1, d2=31):
         try:
             return str(datetime.date(y, m, d))
         except ValueError:
-            return 'skip'
+            return "skip"
+
     return (
-        get_date(y,m,d) for y in range(
-            y1, y2 + 1) for m in range(
-            m1, m2 + 1) for d in range(
-            d1, d2 + 1) if get_date(y, m, d) != 'skip')
+        get_date(y, m, d)
+        for y in range(y1, y2 + 1)
+        for m in range(m1, m2 + 1)
+        for d in range(d1, d2 + 1)
+        if get_date(y, m, d) != "skip"
+    )
+
 
 today = str(datetime.datetime.now().date())
 yesterday = str(datetime.datetime.now().date() - datetime.timedelta(days=1))
 today = "{}-{}-{}".format(today[:4], today[5:7], today[8:10])
 yesterday = "{}-{}-{}".format(yesterday[:4], yesterday[5:7], yesterday[8:10])
+
 
 def erase_today():
     for filename, day in zip(["forecast_db", "history_db"], [today, yesterday]):
@@ -118,7 +123,7 @@ def ETL_regions():
         TWN_name = (
             EC_name
         )  # creating TWN copy of region name so we can manipulate to make relevant to
-           # TWN nomenclature
+        # TWN nomenclature
         TWN_name = TWN_name.replace(" ", "-")
         TWN_name = TWN_name.replace("'", "")
         TWN_url = "https://www.theweathernetwork.com/ca/weather/{}/{}"
@@ -139,6 +144,7 @@ def ETL_regions():
             print("\n")
             return TWN_region_code
         time.sleep(random.randint(3, 5))
+
     regions["TWN_region_code"] = regions["EC_info"].apply(lambda x: find_TWN_code(x))
     regions.drop("EC_info", axis=1, inplace=True)
 
@@ -170,7 +176,7 @@ def geocode():
     API_KEY = "GET_YOUR_OWN"
     loggr.info(datetime.datetime.now())
     regions = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-        "Unnamed: 0", axis=1, errors='ignore'
+        "Unnamed: 0", axis=1, errors="ignore"
     )
     regions["prov_region"] = regions["province"].map(str) + "_" + regions["region"]
 
@@ -191,18 +197,23 @@ def geocode():
     regions.to_csv("{}/Data/region_codes.csv".format(PATH))
     loggr.info(datetime.datetime.now())
 
+
 def elevate():
     API_KEY = "GET_YOUR_OWN"
     rc = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-        "Unnamed: 0", axis=1, errors='ignore'
+        "Unnamed: 0", axis=1, errors="ignore"
     )
     url = "https://maps.googleapis.com/maps/api/elevation/json?locations={},{}&key={}"
+
     def get_elevation(latitude, longitude):
         response = requests.get(url.format(latitude, longitude, API_KEY)).json()
-        elevation = round(response['results'][0]['elevation'],1)
+        elevation = round(response["results"][0]["elevation"], 1)
         print(elevation)
         return elevation
-    rc['elevation'] = rc.apply(lambda row: get_elevation(row['latitude'], row['longitude']), axis=1)
+
+    rc["elevation"] = rc.apply(
+        lambda row: get_elevation(row["latitude"], row["longitude"]), axis=1
+    )
     rc.to_csv("{}/Data/region_codes.csv".format(PATH))
     loggr.info(datetime.datetime.now())
 

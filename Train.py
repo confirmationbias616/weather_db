@@ -37,7 +37,7 @@ def train(
     cv=100,
     edge_forecasting=1,
     normalize_data=1,
-    criterion='mse',
+    criterion="mse",
     **kwargs
 ):
     def get_date_object(date):
@@ -60,7 +60,7 @@ def train(
     except KeyError:
         today = str(datetime.datetime.now().date())
         time_travel = False
-        
+
     loggr.info("Training for date: {}...".format(today))
     if time_travel:
         time_travel_string = "time_travel/{} -> ".format(datetime.datetime.now().date())
@@ -72,7 +72,7 @@ def train(
     # Get indices for selecting portion of data centered on target date by a
     # width of specified time span
     def get_time_span_indices(today):
-        
+
         date_jump = int(time_span / 2)
         today = get_date_object(today)
         # If dates aren't present in DataFrame, get ones that are
@@ -94,7 +94,11 @@ def train(
                 loggr.info("Selected {} as start date".format(start_date))
                 break
             else:
-                loggr.info("There was a missing date({}) in place of attempted start date for time span. Retrying...".format(potential_start_date))
+                loggr.info(
+                    "There was a missing date({}) in place of attempted start date for time span. Retrying...".format(
+                        potential_start_date
+                    )
+                )
                 potential_start_date += datetime.timedelta(1)
         end_date_limit = datetime.date(2017, 12, 25)
         while potential_end_date > end_date_limit:
@@ -107,7 +111,11 @@ def train(
                 loggr.info("Selected {} as end date".format(end_date))
                 break
             else:
-                loggr.info("There was a missing date({}) in place of attempted end date for time span. Retrying...".format(potential_end_date))
+                loggr.info(
+                    "There was a missing date({}) in place of attempted end date for time span. Retrying...".format(
+                        potential_end_date
+                    )
+                )
                 potential_end_date -= datetime.timedelta(1)
 
         start_date, end_date = str(start_date), str(end_date)
@@ -122,7 +130,11 @@ def train(
         )
         return start_index, end_index
 
-    loggr.info("Selecting dates & indices for time span training surrounding date {}...".format(today))
+    loggr.info(
+        "Selecting dates & indices for time span training surrounding date {}...".format(
+            today
+        )
+    )
     start_index, end_index = get_time_span_indices(today)
 
     attr = list(db.columns)
@@ -132,7 +144,19 @@ def train(
     except KeyError:
         label_column = "TWN_high"
     # Create X as features set and y as labeled set
-    must_drop = ['TWN_high', 'TWN_high_delta', 'TWN_low', 'EC_high', 'EC_high_delta', 'EC_low', 'TWN_precipitation', 'EC_precipitation', 'region', 'province', 'date']
+    must_drop = [
+        "TWN_high",
+        "TWN_high_delta",
+        "TWN_low",
+        "EC_high",
+        "EC_high_delta",
+        "EC_low",
+        "TWN_precipitation",
+        "EC_precipitation",
+        "region",
+        "province",
+        "date",
+    ]
     must_drop = [column for column in must_drop if column in db.columns]
     X, y = db.drop(must_drop, axis=1), db[label_column]
     X = X[(X.index > start_index) & (X.index < end_index)]
@@ -141,17 +165,22 @@ def train(
     loggr.info("Amount of data points being used in ML analysis: {}".format(points))
     # compute for baseline error when predicting tomorrow's high using only TWN T1
     # prediction
-    if 'TWN_high_T1' in attr:
+    if "TWN_high_T1" in attr:
         baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1"]))
         baseline_ave_error = sum((abs(y - X["TWN_high_T1"]))) / len(y)
-    elif ('TWN_high_T1_delta' in attr) and ('rolling_normal_high' in attr):
-        baseline_rmse = np.sqrt(mean_squared_error(y, X["TWN_high_T1_delta"] + X['rolling_normal_high']))
-        baseline_ave_error = sum((abs(y - X["TWN_high_T1_delta"] + X['rolling_normal_high']))) / len(y)
+    elif ("TWN_high_T1_delta" in attr) and ("rolling_normal_high" in attr):
+        baseline_rmse = np.sqrt(
+            mean_squared_error(y, X["TWN_high_T1_delta"] + X["rolling_normal_high"])
+        )
+        baseline_ave_error = sum(
+            (abs(y - X["TWN_high_T1_delta"] + X["rolling_normal_high"]))
+        ) / len(y)
     else:
         baseline_rmse = 0
         baseline_ave_error = 0
-        loggr.info('Baseline rmse not available for eventual ML performance comparison :(')
-        
+        loggr.info(
+            "Baseline rmse not available for eventual ML performance comparison :("
+        )
 
     features = X.columns
 
@@ -168,9 +197,9 @@ def train(
         min_samples_split=min_samples_split,
         n_estimators=n_estimators,
         random_state=42,
-        criterion=criterion
+        criterion=criterion,
     )
-    
+
     if baseline_rmse:
         loggr.info("Baseline RMSE: {}".format(round(baseline_rmse, 2)))
         loggr.info("Baseline average error: {}".format(round(baseline_ave_error, 2)))
@@ -179,8 +208,10 @@ def train(
         X, y, shuffle=True, random_state=42
     )
     model.fit(X_train, y_train)
-    
-    feature_importances = sorted(zip(model.feature_importances_, features), reverse=True)
+
+    feature_importances = sorted(
+        zip(model.feature_importances_, features), reverse=True
+    )
     importance_table = pd.DataFrame(
         feature_importances, columns=["importance", "feature"]
     )
@@ -196,7 +227,7 @@ def train(
     )
     model_rmses = np.sqrt(-scores)
     model_rmse = sum(model_rmses) / len(model_rmses)
-    
+
     loggr.info("Model RMSE:{}".format(round(model_rmse, 2)))
     save_model(model)
     loggr.info("Model has been pickled for future use")

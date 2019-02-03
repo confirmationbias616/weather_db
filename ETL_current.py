@@ -21,7 +21,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-    "Unnamed: 0", axis=1, errors='ignore'
+    "Unnamed: 0", axis=1, errors="ignore"
 )
 providers = "TWN"
 readings = {
@@ -53,13 +53,15 @@ def get_TWN(prov, region, readings):
         (region_codes["province"] == prov) & (region_codes["region"] == region)
     ].iloc[0]["TWN_region_code"]
     while True:
-        try:    
+        try:
             response = requests.get(
                 url.format(province_dict[prov], str(TWN_region_code).zfill(4))
             ).json()
             break
         except (json.decoder.JSONDecodeError, ConnectionError):
-            loggr.info("For some reason the JSON response was bad. Retrying this code...")
+            loggr.info(
+                "For some reason the JSON response was bad. Retrying this code..."
+            )
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "t", 1: "f", 2: "p", 3: "w", 4: "wd"}
     try:
@@ -77,20 +79,19 @@ def get_TWN(prov, region, readings):
         loggr.warning("bad region code?")
         loggr.warning(
             "JSON response we got from the " "region code: \n{}".format(response)
-        )           
+        )
 
 
 current_db = pd.read_csv("{}/Data/current_db.csv".format(PATH))
-if current_db["date"].iloc[-1] == datetime.datetime.now().date().strftime(
-    "%Y-%m-%d"
-):
+if current_db["date"].iloc[-1] == datetime.datetime.now().date().strftime("%Y-%m-%d"):
     loggr.warning("Data already collected for today. Process terminated.")
     pass
 else:
     no_of_regions = len(region_codes["TWN_region_code"])
     loggr.info(
         "starting to extract current conditions for 1st of "
-        "{} regions...".format(no_of_regions))
+        "{} regions...".format(no_of_regions)
+    )
     for j in range(no_of_regions):
         try:
             data = get_TWN(region_codes.province[j], region_codes.region[j], readings)
@@ -106,9 +107,10 @@ else:
                     "current_pressure": data[2],
                     "current_wind_speed": data[3],
                     "current_wind_direction": data[4],
-                }, ignore_index=True
+                },
+                ignore_index=True,
             )
-            loggr.info("extracted current conditions for region #{}".format(j+1))
+            loggr.info("extracted current conditions for region #{}".format(j + 1))
         except TypeError:
-            loggr.info("Due to errors logged above, skipped region #{}".format(j+1))
+            loggr.info("Due to errors logged above, skipped region #{}".format(j + 1))
     current_db.to_csv("{}/Data/current_db.csv".format(PATH), index=False)

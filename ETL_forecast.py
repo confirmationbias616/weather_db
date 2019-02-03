@@ -23,7 +23,7 @@ loggr.addHandler(log_handler)
 loggr.setLevel(logging.INFO)
 
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-    "Unnamed: 0", axis=1, errors='ignore'
+    "Unnamed: 0", axis=1, errors="ignore"
 )
 providers = ("TWN", "EC")
 fc_days = 5
@@ -56,17 +56,19 @@ def get_TWN(prov, region, readings, fc_days):
     ].iloc[0]["TWN_region_code"]
     max_retries = 20
     retries = 0
-    while retries < max_retries:    
+    while retries < max_retries:
         try:
             response = requests.get(
                 url.format(province_dict[prov], str(TWN_region_code).zfill(4))
             ).json()
-            if len(response) < fc_days-1:
+            if len(response) < fc_days - 1:
                 loggr.warning("TWN returned bad data for this region. Retrying...")
                 retries += 1
                 continue
         except json.decoder.JSONDecodeError:
-            loggr.warning("For some reason the JSON response was bad. Retrying this code...")
+            loggr.warning(
+                "For some reason the JSON response was bad. Retrying this code..."
+            )
             retries += 1
             continue
         TWN_data = [None] * len(readings)
@@ -75,10 +77,12 @@ def get_TWN(prov, region, readings, fc_days):
             fc_response = response["fourteendays"]["periods"]
             TWN_data[i] = [
                 int(fc_response[day][TWN_translation[i]]) for day in range(0, fc_days)
-                ]
+            ]
         retries += 1
         return TWN_data
-    loggr.warning('Exceeded retry limit. logging all NaNs and moving on to the next code.')
+    loggr.warning(
+        "Exceeded retry limit. logging all NaNs and moving on to the next code."
+    )
     return [[np.nan] * fc_days] * len(readings)
 
 

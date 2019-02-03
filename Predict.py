@@ -63,23 +63,38 @@ def predict(precision=1, normalize_data=1, **kwargs):
     dbpp = pd.read_csv("{}/Data/prediction_prep_db.csv".format(PATH))
     dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
     dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH)).drop("time", axis=1)
-    X = dbpp.drop(['province', 'region', 'date'], axis=1)
+    X = dbpp.drop(["province", "region", "date"], axis=1)
     try:
-        X.drop('predictions', axis=1, inplace=True)
-        loggr.info("predictions already existed so they were dropped to make room for new ones")
+        X.drop("predictions", axis=1, inplace=True)
+        loggr.info(
+            "predictions already existed so they were dropped to make room for new ones"
+        )
     except KeyError:
         pass
-    loggr.info(("Features for prediction:\n" + "".join(["{}\n".format(feature) for feature in X.columns])))
-    X = X.reindex(columns=(['TWN_high_T1'] + ['EC_high_T1'] + list([a for a in X.columns if a not in ['TWN_high_T1', 'EC_high_T1']])))
+    loggr.info(
+        (
+            "Features for prediction:\n"
+            + "".join(["{}\n".format(feature) for feature in X.columns])
+        )
+    )
+    X = X.reindex(
+        columns=(
+            ["TWN_high_T1"]
+            + ["EC_high_T1"]
+            + list([a for a in X.columns if a not in ["TWN_high_T1", "EC_high_T1"]])
+        )
+    )
 
     if normalize_data:
         pipeline = Pipeline([("std_scaler", StandardScaler())])
         X = pipeline.fit_transform(X)
 
     predictions = model.predict(X)
-    dbpp['predictions'] = model.predict(X)
+    dbpp["predictions"] = model.predict(X)
     dbpp.to_csv("{}/Data/prediction_prep_db.csv".format(PATH), index=False)
     tomorrow = get_date_object(today) + datetime.timedelta(1)
-    dbp = dbp[dbp.date!=str(tomorrow)] # delete tomorrow's prediction to make room for new ones
+    dbp = dbp[
+        dbp.date != str(tomorrow)
+    ]  # delete tomorrow's prediction to make room for new ones
     dbp = dbp.append(dbpp, ignore_index=True)
     dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)

@@ -56,12 +56,13 @@ def load_hyperparameters():
             "precision": [1],
             "date_efficient": 1,
             "region_efficient": [1],
-            "exit_on_exception": 1
+            "exit_on_exception": 1,
         }
 
 
 def get_datetime(date):
     return datetime.date(int(date[:4]), int(date[5:7]), int(date[8:]))
+
 
 hp = load_hyperparameters()
 
@@ -73,8 +74,8 @@ for i in range(hp["iterations"]):
         try:
             hp = load_hyperparameters()
 
-            if type(hp['start_date']) is list:
-                start_date = get_datetime(random.choice(hp['start_date']))
+            if type(hp["start_date"]) is list:
+                start_date = get_datetime(random.choice(hp["start_date"]))
                 end_date = start_date
             else:
                 start_date = get_datetime(hp["start_date"])
@@ -96,10 +97,17 @@ for i in range(hp["iterations"]):
                 + "".join(["{}:{}\n".format(x, hp_inst[x]) for x in hp_inst])
             )
 
-            MLp_agg, MLa_agg, TWNa_agg, ECa_agg, MLw_agg, TWNw_agg, ECw_agg  = [], [], [], [], [], [], []
+            MLp_agg, MLa_agg, TWNa_agg, ECa_agg, MLw_agg, TWNw_agg, ECw_agg = (
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+            )
             for target_date in [
-                str(start_date + datetime.timedelta(days=x))
-                for x in range(eval_days)
+                str(start_date + datetime.timedelta(days=x)) for x in range(eval_days)
             ]:
                 try:
                     loggr.info(
@@ -114,11 +122,11 @@ for i in range(hp["iterations"]):
                         rolling_average_min_periods=hp_inst[
                             "rolling_average_min_periods"
                         ],
-                        TWN_EC_split = hp_inst["TWN_EC_split"],
+                        TWN_EC_split=hp_inst["TWN_EC_split"],
                         date_efficient=hp_inst["date_efficient"],
                         region_efficient=hp_inst["region_efficient"],
-                        drop_columns=hp_inst['drop_columns'],
-                        include_only_columns=hp_inst['include_only_columns'],
+                        drop_columns=hp_inst["drop_columns"],
+                        include_only_columns=hp_inst["include_only_columns"],
                         label=hp_inst["label"],
                         real_time=hp_inst["real_time"],
                     )
@@ -145,7 +153,11 @@ for i in range(hp["iterations"]):
                         target_date=target_date,
                         normalize_data=hp_inst["normalize_data"],
                     )
-                    MLp, MLa, TWNa, ECa, MLw, TWNw, ECw = post_mortem(target_date=str(get_datetime(target_date)+datetime.timedelta(1)))
+                    MLp, MLa, TWNa, ECa, MLw, TWNw, ECw = post_mortem(
+                        target_date=str(
+                            get_datetime(target_date) + datetime.timedelta(1)
+                        )
+                    )
                     MLp_agg.append(MLp)
                     MLa_agg.append(MLa)
                     TWNa_agg.append(TWNa)
@@ -179,8 +191,12 @@ for i in range(hp["iterations"]):
                     "TWN win %": sum(TWNw_agg) / sum(MLp_agg),
                     "EC win %": sum(ECw_agg) / sum(MLp_agg),
                     "points_used": sum(MLp_agg) / len(MLp_agg),
-                    "TWN-ML ave": [TWNa_agg[x]-MLa_agg[x] for x in range(len(TWNa_agg))],
-                    "TWN-ML wins": [TWNw_agg[x]-MLw_agg[x] for x in range(len(TWNw_agg))],
+                    "TWN-ML ave": [
+                        TWNa_agg[x] - MLa_agg[x] for x in range(len(TWNa_agg))
+                    ],
+                    "TWN-ML wins": [
+                        TWNw_agg[x] - MLw_agg[x] for x in range(len(TWNw_agg))
+                    ],
                     "points_used": MLp_agg,
                 }
             )

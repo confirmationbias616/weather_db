@@ -15,8 +15,8 @@ loggr = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setFormatter(
     logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line " +
-        "%(lineno)d"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line "
+        + "%(lineno)d"
     )
 )
 loggr.addHandler(log_handler)
@@ -24,7 +24,7 @@ loggr.setLevel(logging.INFO)
 
 now = datetime.datetime.now()
 region_codes = pd.read_csv("{}/Data/region_codes.csv".format(PATH)).drop(
-    "Unnamed: 0", axis=1, errors='ignore'
+    "Unnamed: 0", axis=1, errors="ignore"
 )
 providers = ("TWN", "EC")
 readings = {0: "high", 1: "low", 2: "precipitation"}
@@ -56,12 +56,14 @@ def get_TWN(prov, region, readings):
         yesterday.month,
         yesterday.year,
     )
-    while True:    
+    while True:
         try:
             response = requests.get(url).json()
             break
         except json.decoder.JSONDecodeError:
-            loggr.info("For some reason the JSON response was bad. Retrying this code...")
+            loggr.info(
+                "For some reason the JSON response was bad. Retrying this code..."
+            )
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "temperatureMax", 1: "temperatureMin", 2: "precip"}
     now = datetime.datetime.now()
@@ -87,7 +89,7 @@ def get_TWN(prov, region, readings):
                         )
                     )
                     TWN_data[i] = np.nan
-    except (KeyError,TypeError):
+    except (KeyError, TypeError):
         loggr.critical(
             "TWN code {} is a bad region code? JSON response"
             'received from the region code: "{}"'.format(

@@ -23,7 +23,7 @@ def wrangle(
     time_span=10,
     rolling_average_window=30,
     rolling_average_min_periods=1,
-    TWN_EC_split = 0.7,
+    TWN_EC_split=0.7,
     date_efficient=True,
     region_efficient=False,
     drop_columns=False,
@@ -65,15 +65,23 @@ def wrangle(
     )
 
     [dbh, dbf, dbc, dba, dbll] = [
-        df[df.columns.drop(list(df.filter(regex="Unnamed")), errors='ignore')]
+        df[df.columns.drop(list(df.filter(regex="Unnamed")), errors="ignore")]
         for df in [dbh, dbf, dbc, dba, dbll]
     ]
 
     if date_efficient:
         loggr.info("Shrinking data for speed...")
-        loggr.debug("Initially, df size was dbh:{}, dbf:{}, dbc:{}, dba:{}".format(len(dbh), len(dbf), len(dbc), len(dba)))
+        loggr.debug(
+            "Initially, df size was dbh:{}, dbf:{}, dbc:{}, dba:{}".format(
+                len(dbh), len(dbf), len(dbc), len(dba)
+            )
+        )
         [dbh, dbf, dbc] = [shrink_dates(df) for df in [dbh, dbf, dbc]]
-        loggr.debug("After shrinking, df size is dbh:{}, dbf:{}, dbc:{}, dba:{}".format(len(dbh), len(dbf), len(dbc), len(dba)))
+        loggr.debug(
+            "After shrinking, df size is dbh:{}, dbf:{}, dbc:{}, dba:{}".format(
+                len(dbh), len(dbf), len(dbc), len(dba)
+            )
+        )
 
     loggr.info("Wrangling forecast data")
     fc_providers = dbf.provider.unique()
@@ -94,7 +102,9 @@ def wrangle(
                 },
                 inplace=True,
             )
-            seg_dbf_list[seg_num].date = seg_dbf_list[seg_num].date.apply(lambda x: str(get_date_object(x) + datetime.timedelta(int(day))))
+            seg_dbf_list[seg_num].date = seg_dbf_list[seg_num].date.apply(
+                lambda x: str(get_date_object(x) + datetime.timedelta(int(day)))
+            )
             seg_num += 1
 
     i = 0
@@ -102,7 +112,9 @@ def wrangle(
         if i == 0:
             db = seg_dbf
         else:
-            db = db.merge(seg_dbf_list[i], how='left', on=["date", "region", "province"])
+            db = db.merge(
+                seg_dbf_list[i], how="left", on=["date", "region", "province"]
+            )
         i += 1
 
     loggr.info("Wrangling history data")
@@ -121,7 +133,7 @@ def wrangle(
         seg_num += 1
 
     for seg_dbh in seg_dbh_list:
-        db = db.merge(seg_dbh, how='left', on=["date", "region", "province"])
+        db = db.merge(seg_dbh, how="left", on=["date", "region", "province"])
 
     loggr.debug("Number of rows in master_db: {}".format(len(db)))
 
@@ -152,15 +164,29 @@ def wrangle(
     db["month"] = db.date.apply(lambda x: get_date_object(x).month)
     db["day_of_month"] = db.date.apply(lambda x: get_date_object(x).day)
     try:
-        dba_rolled = dba[[
-            'region',
-            'month',
-            'day_of_month',
-            'rolling_normal_high_{}days'.format(rolling_average_window)
-        ]]
-        dba_rolled.rename(index=str, columns={"rolling_normal_high_{}days".format(rolling_average_window): "rolling_normal_high"}, inplace=True)
+        dba_rolled = dba[
+            [
+                "region",
+                "month",
+                "day_of_month",
+                "rolling_normal_high_{}days".format(rolling_average_window),
+            ]
+        ]
+        dba_rolled.rename(
+            index=str,
+            columns={
+                "rolling_normal_high_{}days".format(
+                    rolling_average_window
+                ): "rolling_normal_high"
+            },
+            inplace=True,
+        )
     except KeyError:
-        loggr.info("No pre-rolled average column exists for a rolling_average_window of {}. Starting to calculate instead...".format(rolling_average_window))
+        loggr.info(
+            "No pre-rolled average column exists for a rolling_average_window of {}. Starting to calculate instead...".format(
+                rolling_average_window
+            )
+        )
         dba["month"] = dba.date.apply(lambda x: get_date_object(x).month)
         dba["day_of_month"] = dba.date.apply(lambda x: get_date_object(x).day)
 
@@ -190,14 +216,17 @@ def wrangle(
     loggr.info("Computing mean columns")
     for reading in ["high", "low"]:
         for T in ["1", "2", "3"]:
-            db["mean_{}_T{}".format(reading, T)] = TWN_EC_split * db["TWN_{}_T{}".format(reading, T)] + (1 - TWN_EC_split) * db["EC_{}_T{}".format(reading, T)]
-            # below is the generalized version with actual mean instead of offset split 
+            db["mean_{}_T{}".format(reading, T)] = (
+                TWN_EC_split * db["TWN_{}_T{}".format(reading, T)]
+                + (1 - TWN_EC_split) * db["EC_{}_T{}".format(reading, T)]
+            )
+            # below is the generalized version with actual mean instead of offset split
             # (for future when more providers are added)
-            '''
+            """
             db["mean_{}_T{}".format(reading, T)] = db[
                 ["{}_{}_T{}".format(x, reading, T) for x in fc_providers]
             ].apply(np.mean, axis=1)
-            '''
+            """
 
     loggr.info("Computing average deltas")
     delta_req = [
@@ -241,29 +270,61 @@ def wrangle(
     )
 
     ### EXPERIMENTAL STUFF BEGINNING!!!!
-    #2ago
+    # 2ago
     db_date_shift = db.copy()
-    db_date_shift['shift_date'] = db_date_shift.date.apply(lambda x: get_date_object(x) + datetime.timedelta(2)).apply(str)
-    shift_features = [x for x in (include_only_columns + [label]) if (x[-4:] != '2ago' and x[-4:] != 'lkah')]
-    shifted_features = [x+'_2ago' for x in shift_features]
-    for x,y in zip(shifted_features, shift_features):
+    db_date_shift["shift_date"] = db_date_shift.date.apply(
+        lambda x: get_date_object(x) + datetime.timedelta(2)
+    ).apply(str)
+    shift_features = [
+        x
+        for x in (include_only_columns + [label])
+        if (x[-4:] != "2ago" and x[-4:] != "lkah")
+    ]
+    shifted_features = [x + "_2ago" for x in shift_features]
+    for x, y in zip(shifted_features, shift_features):
         db_date_shift[x] = db_date_shift[y]
-    shifted_features = shifted_features + ['shift_date','region','province']
+    shifted_features = shifted_features + ["shift_date", "region", "province"]
     print(shifted_features)
-    db_date_shift.drop([x for x in db_date_shift.columns if x not in shifted_features], axis=1, errors='ignore', inplace=True)
-    db = db.merge(db_date_shift, left_on=['date','region','province'], right_on=['shift_date','region','province'], how='left')
-    
-    #look_ahead
+    db_date_shift.drop(
+        [x for x in db_date_shift.columns if x not in shifted_features],
+        axis=1,
+        errors="ignore",
+        inplace=True,
+    )
+    db = db.merge(
+        db_date_shift,
+        left_on=["date", "region", "province"],
+        right_on=["shift_date", "region", "province"],
+        how="left",
+    )
+
+    # look_ahead
     db_date_shift = db.copy()
-    db_date_shift['shift_date'] = db_date_shift.date.apply(lambda x: get_date_object(x) + datetime.timedelta(1)).apply(str)
-    shift_features = [x for x in (include_only_columns + [label]) if (x[-4:] != '2ago' and x[-4:] != 'lkah')]
-    shifted_features = [x+'_lkah' for x in shift_features]
-    for x,y in zip(shifted_features, shift_features):
+    db_date_shift["shift_date"] = db_date_shift.date.apply(
+        lambda x: get_date_object(x) + datetime.timedelta(1)
+    ).apply(str)
+    shift_features = [
+        x
+        for x in (include_only_columns + [label])
+        if (x[-4:] != "2ago" and x[-4:] != "lkah")
+    ]
+    shifted_features = [x + "_lkah" for x in shift_features]
+    for x, y in zip(shifted_features, shift_features):
         db_date_shift[x] = db_date_shift[y]
-    shifted_features = shifted_features + ['shift_date','region','province']
+    shifted_features = shifted_features + ["shift_date", "region", "province"]
     print(shifted_features)
-    db_date_shift.drop([x for x in db_date_shift.columns if x not in shifted_features], axis=1, errors='ignore', inplace=True)
-    db = db.merge(db_date_shift, left_on=['date','region','province'], right_on=['shift_date','region','province'], how='left')
+    db_date_shift.drop(
+        [x for x in db_date_shift.columns if x not in shifted_features],
+        axis=1,
+        errors="ignore",
+        inplace=True,
+    )
+    db = db.merge(
+        db_date_shift,
+        left_on=["date", "region", "province"],
+        right_on=["shift_date", "region", "province"],
+        how="left",
+    )
     ### DONE BEING EXPERIMENTAL :D
 
     loggr.debug("Number of rows in master_db: {}".format(len(db)))
@@ -280,60 +341,92 @@ def wrangle(
     loggr.info("Dropping a few columns that will be incompatible with ML training")
     keyword_to_remove = ["current_cond_time", "region_code", "Unnamed", "index"]
     for keyword in keyword_to_remove:
-        db = db[db.columns.drop(list(db.filter(regex=keyword)), errors='ignore')]
+        db = db[db.columns.drop(list(db.filter(regex=keyword)), errors="ignore")]
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
     if include_only_columns:
         if type(include_only_columns) is str:
             include_only_columns = [include_only_columns]
         original_columns = db.columns
-        include_only_columns = [column for column in include_only_columns if column in db.columns]
-        db = db[include_only_columns + [label] + ['date', 'province', 'region']]
-        loggr.info("Kept only the hyperparameter-defined columns + the target column + essentials: {}".format(db.columns))
-        loggr.info("Dropped all other columns: {}".format([column for column in original_columns if column not in db.columns]))
+        include_only_columns = [
+            column for column in include_only_columns if column in db.columns
+        ]
+        db = db[include_only_columns + [label] + ["date", "province", "region"]]
+        loggr.info(
+            "Kept only the hyperparameter-defined columns + the target column + essentials: {}".format(
+                db.columns
+            )
+        )
+        loggr.info(
+            "Dropped all other columns: {}".format(
+                [column for column in original_columns if column not in db.columns]
+            )
+        )
     if drop_columns:
         if type(drop_columns) is str:
             drop_columns = [drop_columns]
         drop_columns = [column for column in drop_columns if column in db.columns]
         db.drop(drop_columns, axis=1, inplace=True)
-        loggr.info("Dropped the hyperparameter-defined columns: {}".format(drop_columns))
+        loggr.info(
+            "Dropped the hyperparameter-defined columns: {}".format(drop_columns)
+        )
         loggr.info("Only columns that remain: {}".format(db.columns))
 
-    loggr.info("Pausing cleaning operations to prepare data as `prediction_prep_db.csv` for forecasting tomorrow's highs")
+    loggr.info(
+        "Pausing cleaning operations to prepare data as `prediction_prep_db.csv` for forecasting tomorrow's highs"
+    )
     tomorrow = str(get_date_object(today) + datetime.timedelta(1))
-    dbpp = db[db.date==tomorrow].drop(label, axis=1)
+    dbpp = db[db.date == tomorrow].drop(label, axis=1)
     if not real_time:
         if len(dbpp) == 0:
-            loggr.warning("Aborting analysis since no historical data was available to form a ground truth table for this date")
+            loggr.warning(
+                "Aborting analysis since no historical data was available to form a ground truth table for this date"
+            )
             return 1
     loggr.debug("Scanning through selected features to see if we should drop some.")
     drop_features = []
+
     def feature_dropping(df, df_name):
         for feature in df.columns:
             try:
                 nan_list = np.isnan(df[feature])
                 if nan_list.nunique() == 2:
-                    nan_ratio = nan_list.value_counts()[1]/len(df)
+                    nan_ratio = nan_list.value_counts()[1] / len(df)
                 elif (list(nan_list))[0] == True:
                     nan_ratio = 1
                 else:
                     nan_ratio = 0
                 if nan_ratio > 0.6:
                     drop_features.append(feature)
-                    loggr.info("nan_ratio for `{}` feature in overall selected dataset `{}` is {}, which is too high. Will train and predict without this feature.".format(feature, df_name, nan_ratio))
+                    loggr.info(
+                        "nan_ratio for `{}` feature in overall selected dataset `{}` is {}, which is too high. Will train and predict without this feature.".format(
+                            feature, df_name, nan_ratio
+                        )
+                    )
             except TypeError:
                 # column is not numerical and is safe to be retained. Assume nan_ratio of 0
                 pass
             except (KeyError, IndexError):
                 drop_features.append(feature)
-                loggr.info("Feature `{}` was empty for `{}` so it will be dropped from training and prediction.".format(feature, df_name))
+                loggr.info(
+                    "Feature `{}` was empty for `{}` so it will be dropped from training and prediction.".format(
+                        feature, df_name
+                    )
+                )
         return drop_features
-    db_drop_features, dbpp_drop_features = [feature_dropping(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
+
+    db_drop_features, dbpp_drop_features = [
+        feature_dropping(df, df_name)
+        for df, df_name in zip([db, dbpp], ["master_db", "prediction_prep_db"])
+    ]
     drop_features = set(db_drop_features + dbpp_drop_features)
     db.drop(drop_features, axis=1, inplace=True)
     dbpp.drop(drop_features, axis=1, inplace=True)
     loggr.debug("Number of columns in master_db: {}".format(len(list(db.columns))))
     loggr.debug("Done with column-wise cleaning")
-    loggr.debug("Starting row-wise operations but also applying it to `prediction_prep_db` (as well as `master_db`)")
+    loggr.debug(
+        "Starting row-wise operations but also applying it to `prediction_prep_db` (as well as `master_db`)"
+    )
+
     def row_cleaning(df, df_name):
         loggr.info("Dropping rows with any NaN data...")
         df.dropna(axis=0, how="any", inplace=True)
@@ -342,12 +435,21 @@ def wrangle(
         df.drop_duplicates(inplace=True)
         loggr.debug("Number of rows in `{}`: {}".format(df_name, len(df)))
         return df
-    [db, dbpp] = [row_cleaning(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
+
+    [db, dbpp] = [
+        row_cleaning(df, df_name)
+        for df, df_name in zip([db, dbpp], ["master_db", "prediction_prep_db"])
+    ]
     loggr.debug("Row and column cleaning is complete.")
-    def df_saving(df, df_name):    
+
+    def df_saving(df, df_name):
         loggr.info("Writing `{}` to disk".format(df_name))
         df.to_csv("{}/Data/{}.csv".format(PATH, df_name), index=False)
-    [df_saving(df, df_name) for df, df_name in zip([db, dbpp],['master_db', 'prediction_prep_db'])]
+
+    [
+        df_saving(df, df_name)
+        for df, df_name in zip([db, dbpp], ["master_db", "prediction_prep_db"])
+    ]
 
     loggr.info("Wrangling complete")
     return 0

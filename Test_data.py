@@ -12,8 +12,8 @@ loggr = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setFormatter(
     logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line " +
-        "%(lineno)d"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - line "
+        + "%(lineno)d"
     )
 )
 log_handler.setLevel(logging.INFO)
@@ -52,13 +52,13 @@ def check_forecast_data():
 # it should actually be NaN.
 def correct_bad_forecast_EC_data():
     fc = pd.read_csv("{}/Data/forecast_db.csv".format(PATH), dtype={"date": "str"})
-    drop_ind = list(
-        fc[(fc.high == 0) & (fc.provider == "EC")].index
-    )
+    drop_ind = list(fc[(fc.high == 0) & (fc.provider == "EC")].index)
     if drop_ind:
         fc.loc[drop_ind, "high"] = np.nan
         fc.to_csv("{}/Data/forecast_db.csv".format(PATH))
-        loggr.info("Deleted {} potentially bad forecast entries from EC.".format(len(drop_ind)))
+        loggr.info(
+            "Deleted {} potentially bad forecast entries from EC.".format(len(drop_ind))
+        )
 
 
 # check for missed historical data collection
@@ -82,14 +82,17 @@ def check_historical_data():
         else:
             loggr.critical("all {} historical data was missed".format(provider))
 
+
 # This is to fix an EC bug where it seems like they record a high of '0' when
 # it should actually be NaN.
 def correct_bad_historical_EC_data():
     ht = pd.read_csv("{}/Data/history_db.csv".format(PATH), dtype={"date": "str"})
-    drop_ind = list(
-        ht[(ht.high == 0) & (ht.provider == "EC")].index
-    )
+    drop_ind = list(ht[(ht.high == 0) & (ht.provider == "EC")].index)
     if drop_ind:
         ht.loc[drop_ind, "high"] = np.nan
         ht.to_csv("{}/Data/history_db.csv".format(PATH))
-        loggr.info("Deleted {} potentially bad historical entries from EC.".format(len(drop_ind)))
+        loggr.info(
+            "Deleted {} potentially bad historical entries from EC.".format(
+                len(drop_ind)
+            )
+        )

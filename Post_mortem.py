@@ -69,6 +69,16 @@ def post_mortem(**kwargs):
     dbp['TWN_win'] = dbp['TWN_1win']*1 + dbp['TWN_2tie']*0.5 + dbp['all_3tie']*0.3
     dbp['EC_win'] = dbp['EC_1win']*1 + dbp['EC_2tie']*0.5 + dbp['all_3tie']*0.3
 
+    seg_dbp_list = []
+    for region in dbp.region.unique():
+        seg_dbp_list.append(dbp[dbp.region == region])
+    for seg_dbp in seg_dbp_list:
+        seg_dbp['ML_real_diff_tr'] = seg_dbp.ML_real_diff.rolling(window=14,min_periods=1,center=False).mean()
+        seg_dbp['TWN_real_diff_tr'] = seg_dbp.TWN_real_diff.rolling(window=14,min_periods=1,center=False).mean()
+        seg_dbp['EC_real_diff_tr'] = seg_dbp.EC_real_diff.rolling(window=14,min_periods=1,center=False).mean()
+    dbp_tr = pd.concat(seg_dbp_list, ignore_index=True)
+    dbp = dbp.merge(dbp_tr[["date", "region","ML_real_diff_tr", "TWN_real_diff_tr", "EC_real_diff_tr"]], on=["date", "region"], how="left")
+
     ML_reg_diff_mean = dbp.groupby('region')['ML_real_diff'].mean().sort_values()
     TWN_reg_diff_mean = dbp.groupby('region')['TWN_real_diff'].mean().sort_values()
     EC_reg_diff_mean = dbp.groupby('region')['EC_real_diff'].mean().sort_values()

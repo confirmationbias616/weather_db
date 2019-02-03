@@ -37,6 +37,7 @@ def train(
     cv=100,
     edge_forecasting=1,
     normalize_data=1,
+    criterion='mse',
     **kwargs
 ):
     def get_date_object(date):
@@ -167,6 +168,7 @@ def train(
         min_samples_split=min_samples_split,
         n_estimators=n_estimators,
         random_state=42,
+        criterion=criterion
     )
     
     if baseline_rmse:

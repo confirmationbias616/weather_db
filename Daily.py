@@ -157,6 +157,8 @@ try:
         precision=hp["precision"],
         edge_forecasting=hp["edge_forecasting"],
         normalize_data=hp["normalize_data"],
+        criterion=hp["criterion"],
+
     )
     loggr.info("ML Model is now ready")
 except Exception as e:

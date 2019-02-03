@@ -40,6 +40,7 @@ def load_hyperparameters():
             "edge_forecasting": [1],
             "real_time": [0],
             "normalize_data": [1, 0],
+            "criterion": ["mse", "mae"],
             "label": "TWN_high",
             "drop_columns": 0,
             "include_only_columns": 0,
@@ -136,6 +137,7 @@ for i in range(hp["iterations"]):
                         precision=hp_inst["precision"],
                         edge_forecasting=hp_inst["edge_forecasting"],
                         normalize_data=hp_inst["normalize_data"],
+                        criterion=hp_inst["criterion"],
                     )
                     predict(
                         label=hp_inst["label"],

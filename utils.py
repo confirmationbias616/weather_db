@@ -220,7 +220,9 @@ if __name__ == "__main__":
         erase_today()
     elif args.tool == "ETL_regions":
         ETL_regions()
-    elif args.tool == "geocodify":
+    elif args.tool == "geocode":
         geocode()
+    elif args.tool == "elevate":
+        elevate()
     else:
         loggr.info("No function specified. See help for more instructions.")

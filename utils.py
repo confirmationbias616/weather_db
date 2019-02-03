@@ -203,7 +203,7 @@ def elevate():
         print(elevation)
         return elevation
     rc['elevation'] = rc.apply(lambda row: get_elevation(row['latitude'], row['longitude']), axis=1)
-    regions.to_csv("{}/Data/region_codes.csv".format(PATH))
+    rc.to_csv("{}/Data/region_codes.csv".format(PATH))
     loggr.info(datetime.datetime.now())
 
 

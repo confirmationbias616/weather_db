@@ -1,4 +1,4 @@
-# weather_db
+# weather_db :cloud:
 
 [![CircleCI](https://circleci.com/gh/confirmationbias616/weather_db.svg?style=svg)](https://circleci.com/gh/confirmationbias616/weather_db)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
@@ -7,7 +7,7 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 
 
 ###### Primary Goal:
-* Predict tomorrow's high with as much accuracy as possible. [Check out my progress!](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements)
+* Predict tomorrow's high with as much accuracy as possible. [Check out my progress on Klipfolio!](https://app.klipfolio.com/published/dcdee1e03d96198ac7b9d659ae29357a/accuracy-improvements)
  * A real success would be to have the lowest prediction errors (MAE) between forecast and recorded highs out of all tracked forecasters.
 
  
@@ -17,15 +17,14 @@ Forecasting Canada's weather by analyzing top forecasters's data and improving u
 * Find out if rumours of forecaster [wet bias](<https://en.wikipedia.org/wiki/Wet_bias>) are valid.
 * Collect a dataset of historical forecasts across the country for whatever new purpose the open source community might find
 
-
 ---
 
 Please understand this project is still work in progress and is very much **incomplete**.  
 See [Installation](#Installation) instructions to check out the source code on your machine and maybe even help me out.
 
+Also, see [Progress Log](#ProgressLog) for latest updates on development.
+
 ---
-
-
 
 ## Challenges
 
@@ -107,3 +106,37 @@ Currently, I run the following script on a daily schedule, using launchd through
 * `Daily.py` at 5:00 PM
 
 If you want the same results as me, you should do the same.
+
+## <a name="ProgressLog"></a>Progress Log
+
+---
+
+#### Feb 2, 2019
+Since the productionisation of weather_db in early December, I've been casually checking in on my Klipfolio dashboard to monitor the model's predictions across the country. I've been trying to get a feel for quality and usefulness of the generaed output to see if any tweaks are required.
+
+The KPI of beating Environment Canada and The Weather Network on average by 21% and 11% respectively seems rather encouraging at first glance but what happens when we zoom in on specific areas and dates? I started noticing a reccuring pattern of weather_db far outperforming other forecasters when and where the daily high occurs in the first hours of a new day (12AM - 3AM). When the day's high occurs closer to mid-day however, the competition seems to perform much better. 
+
+**So what's going on here?!** Do these forecasters have flawed models and algorithms that just refuse to consider the possibility of a day's high occuring in the wee hours of the night? Are they just off on their timing of temperature drops in the evening caused by the sun's retreat? As it turns out, none of these explanations are right. 
+
+As explained by [Environment Canada's website](https://www.canada.ca/en/environment-climate-change/services/types-weather-forecasts-use/public/guide/bulletins.html#c1), the "Tomorrow Forecast" being issued in the evening only considers the tomorrow's range of 6AM - 6PM when it predicts a daily high. For The Weather Network, I can't find anything on their page explaining forecast timing but I did e-mail their support team to get more info. I suspect they must be using the same structure because their median prediction error is -1.1 degrees, which is similar to Environment Canada (-1.2). Reflecting back on the preliminary EDA phase, looking at summary statistics from the initial web scraping round of data should have sounded alarm bells. I do remember finding these biases strange but chalked it up to probably being a temperature version of the [wet bias](<https://en.wikipedia.org/wiki/Wet_bias>). See [this notebook](https://github.com/confirmationbias616/weather_db/blob/master/Notebooks/Prediction_Error_Bias_Analysis.ipynb) for a short analyis on the last few lines. For the record, weather_db's median is virtually neutral (-0.05), which is as it should be.
+
+Unlike the time period for the forecasters' predicted daily highs, they report *historical* daily highs over the day's full 24-hr period - not just the mid-day 6AM - 6PM period. Since the model is trained on this reported *historical* data as ground truth, it therefore tries to predict the daily high for the full 24-hr period. This results in a mismatch between the model's daily high predictions and its competitors' daily high predictions.
+
+ This recent discovery generates 2 serious issues:
+* Comparing perfomance of weather_db to that of its competitors is not fair because they technically aren't predicting the same thing. In fact, comparing Enivronment Canada's predictions to its own historical records doesn't even make sense, for this exact same reason. This leads me to wonder: are they even tracking their own performance?
+* The model could easily become biased towards predicting too high in weather patterns where nightly highs are a common occurence, which would then backfire when daily highs start occuring at mid-day again.
+
+This leaves the project at a fork in the road, stuck between 2 possible paths it could take to realign the data, predictions, and KPI's in a more meaningful way:
+1. Keep everyhting generally the same but stop claiming a certain outperformance percentage over competition. The forecasters' limited-range predictions are still great features to be used by the ML model - they just aren't exactly comparable to the model's target variable and cannot be compared as such. Sticking with this path, we could still add 2 features to our trainging data: time of daily high (continuous numerical feature) and whether it falls before mid-day range, during, or after (categorical feature). 
+2. Tweak the ETL & data wrangling process so that the recorded historical daily high is actually just taken from the 6AM-6PM time period. This hourly breakdown of the actual temperature is available through Environment Canada's website. Modifying the target variable of the model's training dataset in this way would in effect cause it to mimic its competitor's behaviour (but hopefully with better performance!). We would finally be able to tell if weather_db can outperform its competition!
+
+This fork in the road calls for 2 separate branches.
+
+#### ***TL;DR***  
+*The moral of the story is that domain knowledge is absolutely crucial for for any data science project. A solid understanding of the features and underlying data is required in order to build a useful model.*  
+
+*Now that there is a deeper understanding of the forecasting domain knowledge, this project's development will be corrected in 2 different ways, through 2 different branches.*  
+
+Stay tuned! :smirk: :wave:
+
+---

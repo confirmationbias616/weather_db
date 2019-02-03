@@ -58,7 +58,7 @@ def get_TWN(prov, region, readings):
                 url.format(province_dict[prov], str(TWN_region_code).zfill(4))
             ).json()
             break
-        except json.decoder.JSONDecodeError:
+        except (json.decoder.JSONDecodeError, ConnectionError):
             loggr.info("For some reason the JSON response was bad. Retrying this code...")
     TWN_data = [None] * len(readings)
     TWN_translation = {0: "t", 1: "f", 2: "p", 3: "w", 4: "wd"}

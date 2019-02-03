@@ -23,12 +23,34 @@ log_handler.setFormatter(
 )
 loggr.addHandler(log_handler)
 
-# create a copy of what was collected today
+
+def str_date_gen(y1=False, y2=False, m1=1, m2=12, d1=1, d2=31):
+    """Returns a generator of valid date strings in the format "yyyy-mm-dd".
+
+    Useful when used in conjunction with `.isin()` method to filter Dataframes 
+    on the `date` column, which is a string dtype. Returns all valid dates in current 
+    year by default.
+    \n.
+    """
+
+    y1 = datetime.datetime.now().year if y1 is False else y1
+    y2 = datetime.datetime.now().year if y2 is False else y2
+
+    def get_date(y, m, d):
+        try:
+            return str(datetime.date(y, m, d))
+        except ValueError:
+            return 'skip'
+    return (
+        get_date(y,m,d) for y in range(
+            y1, y2 + 1) for m in range(
+            m1, m2 + 1) for d in range(
+            d1, d2 + 1) if get_date(y, m, d) != 'skip')
+
 today = str(datetime.datetime.now().date())
 yesterday = str(datetime.datetime.now().date() - datetime.timedelta(days=1))
 today = "{}-{}-{}".format(today[:4], today[5:7], today[8:10])
 yesterday = "{}-{}-{}".format(yesterday[:4], yesterday[5:7], yesterday[8:10])
-
 
 def erase_today():
     for filename, day in zip(["forecast_db", "history_db"], [today, yesterday]):

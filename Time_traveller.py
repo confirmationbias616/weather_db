@@ -38,7 +38,7 @@ def load_hyperparameters():
             "end_date": "2018-10-15",
             "time_span": [20],
             "edge_forecasting": [1],
-            "real_time": [1],
+            "real_time": [0],
             "normalize_data": [1, 0],
             "criterion": ["mse", "mae"],
             "label": "TWN_high",
@@ -54,7 +54,7 @@ def load_hyperparameters():
             "n_estimators": [40],
             "cv": [3],
             "precision": [1],
-            "date_efficient": 1,
+            "date_efficient": 0,
             "region_efficient": [1],
             "exit_on_exception": 1,
         }

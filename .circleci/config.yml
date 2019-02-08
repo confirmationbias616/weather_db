@@ -62,6 +62,8 @@ jobs:
             current_db.csv \
             dba_rolled.csv \
             region_codes.csv \
+            prediction_db.csv \
+            prediction_prep_db.csv \
             ..
             
             cd ..
@@ -72,6 +74,8 @@ jobs:
             current_db.csv \
             dba_rolled.csv \
             region_codes.csv \
+            prediction_db.csv \
+            prediction_prep_db.csv \
             ./Data
             
             cd Test

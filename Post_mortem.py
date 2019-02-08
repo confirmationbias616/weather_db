@@ -42,8 +42,8 @@ def post_mortem(**kwargs):
     else:
         time_travel_string = ""
 
-    dbh = pd.read_csv("/Users/Alex/Coding/weather_db/Data/history_db.csv")
-    dbp = pd.read_csv("/Users/Alex/Coding/weather_db/Data/prediction_db.csv")
+    dbh = pd.read_csv("{}/Data/history_db.csv".format(PATH))
+    dbp = pd.read_csv("{}/Data/prediction_db.csv".format(PATH))
 
     dbp = (
         dbp.drop("high", axis=1)
@@ -55,7 +55,7 @@ def post_mortem(**kwargs):
         .reset_index()
         .drop("index", axis=1)
     )
-    dbp.to_csv("/Users/Alex/Coding/weather_db/Data/prediction_db.csv", index=False)
+    dbp.to_csv("{}/Data/prediction_db.csv".format(PATH), index=False)
 
     dbp.dropna(axis=0, subset=["high", "predictions"], inplace=True)
 
@@ -157,14 +157,14 @@ def post_mortem(**kwargs):
     )
     dbpr = dbpr.reset_index().rename(columns={"index": "region"})
     dbpr.to_csv(
-        "/Users/Alex/Coding/weather_db/Data/prediction_regional_analysis.csv",
+        "{}/Data/prediction_regional_analysis.csv".format(PATH),
         index=False,
     )
 
     dbp = dbp.merge(dbpr.reset_index()[["region", "lowest"]], how="left", on="region")
     dbp = dbp.sort_values(["date", "province", "region"])
     dbp.to_csv(
-        "/Users/Alex/Coding/weather_db/Data/prediction_db_analysis.csv", index=False
+        "{}/Data/prediction_db_analysis.csv".format(PATH), index=False
     )
 
     loggr.info("For entire predictions history:")
@@ -187,7 +187,7 @@ def post_mortem(**kwargs):
 
     dbp_latest = dbp[dbp.date == fc_date]
     dbp_latest.to_csv(
-        "/Users/Alex/Coding/weather_db/Data/prediction_db_analysis_latest.csv",
+        "{}/Data/prediction_db_analysis_latest.csv".format(PATH),
         index=False,
     )
     loggr.info("Total points to share: {}".format(len(dbp.ML_win)))

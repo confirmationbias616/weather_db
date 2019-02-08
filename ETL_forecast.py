@@ -100,9 +100,12 @@ def get_EC(prov, region, readings, fc_days):
     soup = BeautifulSoup(html, "html.parser")
     EC_data = [[] for _ in range(len(readings))]
     forecast_table = soup.find("div", {"class": "div-table"})
-    forecast_days = forecast_table.find_all("div", {"class": "div-column"})[
-        1 : (fc_days + 1)
-    ]
+    try:
+        forecast_days = forecast_table.find_all("div", {"class": "div-column"})[
+            1 : (fc_days + 1)
+        ]
+    except AttributeError:
+        return [[np.nan]*5]*4
     for col_content in forecast_days:
         try:
             EC_data[0].append(

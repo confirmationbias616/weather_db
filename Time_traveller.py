@@ -44,7 +44,7 @@ def load_hyperparameters():
             "label": "TWN_high",
             "drop_columns": 0,
             "include_only_columns": 0,
-            "rolling_average_window": [1],
+            "rolling_average_window": [6],
             "rolling_average_min_periods": [1],
             "TWN_EC_split": 0.7,
             "max_depth": [20],

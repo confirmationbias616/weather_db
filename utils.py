@@ -58,7 +58,7 @@ yesterday = "{}-{}-{}".format(yesterday[:4], yesterday[5:7], yesterday[8:10])
 
 
 def erase_today():
-    for filename, day in zip(["forecast_db", "history_db"], [today, yesterday]):
+    for filename, day in zip(["forecast_db", "history_db", "current_db", "history_timing_db"], [today, yesterday, today, yesterday]):
         df = pd.read_csv("{}/Data/{}.csv".format(PATH, filename))
         df = df[df["date"] != day]
         df.to_csv("{}/Data/{}.csv".format(PATH, filename), index=False)

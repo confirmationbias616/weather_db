@@ -43,7 +43,7 @@ def load_hyperparameters():
             "criterion": ["mse", "mae"],
             "label": "TWN_high",
             "drop_columns": 0,
-            "include_only_columns": False,
+            "include_only_columns": None,
             "rolling_average_window": [6],
             "rolling_average_min_periods": [1],
             "TWN_EC_split": 0.7,

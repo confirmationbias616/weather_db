@@ -44,6 +44,10 @@ province_dict = {
     "saskatchewan": "sk",
     "alberta": "ab",
     "british-columbia": "bc",
+    "newfoundland-and-labrador": "nl",
+    "yukon": "yt",
+    "nunavut": "nu",
+    "northwest-territories": "nt",
 }
 
 

@@ -80,6 +80,10 @@ def ETL_regions():
         "sk": "saskatchewan",
         "ab": "alberta",
         "bc": "british-columbia",
+        "nl": "newfoundland-and-labrador",
+        "yt": "yukon",
+        "nu": "nunavut",
+        "nt": "northwest-territories",
     }
 
     for EC_province in list(province_dict.keys()):

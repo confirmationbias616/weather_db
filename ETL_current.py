@@ -44,6 +44,10 @@ province_dict = {
     "saskatchewan": "sk",
     "alberta": "ab",
     "british-columbia": "bc",
+    "newfoundland-and-labrador": "nl",
+    "yukon": "yt",
+    "nunavut": "nu",
+    "northwest-territories": "nt",
 }
 
 
@@ -58,7 +62,7 @@ def get_TWN(prov, region, readings):
                 url.format(province_dict[prov], str(TWN_region_code).zfill(4))
             ).json()
             break
-        except (json.decoder.JSONDecodeError, ConnectionError):
+        except (json.decoder.JSONDecodeError, ConnectionError, requests.exceptions.ConnectionError, SSLError, requests.exceptions.SSLError):
             loggr.info(
                 "For some reason the JSON response was bad. Retrying this code..."
             )

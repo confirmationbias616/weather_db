@@ -41,6 +41,10 @@ province_dict = {
     "saskatchewan": "sk",
     "alberta": "ab",
     "british-columbia": "bc",
+    "newfoundland-and-labrador": "nl",
+    "yukon": "yt",
+    "nunavut": "nu",
+    "northwest-territories": "nt",
 }
 
 
@@ -120,9 +124,14 @@ def get_EC(prov, region, readings):
     response = requests.get(hist_link)
     html = response.content
     soup = BeautifulSoup(html, "html.parser")
-    hist_year = int(
-        soup.find("div", {"id": "dynamicDataTable"}).find("caption").get_text()[-4:]
-    )
+    try:
+        hist_year = int(
+            soup.find("div", {"id": "dynamicDataTable"}).find("caption").get_text()[-4:]
+        )
+    except AttributeError:
+        loggr.info("EC code {} does not log historical data".format(EC_region_code))
+        EC_data = [np.nan] * 3
+        hist_year=0
     EC_data = [0 for _ in range(len(readings))]
     if hist_year == yesterday.year:
         try:

@@ -43,7 +43,7 @@ def load_hyperparameters():
             "criterion": ["mse", "mae"],
             "label": "TWN_high",
             "drop_columns": 0,
-            "include_only_columns": ["mean_high_T1",  "TWN_high_T1", "EC_high_T1", "longitude", "latitude", "elevation", "rolling_normal_high", "current_temp_T1"],
+            "include_only_columns": [["mean_high_T1",  "TWN_high_T1", "EC_high_T1", "longitude", "latitude", "elevation", "rolling_normal_high", "current_temp_T1"]],
             "rolling_average_window": [6],
             "rolling_average_min_periods": [1],
             "TWN_EC_split": 0.7,
